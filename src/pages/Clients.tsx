@@ -274,6 +274,60 @@ const Clients = () => {
             </div>
           </header>
 
+          {/* Stats Overview - Robinhood-inspired subtle visualization */}
+          <div className="max-w-[1400px] mx-auto px-6 sm:px-8 py-6">
+            <div className="grid grid-cols-4 gap-3">
+              {clientGroups.map((group) => {
+                const totalValue = group.clients.reduce((sum, c) => sum + parseFloat(c.propertyValue.replace(/[$MK,]/g, '').replace('M', '000').replace('K', '')), 0);
+                const totalDeals = group.clients.reduce((sum, c) => sum + c.transactions, 0);
+                const percentage = clients.length > 0 ? (group.clients.length / clients.length) * 100 : 0;
+                
+                return (
+                  <div key={group.type} className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-sm transition-shadow duration-200">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-xl">{group.icon}</span>
+                      <div className="text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
+                        {group.label}
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      {/* Count */}
+                      <div>
+                        <div className="text-[28px] font-bold tracking-tight text-[hsl(var(--charcoal))] leading-none">
+                          {group.clients.length}
+                        </div>
+                        <div className="text-[11px] text-gray-500 mt-1">
+                          {percentage.toFixed(0)}% of portfolio
+                        </div>
+                      </div>
+                      
+                      {/* Progress bar */}
+                      <div className="space-y-1.5">
+                        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                          <div 
+                            className={`h-full ${group.bgColor.replace('50', '200')} transition-all duration-500`}
+                            style={{ width: `${percentage}%` }}
+                          />
+                        </div>
+                        
+                        {/* Stats row */}
+                        <div className="flex items-center justify-between text-[11px]">
+                          <span className="text-gray-600 font-medium">
+                            {totalDeals} deals
+                          </span>
+                          <span className="font-semibold text-gray-900">
+                            ${(totalValue / 1000).toFixed(1)}M
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Client Groups */}
           <div className="max-w-[1400px] mx-auto px-6 sm:px-8 py-6 space-y-4">
             {clientGroups.map((group) => (
