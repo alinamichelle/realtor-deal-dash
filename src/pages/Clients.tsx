@@ -164,119 +164,123 @@ const Clients = () => {
             </div>
           </header>
 
-          {/* Client Cards */}
+          {/* Client List */}
           <div className="max-w-[1400px] mx-auto px-6 sm:px-8 py-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {clients.map((client) => (
-                <div
-                  key={client.id}
-                  onMouseEnter={() => setHoveredClient(client.id)}
-                  onMouseLeave={() => setHoveredClient(null)}
-                  className="group relative bg-white border border-gray-200 rounded-xl p-5 hover:shadow-lg hover:shadow-gray-100/50 transition-all duration-300 cursor-pointer hover:-translate-y-0.5"
-                >
-                  {/* Top Row - Name and Status */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-[17px] font-semibold tracking-[-0.01em] text-[hsl(var(--charcoal))] group-hover:text-[hsl(var(--coral))] transition-colors duration-200 truncate">
-                        {client.name}
-                      </h3>
-                      <div className="flex items-center gap-2 mt-2">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold tracking-wide ${
-                          client.role === 'Buyer' 
-                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
-                            : 'bg-pink-50 text-pink-700 border border-pink-200'
-                        }`}>
-                          {client.role}
-                        </span>
-                        {client.isPastClient && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold tracking-wide bg-gray-50 text-gray-600 border border-gray-200">
-                            Past Client
+            {/* Table */}
+            <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+              {/* Header Row */}
+              <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-gray-50/50 border-b border-gray-200">
+                <div className="col-span-3 text-[11px] font-semibold text-gray-600 uppercase tracking-wider">Client</div>
+                <div className="col-span-2 text-[11px] font-semibold text-gray-600 uppercase tracking-wider">Contact</div>
+                <div className="col-span-2 text-[11px] font-semibold text-gray-600 uppercase tracking-wider">Source</div>
+                <div className="col-span-1 text-[11px] font-semibold text-gray-600 uppercase tracking-wider">Deals</div>
+                <div className="col-span-2 text-[11px] font-semibold text-gray-600 uppercase tracking-wider">Last Active</div>
+                <div className="col-span-1 text-[11px] font-semibold text-gray-600 uppercase tracking-wider">Status</div>
+                <div className="col-span-1"></div>
+              </div>
+
+              {/* Client Rows */}
+              <div>
+                {clients.map((client, index) => (
+                  <div
+                    key={client.id}
+                    onMouseEnter={() => setHoveredClient(client.id)}
+                    onMouseLeave={() => setHoveredClient(null)}
+                    className={`group relative grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-50/80 transition-all duration-200 cursor-pointer ${
+                      index !== clients.length - 1 ? 'border-b border-gray-100' : ''
+                    }`}
+                  >
+                    {/* Client Info */}
+                    <div className="col-span-3 flex items-center min-w-0">
+                      <div className="min-w-0 flex-1">
+                        <div className="text-[15px] font-semibold tracking-[-0.01em] text-[hsl(var(--charcoal))] group-hover:text-[hsl(var(--coral))] transition-colors duration-200 truncate">
+                          {client.name}
+                        </div>
+                        <div className="flex items-center gap-2 mt-1.5">
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wide uppercase ${
+                            client.role === 'Buyer' 
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                              : 'bg-pink-50 text-pink-700 border border-pink-200'
+                          }`}>
+                            {client.role}
                           </span>
-                        )}
+                          {client.isPastClient && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wide uppercase bg-gray-50 text-gray-600 border border-gray-200">
+                              Past Client
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    
-                    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all ${
-                      client.status === 'Active'
-                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                        : 'bg-gray-50 text-gray-600 border border-gray-200'
-                    }`}>
-                      <div className={`w-1.5 h-1.5 rounded-full transition-all ${
-                        client.status === 'Active' ? 'bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.6)] animate-pulse' : 'bg-gray-400'
-                      }`} />
-                      {client.status}
-                    </span>
-                  </div>
 
-                  {/* Contact Info Grid */}
-                  <div className="space-y-3 mb-4 pb-4 border-b border-gray-100">
-                    <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center">
-                        <Mail className="w-4 h-4 text-gray-500" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-0.5">Email</div>
-                        <div className="text-[13px] text-gray-900 font-medium truncate">{client.email}</div>
-                      </div>
+                    {/* Contact */}
+                    <div className="col-span-2 flex flex-col justify-center min-w-0">
+                      <div className="text-[13px] text-gray-900 font-medium truncate tracking-[-0.01em]">{client.email}</div>
+                      <div className="text-[13px] text-gray-500 font-mono tracking-tight mt-0.5">{client.phone}</div>
                     </div>
-                    
-                    <div className="flex items-center gap-3">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center">
-                        <Phone className="w-4 h-4 text-gray-500" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-0.5">Phone</div>
-                        <div className="text-[13px] text-gray-900 font-medium font-mono tracking-tight">{client.phone}</div>
-                      </div>
-                    </div>
-                  </div>
 
-                  {/* Stats Row */}
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Source</div>
-                      <div className="text-[13px] font-semibold text-gray-900">{client.source}</div>
+                    {/* Source */}
+                    <div className="col-span-2 flex flex-col justify-center">
+                      <div className="text-[13px] text-gray-900 font-semibold tracking-[-0.01em]">{client.source}</div>
                       {client.agent && (
-                        <div className="text-[11px] text-gray-500 mt-0.5">{client.agent}</div>
+                        <div className="text-[12px] text-gray-500 mt-0.5">
+                          <span className="text-gray-400">via</span> {client.agent}
+                        </div>
                       )}
                     </div>
-                    
-                    <div>
-                      <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Transactions</div>
-                      <div className={`text-[20px] font-bold tabular-nums ${
+
+                    {/* Transactions */}
+                    <div className="col-span-1 flex items-center">
+                      <div className={`text-[18px] font-bold tabular-nums tracking-tight ${
                         client.transactions > 0 ? 'text-[hsl(var(--charcoal))]' : 'text-gray-300'
                       }`}>
                         {client.transactions}
                       </div>
                     </div>
-                    
-                    <div>
-                      <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wider mb-1">Last Active</div>
-                      <div className="text-[13px] font-semibold text-gray-900 tabular-nums">{client.lastActivity}</div>
+
+                    {/* Last Activity */}
+                    <div className="col-span-2 flex items-center">
+                      <div className="text-[13px] text-gray-700 font-medium tabular-nums tracking-[-0.01em]">{client.lastActivity}</div>
                     </div>
-                  </div>
 
-                  {/* Quick Actions - Appears on hover */}
-                  <div className={`absolute top-3 right-3 flex items-center gap-1 transition-all duration-200 ${
-                    hoveredClient === client.id ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-2 pointer-events-none'
-                  }`}>
-                    <button className="p-2 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all duration-150 active:scale-95 shadow-sm">
-                      <Mail className="w-3.5 h-3.5 text-gray-600" />
-                    </button>
-                    <button className="p-2 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all duration-150 active:scale-95 shadow-sm">
-                      <Phone className="w-3.5 h-3.5 text-gray-600" />
-                    </button>
-                    <button className="p-2 rounded-lg bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all duration-150 active:scale-95 shadow-sm">
-                      <MoreHorizontal className="w-3.5 h-3.5 text-gray-600" />
-                    </button>
-                  </div>
+                    {/* Status */}
+                    <div className="col-span-1 flex items-center">
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide transition-all ${
+                        client.status === 'Active'
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                          : 'bg-gray-50 text-gray-600 border border-gray-200'
+                      }`}>
+                        <div className={`w-1.5 h-1.5 rounded-full ${
+                          client.status === 'Active' ? 'bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.6)] animate-pulse' : 'bg-gray-400'
+                        }`} />
+                        {client.status}
+                      </span>
+                    </div>
 
-                  {/* Hover indicator */}
-                  <div className={`absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-[hsl(var(--coral))] to-[hsl(var(--rust))] rounded-l-xl transition-all duration-300 ${
-                    hoveredClient === client.id ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0'
-                  }`} />
-                </div>
-              ))}
+                    {/* Quick Actions */}
+                    <div className="col-span-1 flex items-center justify-end">
+                      <div className={`flex items-center gap-0.5 transition-all duration-200 ${
+                        hoveredClient === client.id ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-2 pointer-events-none'
+                      }`}>
+                        <button className="p-2 rounded-lg hover:bg-gray-100 transition-all duration-150 active:scale-95">
+                          <Mail className="w-4 h-4 text-gray-600" />
+                        </button>
+                        <button className="p-2 rounded-lg hover:bg-gray-100 transition-all duration-150 active:scale-95">
+                          <Phone className="w-4 h-4 text-gray-600" />
+                        </button>
+                        <button className="p-2 rounded-lg hover:bg-gray-100 transition-all duration-150 active:scale-95">
+                          <MoreHorizontal className="w-4 h-4 text-gray-600" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Left edge indicator */}
+                    <div className={`absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-[hsl(var(--coral))] to-[hsl(var(--rust))] transition-all duration-200 ${
+                      hoveredClient === client.id ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0'
+                    }`} />
+                  </div>
+                ))}
+              </div>
             </div>
 
             {/* Empty state */}
