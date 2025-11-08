@@ -149,17 +149,17 @@ const Index = () => {
                   <h1 className="text-[28px] font-semibold text-[hsl(var(--charcoal))] leading-none">
                     {transaction.address}
                   </h1>
-                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium uppercase tracking-wide">
+                  <span className="border border-blue-200 bg-blue-50/50 text-blue-700 px-3 py-1 rounded-full text-xs font-medium uppercase tracking-wide">
                     {transaction.type}
                   </span>
                 </div>
-                <span className="bg-[hsl(var(--coral))] text-white px-4 py-1.5 rounded-full text-[13px] font-medium shadow-sm">
+                <span className="border border-[hsl(var(--coral))]/30 bg-[hsl(var(--coral))] text-white px-4 py-1.5 rounded-full text-[13px] font-medium">
                   {transaction.status}
                 </span>
               </div>
               
-              {/* Enhanced Timeline - Paco: Dense, scannable metrics */}
-              <div className="bg-gray-50 rounded-lg px-4 py-3 flex justify-between items-center">
+              {/* Enhanced Timeline - Paco: Clean, minimal metrics bar */}
+              <div className="border border-gray-200 rounded-lg px-4 py-3 flex justify-between items-center">
                 <div className="flex gap-8">
                   <div>
                     <div className="text-[11px] text-gray-500 mb-0.5 uppercase tracking-wide">Created</div>
@@ -178,7 +178,7 @@ const Index = () => {
                     <div className="text-[13px] text-[hsl(var(--charcoal))] font-medium">{transaction.pricing.contractPrice}</div>
                   </div>
                 </div>
-                <div className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs font-medium">
+                <div className="border border-[hsl(var(--coral))]/30 bg-[hsl(var(--coral))]/5 text-[hsl(var(--coral))] px-3 py-1 rounded-full text-xs font-medium">
                   {transaction.daysToLaunch} days to launch
                 </div>
               </div>
@@ -205,50 +205,44 @@ const Index = () => {
                         {transaction.address}
                         <span className="text-gray-500 font-normal"> {transaction.unit}</span>
                       </div>
-                      <span className="bg-green-100 text-green-800 px-2.5 py-0.5 rounded-lg text-[11px] font-medium uppercase">
+                      <span className="border border-green-200 bg-green-50/50 text-green-700 px-2.5 py-0.5 rounded-lg text-[11px] font-medium uppercase">
                         {transaction.occupancy}
                       </span>
                     </div>
                     <div className="text-sm text-gray-600">{transaction.city}</div>
                   </div>
                   
-                  {/* 4-Column Specs Grid */}
+                  {/* 4-Column Specs Grid - Paco: Minimal borders, no heavy backgrounds */}
                   <div className="grid grid-cols-4 gap-4 mb-6">
-                    <div className="text-center p-3 bg-[hsl(var(--silver))] rounded-lg">
+                    <div className="text-center p-3 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors">
                       <div className="text-2xl font-semibold text-[hsl(var(--charcoal))]">{transaction.property.beds}</div>
                       <div className="text-[11px] text-gray-500 uppercase tracking-wide">Beds</div>
                     </div>
-                    <div className="text-center p-3 bg-[hsl(var(--silver))] rounded-lg">
+                    <div className="text-center p-3 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors">
                       <div className="text-2xl font-semibold text-[hsl(var(--charcoal))]">{transaction.property.baths}</div>
                       <div className="text-[11px] text-gray-500 uppercase tracking-wide">Baths</div>
                     </div>
-                    <div className="text-center p-3 bg-[hsl(var(--silver))] rounded-lg">
+                    <div className="text-center p-3 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors">
                       <div className="text-2xl font-semibold text-[hsl(var(--charcoal))]">{transaction.property.sqft.toLocaleString()}</div>
                       <div className="text-[11px] text-gray-500 uppercase tracking-wide">Sq Ft</div>
                     </div>
-                    <div className="text-center p-3 bg-[hsl(var(--silver))] rounded-lg">
+                    <div className="text-center p-3 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors">
                       <div className="text-2xl font-semibold text-[hsl(var(--charcoal))]">{transaction.property.yearBuilt}</div>
                       <div className="text-[11px] text-gray-500 uppercase tracking-wide">Built</div>
                     </div>
                   </div>
                   
-                  {/* Features Grid - Active/Inactive indicators */}
+                  {/* Features Grid - Paco: Minimal, only show active with subtle styling */}
                   <div className="mb-6">
                     <h3 className="text-xs font-semibold text-gray-600 uppercase mb-3">Features</h3>
-                    <div className="grid grid-cols-4 gap-2">
-                      {transaction.features.map((feature, idx) => (
+                    <div className="flex flex-wrap gap-2">
+                      {transaction.features.filter(f => f.active).map((feature, idx) => (
                         <div 
                           key={idx}
-                          className="flex items-center gap-2 px-2.5 py-2 bg-[hsl(var(--silver))] rounded-md"
+                          className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-md hover:border-gray-300 transition-colors"
                         >
-                          <div 
-                            className={`w-1.5 h-1.5 rounded-full ${
-                              feature.active ? 'bg-[hsl(var(--success))]' : 'bg-gray-300'
-                            }`}
-                          />
-                          <span className={`text-xs ${
-                            feature.active ? 'text-[hsl(var(--charcoal))]' : 'text-gray-400'
-                          }`}>
+                          <div className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--success))]" />
+                          <span className="text-xs text-[hsl(var(--charcoal))]">
                             {feature.name}
                           </span>
                         </div>
@@ -399,7 +393,7 @@ const Index = () => {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
                             <div className="text-sm font-semibold text-[hsl(var(--charcoal))]">{party.name}</div>
-                            <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-lg text-[10px] font-medium uppercase">
+                            <span className="border border-blue-200 bg-blue-50/30 text-blue-700 px-2 py-0.5 rounded text-[10px] font-medium uppercase">
                               {party.role}
                             </span>
                           </div>
@@ -476,7 +470,7 @@ const Index = () => {
                     <div className="text-[11px] text-gray-400 mb-2 uppercase tracking-wide">Services Needed</div>
                     <div className="flex flex-wrap gap-1.5">
                       {transaction.services.map((service, idx) => (
-                        <span key={idx} className="bg-blue-50 text-blue-800 px-2.5 py-1 rounded-full text-xs">
+                        <span key={idx} className="border border-blue-200 bg-blue-50/30 text-blue-700 px-2.5 py-1 rounded-md text-xs">
                           {service}
                         </span>
                       ))}
@@ -490,7 +484,7 @@ const Index = () => {
                     <div className="text-[11px] text-gray-400 mb-2 uppercase tracking-wide">Inventory Needed</div>
                     <div className="flex flex-wrap gap-1.5">
                       {transaction.inventory.map((item, idx) => (
-                        <span key={idx} className="bg-green-50 text-green-800 px-2.5 py-1 rounded-full text-xs">
+                        <span key={idx} className="border border-green-200 bg-green-50/30 text-green-700 px-2.5 py-1 rounded-md text-xs">
                           {item}
                         </span>
                       ))}
@@ -508,7 +502,7 @@ const Index = () => {
                     <div className="text-[11px] text-gray-400 mb-2 uppercase tracking-wide">Buyer Types</div>
                     <div className="flex flex-wrap gap-1.5">
                       {transaction.targetMarket.buyerTypes.map((type, idx) => (
-                        <span key={idx} className="bg-amber-50 text-amber-800 px-2.5 py-1 rounded-full text-xs">
+                        <span key={idx} className="border border-amber-200 bg-amber-50/30 text-amber-700 px-2.5 py-1 rounded-md text-xs">
                           {type}
                         </span>
                       ))}
@@ -519,7 +513,7 @@ const Index = () => {
                     <div className="text-[11px] text-gray-400 mb-2 uppercase tracking-wide">Opportunity Types</div>
                     <div className="flex flex-wrap gap-1.5">
                       {transaction.targetMarket.opportunityTypes.map((type, idx) => (
-                        <span key={idx} className="bg-pink-50 text-pink-800 px-2.5 py-1 rounded-full text-xs">
+                        <span key={idx} className="border border-pink-200 bg-pink-50/30 text-pink-700 px-2.5 py-1 rounded-md text-xs">
                           {type}
                         </span>
                       ))}
