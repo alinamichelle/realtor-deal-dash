@@ -186,28 +186,26 @@ const Clients = () => {
                   key={client.id}
                   onMouseEnter={() => setHoveredClient(client.id)}
                   onMouseLeave={() => setHoveredClient(null)}
-                  className="group relative grid grid-cols-12 gap-4 px-4 py-3 hover:bg-gray-50 transition-all cursor-pointer border-l-2 border-transparent hover:border-[hsl(var(--coral))]"
+                  className="group relative grid grid-cols-12 gap-4 px-4 py-3.5 hover:bg-gray-50/80 transition-all duration-150 cursor-pointer border-l-2 border-transparent hover:border-[hsl(var(--coral))] rounded-r-lg"
                 >
                   {/* Client Info */}
-                  <div className="col-span-3 flex items-center gap-3">
-                    <div className={`w-9 h-9 rounded-full ${client.avatarColor} flex items-center justify-center text-white text-xs font-semibold flex-shrink-0 transition-transform group-hover:scale-105`}>
-                      {client.initials}
-                    </div>
+                  <div className="col-span-3 flex items-center">
                     <div className="min-w-0">
-                      <div className="font-medium text-[hsl(var(--charcoal))] text-sm truncate group-hover:text-[hsl(var(--coral))] transition-colors">
+                      <div className="font-semibold text-[hsl(var(--charcoal))] text-[15px] tracking-[-0.01em] truncate group-hover:text-[hsl(var(--coral))] transition-all duration-200">
                         {client.name}
                       </div>
-                      <div className="flex items-center gap-1.5 mt-0.5">
-                        <span className={`text-[11px] font-medium ${
-                          client.role === 'Buyer' ? 'text-green-600' : 'text-pink-600'
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold tracking-wide uppercase ${
+                          client.role === 'Buyer' 
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                            : 'bg-pink-50 text-pink-700 border border-pink-200'
                         }`}>
                           {client.role}
                         </span>
                         {client.isPastClient && (
-                          <>
-                            <span className="text-gray-300">•</span>
-                            <span className="text-[11px] text-gray-500">Past Client</span>
-                          </>
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold tracking-wide uppercase bg-gray-50 text-gray-600 border border-gray-200">
+                            Past Client
+                          </span>
                         )}
                       </div>
                     </div>
@@ -215,20 +213,22 @@ const Clients = () => {
 
                   {/* Contact */}
                   <div className="col-span-2 flex flex-col justify-center min-w-0">
-                    <div className="text-[13px] text-gray-900 truncate">{client.email}</div>
-                    <div className="text-[12px] text-gray-500">{client.phone}</div>
+                    <div className="text-[13px] text-gray-700 truncate font-medium">{client.email}</div>
+                    <div className="text-[13px] text-gray-500 font-mono tracking-tight">{client.phone}</div>
                   </div>
 
                   {/* Source */}
                   <div className="col-span-2 flex flex-col justify-center">
-                    <div className="text-[13px] text-gray-900">{client.source}</div>
-                    <div className="text-[12px] text-gray-500">Agent: {client.agent}</div>
+                    <div className="text-[13px] text-gray-700 font-medium">{client.source}</div>
+                    <div className="text-[12px] text-gray-500">
+                      <span className="text-gray-400">Agent:</span> {client.agent}
+                    </div>
                   </div>
 
                   {/* Transactions */}
                   <div className="col-span-1 flex items-center">
-                    <div className={`text-sm font-medium ${
-                      client.transactions > 0 ? 'text-[hsl(var(--charcoal))]' : 'text-gray-400'
+                    <div className={`text-[15px] font-semibold tabular-nums ${
+                      client.transactions > 0 ? 'text-[hsl(var(--charcoal))]' : 'text-gray-300'
                     }`}>
                       {client.transactions}
                     </div>
@@ -236,18 +236,18 @@ const Clients = () => {
 
                   {/* Last Activity */}
                   <div className="col-span-2 flex items-center">
-                    <div className="text-[13px] text-gray-600">{client.lastActivity}</div>
+                    <div className="text-[13px] text-gray-600 font-medium tabular-nums">{client.lastActivity}</div>
                   </div>
 
                   {/* Status */}
                   <div className="col-span-1 flex items-center">
-                    <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-medium ${
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all ${
                       client.status === 'Active'
-                        ? 'bg-green-50 text-green-700 border border-green-200'
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                         : 'bg-gray-50 text-gray-600 border border-gray-200'
                     }`}>
-                      <div className={`w-1.5 h-1.5 rounded-full ${
-                        client.status === 'Active' ? 'bg-green-500' : 'bg-gray-400'
+                      <div className={`w-1.5 h-1.5 rounded-full transition-all ${
+                        client.status === 'Active' ? 'bg-emerald-500 shadow-[0_0_4px_rgba(16,185,129,0.5)]' : 'bg-gray-400'
                       }`} />
                       {client.status}
                     </span>
@@ -255,24 +255,24 @@ const Clients = () => {
 
                   {/* Quick Actions - Emil: Perfect hover interactions */}
                   <div className="col-span-1 flex items-center justify-end">
-                    <div className={`flex items-center gap-1 transition-all ${
+                    <div className={`flex items-center gap-0.5 transition-all duration-200 ${
                       hoveredClient === client.id ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-2'
                     }`}>
-                      <button className="p-1.5 rounded-md hover:bg-white hover:shadow-sm border border-transparent hover:border-gray-200 transition-all">
-                        <Mail className="w-4 h-4 text-gray-600" />
+                      <button className="p-2 rounded-lg hover:bg-gray-100 transition-all duration-150 active:scale-95">
+                        <Mail className="w-4 h-4 text-gray-500" />
                       </button>
-                      <button className="p-1.5 rounded-md hover:bg-white hover:shadow-sm border border-transparent hover:border-gray-200 transition-all">
-                        <Phone className="w-4 h-4 text-gray-600" />
+                      <button className="p-2 rounded-lg hover:bg-gray-100 transition-all duration-150 active:scale-95">
+                        <Phone className="w-4 h-4 text-gray-500" />
                       </button>
-                      <button className="p-1.5 rounded-md hover:bg-white hover:shadow-sm border border-transparent hover:border-gray-200 transition-all">
-                        <MoreHorizontal className="w-4 h-4 text-gray-600" />
+                      <button className="p-2 rounded-lg hover:bg-gray-100 transition-all duration-150 active:scale-95">
+                        <MoreHorizontal className="w-4 h-4 text-gray-500" />
                       </button>
                     </div>
                   </div>
 
                   {/* Hover indicator - Rauno: Subtle animation */}
-                  <div className={`absolute left-0 top-0 w-0.5 h-full bg-[hsl(var(--coral))] transition-all ${
-                    hoveredClient === client.id ? 'opacity-100' : 'opacity-0'
+                  <div className={`absolute left-0 top-0 w-0.5 h-full bg-gradient-to-b from-[hsl(var(--coral))] to-[hsl(var(--rust))] transition-all duration-200 ${
+                    hoveredClient === client.id ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-50'
                   }`} />
                 </div>
               ))}
