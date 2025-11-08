@@ -43,6 +43,19 @@ export default {
           DEFAULT: "hsl(var(--success))",
           foreground: "hsl(var(--success-foreground))",
         },
+        caution: {
+          DEFAULT: "hsl(var(--caution))",
+          foreground: "hsl(var(--caution-foreground))",
+        },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
+        },
+        charcoal: "hsl(var(--charcoal))",
+        slate: "hsl(var(--slate))",
+        silver: "hsl(var(--silver))",
+        pearl: "hsl(var(--pearl))",
+        coral: "hsl(var(--coral))",
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
