@@ -228,8 +228,12 @@ export default function TransactionDetail() {
               <div className="lg:col-span-2 space-y-6">
                 {/* Tasks, Comments & Activity - Tabbed */}
                 <Card className="p-6">
-                  <Tabs defaultValue="tasks" className="w-full">
+                  <Tabs defaultValue="activity" className="w-full">
                     <TabsList className="bg-muted w-full">
+                      <TabsTrigger value="activity" className="flex-1 gap-2 text-xs">
+                        <Clock className="h-3.5 w-3.5" />
+                        Activity
+                      </TabsTrigger>
                       <TabsTrigger value="tasks" className="flex-1 gap-2 text-xs">
                         <CheckSquare className="h-3.5 w-3.5" />
                         Tasks
@@ -239,10 +243,6 @@ export default function TransactionDetail() {
                         <MessageSquare className="h-3.5 w-3.5" />
                         Comments
                         <Badge variant="secondary" className="ml-1 text-[10px]">{mockComments.length}</Badge>
-                      </TabsTrigger>
-                      <TabsTrigger value="activity" className="flex-1 gap-2 text-xs">
-                        <Clock className="h-3.5 w-3.5" />
-                        Activity
                       </TabsTrigger>
                     </TabsList>
 
