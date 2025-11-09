@@ -328,66 +328,74 @@ export default function ContactProfile() {
             
             <Separator />
             
-            <div>
-              <h3 className="text-sm font-semibold text-foreground mb-3">Personal Info</h3>
-              <div className="space-y-2.5">
-                {contactData.birthday && (
-                  <div className="flex items-center gap-2">
-                    <Cake className="h-3.5 w-3.5 text-muted-foreground" />
-                    <div className="text-sm">
-                      <span className="text-muted-foreground">Birthday:</span>{" "}
-                      <span className="font-medium">{contactData.birthday}</span>
-                    </div>
-                  </div>
-                )}
-                {contactData.language && (
-                  <div className="flex items-center gap-2">
-                    <Globe className="h-3.5 w-3.5 text-muted-foreground" />
-                    <div className="text-sm">
-                      <span className="text-muted-foreground">Language:</span>{" "}
-                      <span className="font-medium">{contactData.language}</span>
-                    </div>
-                  </div>
-                )}
-                {contactData.kids && (
-                  <div className="flex items-center gap-2">
-                    <Users className="h-3.5 w-3.5 text-muted-foreground" />
-                    <div className="text-sm">
-                      <span className="text-muted-foreground">Kids:</span>{" "}
-                      <span className="font-medium">{contactData.kids}</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            <Separator />
-            
-            <div>
-              <h3 className="text-sm font-semibold text-foreground mb-3">Lead Info</h3>
-              <div className="space-y-2.5">
+            <Collapsible>
+              <CollapsibleTrigger className="flex items-center justify-between w-full py-2 hover:opacity-70 transition-opacity">
+                <h3 className="text-sm font-semibold text-foreground">More Info</h3>
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-4 pt-3">
                 <div>
-                  <div className="text-xs text-muted-foreground mb-0.5">Source</div>
-                  <Badge variant="secondary" className="text-xs">{contactData.leadSource}</Badge>
+                  <h3 className="text-sm font-medium text-muted-foreground mb-3">Personal Info</h3>
+                  <div className="space-y-2.5">
+                    {contactData.birthday && (
+                      <div className="flex items-center gap-2">
+                        <Cake className="h-3.5 w-3.5 text-muted-foreground" />
+                        <div className="text-sm">
+                          <span className="text-muted-foreground">Birthday:</span>{" "}
+                          <span className="font-medium">{contactData.birthday}</span>
+                        </div>
+                      </div>
+                    )}
+                    {contactData.language && (
+                      <div className="flex items-center gap-2">
+                        <Globe className="h-3.5 w-3.5 text-muted-foreground" />
+                        <div className="text-sm">
+                          <span className="text-muted-foreground">Language:</span>{" "}
+                          <span className="font-medium">{contactData.language}</span>
+                        </div>
+                      </div>
+                    )}
+                    {contactData.kids && (
+                      <div className="flex items-center gap-2">
+                        <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                        <div className="text-sm">
+                          <span className="text-muted-foreground">Kids:</span>{" "}
+                          <span className="font-medium">{contactData.kids}</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
+                
+                <Separator />
+                
                 <div>
-                  <div className="text-xs text-muted-foreground mb-0.5">Type</div>
-                  <Badge variant="outline" className="text-xs">{contactData.leadType}</Badge>
+                  <h3 className="text-sm font-medium text-muted-foreground mb-3">Lead Info</h3>
+                  <div className="space-y-2.5">
+                    <div>
+                      <div className="text-xs text-muted-foreground mb-0.5">Source</div>
+                      <Badge variant="secondary" className="text-xs">{contactData.leadSource}</Badge>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground mb-0.5">Type</div>
+                      <Badge variant="outline" className="text-xs">{contactData.leadType}</Badge>
+                    </div>
+                    {contactData.assignedAgent && (
+                      <div>
+                        <div className="text-xs text-muted-foreground mb-0.5">Assigned Agent</div>
+                        <div className="text-sm font-medium">{contactData.assignedAgent}</div>
+                      </div>
+                    )}
+                    {contactData.referrerName && (
+                      <div>
+                        <div className="text-xs text-muted-foreground mb-0.5">Referred By</div>
+                        <div className="text-sm font-medium">{contactData.referrerName}</div>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                {contactData.assignedAgent && (
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-0.5">Assigned Agent</div>
-                    <div className="text-sm font-medium">{contactData.assignedAgent}</div>
-                  </div>
-                )}
-                {contactData.referrerName && (
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-0.5">Referred By</div>
-                    <div className="text-sm font-medium">{contactData.referrerName}</div>
-                  </div>
-                )}
-              </div>
-            </div>
+              </CollapsibleContent>
+            </Collapsible>
             
             {contactData.tags.length > 0 && (
               <>
