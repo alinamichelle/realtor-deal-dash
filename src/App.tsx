@@ -10,6 +10,8 @@ import Transactions from "./pages/Transactions";
 import TransactionDetail from "./pages/TransactionDetail";
 import Properties from "./pages/Properties";
 import PropertyDetail from "./pages/PropertyDetail";
+import IntakeForms from "./pages/IntakeForms";
+import IntakeFormDetail from "./pages/IntakeFormDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +30,8 @@ const App = () => (
           <Route path="/transaction/:id" element={<TransactionDetail />} />
           <Route path="/properties" element={<Properties />} />
           <Route path="/property/:id" element={<PropertyDetail />} />
+          <Route path="/intake-forms" element={<IntakeForms />} />
+          <Route path="/intake/:id" element={<IntakeFormDetail />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
