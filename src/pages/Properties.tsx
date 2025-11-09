@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
@@ -236,6 +237,7 @@ const getPropertyTypeInfo = (type: string) => {
 };
 
 export default function Properties() {
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState<"map" | "list" | "grid">("grid");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -374,7 +376,11 @@ export default function Properties() {
                   const insight = getPropertyInsight(property);
                   
                   return (
-                    <Card key={property.id} className="hover:shadow-md transition-shadow cursor-pointer">
+                    <Card 
+                      key={property.id} 
+                      className="hover:shadow-md transition-shadow cursor-pointer"
+                      onClick={() => navigate(`/property/${property.id}`)}
+                    >
                       <CardContent className="p-6">
                         <div className="flex items-start gap-6">
                           <img 
@@ -499,7 +505,11 @@ export default function Properties() {
                   const insight = getPropertyInsight(property);
                   
                   return (
-                    <Card key={property.id} className="hover:shadow-lg transition-shadow cursor-pointer overflow-hidden">
+                    <Card 
+                      key={property.id} 
+                      className="hover:shadow-lg transition-shadow cursor-pointer overflow-hidden"
+                      onClick={() => navigate(`/property/${property.id}`)}
+                    >
                       <div className="relative h-48">
                         <img 
                           src={property.image} 
