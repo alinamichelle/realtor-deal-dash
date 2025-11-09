@@ -354,17 +354,18 @@ const Clients = () => {
             </div>
           </header>
 
-          {/* Gentle Reminders Strip */}
+          {/* Quick Reminders - Subtle Info Strip */}
           {upcomingTouchpoints.length > 0 && (
-            <div className="bg-gradient-to-r from-gray-50/50 to-white border-y border-gray-100">
-              <div className="max-w-[1400px] mx-auto px-6 sm:px-8 py-4">
-                <div className="mb-3 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <h2 className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
-                      Quick Reminders
+            <div className="bg-blue-50/30 border-y border-blue-100">
+              <div className="max-w-[1400px] mx-auto px-6 sm:px-8 py-5">
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                    <h2 className="text-[12px] font-bold text-blue-900 uppercase tracking-wider">
+                      Upcoming Touchpoints
                     </h2>
-                    <span className="text-[10px] text-gray-400 font-normal">• Upcoming touchpoints</span>
                   </div>
+                  <span className="text-[11px] text-blue-600/60">Quick reminders for the week</span>
                 </div>
 
                 {/* Compact Summary + Preview */}
@@ -431,9 +432,16 @@ const Clients = () => {
             </div>
           )}
 
-          {/* Stats Overview - Robinhood-inspired subtle visualization */}
-          <div className="max-w-[1400px] mx-auto px-6 sm:px-8 py-6">
-            <div className="grid grid-cols-4 gap-3">
+          {/* Portfolio Overview */}
+          <div className="bg-white border-b border-gray-200">
+            <div className="max-w-[1400px] mx-auto px-6 sm:px-8 py-8">
+              <div className="mb-5 flex items-center gap-3">
+                <h2 className="text-[15px] font-bold text-[hsl(var(--charcoal))] tracking-tight">
+                  Portfolio Overview
+                </h2>
+                <div className="flex-1 h-px bg-gray-200" />
+              </div>
+              <div className="grid grid-cols-4 gap-3">
               {clientGroups.map((group) => {
                 const totalValue = group.clients.reduce((sum, c) => sum + parseFloat(c.propertyValue.replace(/[$MK,]/g, '').replace('M', '000').replace('K', '')), 0);
                 const totalDeals = group.clients.reduce((sum, c) => sum + c.transactions, 0);
@@ -484,9 +492,23 @@ const Clients = () => {
               })}
             </div>
           </div>
+          </div>
 
-          {/* Client Groups */}
-          <div className="max-w-[1400px] mx-auto px-6 sm:px-8 py-6 space-y-4">
+          {/* All Clients - Main Section */}
+          <div className="bg-gray-50/50">
+            <div className="max-w-[1400px] mx-auto px-6 sm:px-8 py-8">
+              <div className="mb-6 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <h2 className="text-[18px] font-bold text-[hsl(var(--charcoal))] tracking-tight">
+                    All Clients
+                  </h2>
+                  <span className="text-[13px] text-gray-500 font-medium">
+                    {clients.length} total
+                  </span>
+                </div>
+              </div>
+              
+              <div className="space-y-4">
             {clientGroups.map((group) => (
               <div key={group.type} className="bg-white border border-gray-200 rounded-xl overflow-hidden">
                 {/* Group Header */}
@@ -652,8 +674,9 @@ const Clients = () => {
                   </div>
                 )}
               </div>
-            ))}
-
+              ))}
+              </div>
+            </div>
           </div>
 
           {/* Footer stats */}
