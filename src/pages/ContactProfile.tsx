@@ -288,6 +288,127 @@ export default function ContactProfile() {
       <div className="grid grid-cols-12 gap-6 p-6 max-w-[1600px] mx-auto">
         {/* Left Sidebar - Contact Info */}
         <div className="col-span-3 space-y-4">
+          {/* Contact Details Card - ALWAYS FIRST */}
+          <Card className="p-5 space-y-4">
+            <div>
+              <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
+                <UserCheck className="h-4 w-4 text-primary" />
+                Contact Details
+              </h3>
+              <div className="space-y-3">
+                {contactData.email && (
+                  <div>
+                    <div className="text-xs text-muted-foreground mb-1">Email</div>
+                    <div className="text-sm font-medium text-foreground">{contactData.email}</div>
+                  </div>
+                )}
+                {contactData.phone && (
+                  <div>
+                    <div className="text-xs text-muted-foreground mb-1">Phone</div>
+                    <div className="text-sm font-medium text-foreground">{contactData.phone}</div>
+                  </div>
+                )}
+                {contactData.otherPhone && (
+                  <div>
+                    <div className="text-xs text-muted-foreground mb-1">Other Phone</div>
+                    <div className="text-sm font-medium text-foreground">{contactData.otherPhone}</div>
+                  </div>
+                )}
+                {contactData.streetAddress && (
+                  <div>
+                    <div className="text-xs text-muted-foreground mb-1">Address</div>
+                    <div className="text-sm font-medium text-foreground">
+                      {contactData.streetAddress}<br />
+                      {contactData.city}, {contactData.state} {contactData.zipcode}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <Separator />
+            
+            <div>
+              <h3 className="text-sm font-semibold text-foreground mb-3">Personal Info</h3>
+              <div className="space-y-2.5">
+                {contactData.birthday && (
+                  <div className="flex items-center gap-2">
+                    <Cake className="h-3.5 w-3.5 text-muted-foreground" />
+                    <div className="text-sm">
+                      <span className="text-muted-foreground">Birthday:</span>{" "}
+                      <span className="font-medium">{contactData.birthday}</span>
+                    </div>
+                  </div>
+                )}
+                {contactData.language && (
+                  <div className="flex items-center gap-2">
+                    <Globe className="h-3.5 w-3.5 text-muted-foreground" />
+                    <div className="text-sm">
+                      <span className="text-muted-foreground">Language:</span>{" "}
+                      <span className="font-medium">{contactData.language}</span>
+                    </div>
+                  </div>
+                )}
+                {contactData.kids && (
+                  <div className="flex items-center gap-2">
+                    <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                    <div className="text-sm">
+                      <span className="text-muted-foreground">Kids:</span>{" "}
+                      <span className="font-medium">{contactData.kids}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            <Separator />
+            
+            <div>
+              <h3 className="text-sm font-semibold text-foreground mb-3">Lead Info</h3>
+              <div className="space-y-2.5">
+                <div>
+                  <div className="text-xs text-muted-foreground mb-0.5">Source</div>
+                  <Badge variant="secondary" className="text-xs">{contactData.leadSource}</Badge>
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground mb-0.5">Type</div>
+                  <Badge variant="outline" className="text-xs">{contactData.leadType}</Badge>
+                </div>
+                {contactData.assignedAgent && (
+                  <div>
+                    <div className="text-xs text-muted-foreground mb-0.5">Assigned Agent</div>
+                    <div className="text-sm font-medium">{contactData.assignedAgent}</div>
+                  </div>
+                )}
+                {contactData.referrerName && (
+                  <div>
+                    <div className="text-xs text-muted-foreground mb-0.5">Referred By</div>
+                    <div className="text-sm font-medium">{contactData.referrerName}</div>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            {contactData.tags.length > 0 && (
+              <>
+                <Separator />
+                <div>
+                  <h3 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
+                    <Tag className="h-3.5 w-3.5" />
+                    Tags
+                  </h3>
+                  <div className="flex flex-wrap gap-1.5">
+                    {contactData.tags.map((tag, idx) => (
+                      <Badge key={idx} variant="outline" className="text-xs">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+          </Card>
+
           {/* Property Card - Only for Past Clients */}
           {isPastClient && (
             <Card className="overflow-hidden border-success/20 bg-gradient-to-br from-success/5 to-background">
@@ -462,126 +583,6 @@ export default function ContactProfile() {
             </Card>
           )}
 
-          {/* Contact Details Card */}
-          <Card className="p-4 space-y-4">
-            <div>
-              <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-                <UserCheck className="h-4 w-4 text-primary" />
-                Contact Details
-              </h3>
-              <div className="space-y-2.5">
-                {contactData.email && (
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-0.5">Email</div>
-                    <div className="text-sm font-medium text-foreground">{contactData.email}</div>
-                  </div>
-                )}
-                {contactData.phone && (
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-0.5">Phone</div>
-                    <div className="text-sm font-medium text-foreground">{contactData.phone}</div>
-                  </div>
-                )}
-                {contactData.otherPhone && (
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-0.5">Other Phone</div>
-                    <div className="text-sm font-medium text-foreground">{contactData.otherPhone}</div>
-                  </div>
-                )}
-                {contactData.streetAddress && (
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-0.5">Address</div>
-                    <div className="text-sm font-medium text-foreground">
-                      {contactData.streetAddress}<br />
-                      {contactData.city}, {contactData.state} {contactData.zipcode}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            <Separator />
-            
-            <div>
-              <h3 className="text-sm font-semibold text-foreground mb-3">Personal Info</h3>
-              <div className="space-y-2.5">
-                {contactData.birthday && (
-                  <div className="flex items-center gap-2">
-                    <Cake className="h-3.5 w-3.5 text-muted-foreground" />
-                    <div className="text-sm">
-                      <span className="text-muted-foreground">Birthday:</span>{" "}
-                      <span className="font-medium">{contactData.birthday}</span>
-                    </div>
-                  </div>
-                )}
-                {contactData.language && (
-                  <div className="flex items-center gap-2">
-                    <Globe className="h-3.5 w-3.5 text-muted-foreground" />
-                    <div className="text-sm">
-                      <span className="text-muted-foreground">Language:</span>{" "}
-                      <span className="font-medium">{contactData.language}</span>
-                    </div>
-                  </div>
-                )}
-                {contactData.kids && (
-                  <div className="flex items-center gap-2">
-                    <Users className="h-3.5 w-3.5 text-muted-foreground" />
-                    <div className="text-sm">
-                      <span className="text-muted-foreground">Kids:</span>{" "}
-                      <span className="font-medium">{contactData.kids}</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            <Separator />
-            
-            <div>
-              <h3 className="text-sm font-semibold text-foreground mb-3">Lead Info</h3>
-              <div className="space-y-2.5">
-                <div>
-                  <div className="text-xs text-muted-foreground mb-0.5">Source</div>
-                  <Badge variant="secondary" className="text-xs">{contactData.leadSource}</Badge>
-                </div>
-                <div>
-                  <div className="text-xs text-muted-foreground mb-0.5">Type</div>
-                  <Badge variant="outline" className="text-xs">{contactData.leadType}</Badge>
-                </div>
-                {contactData.assignedAgent && (
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-0.5">Assigned Agent</div>
-                    <div className="text-sm font-medium">{contactData.assignedAgent}</div>
-                  </div>
-                )}
-                {contactData.referrerName && (
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-0.5">Referred By</div>
-                    <div className="text-sm font-medium">{contactData.referrerName}</div>
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            {contactData.tags.length > 0 && (
-              <>
-                <Separator />
-                <div>
-                  <h3 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
-                    <Tag className="h-3.5 w-3.5" />
-                    Tags
-                  </h3>
-                  <div className="flex flex-wrap gap-1.5">
-                    {contactData.tags.map((tag, idx) => (
-                      <Badge key={idx} variant="outline" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-          </Card>
 
           {/* System Info Card */}
           <Card className="p-4">
@@ -695,72 +696,60 @@ export default function ContactProfile() {
                 {/* Quarterly Calls - Only for Past Clients */}
                 {isPastClient && (
                   <div>
-                    <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-primary" />
+                    <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">
                       Quarterly Calls
                     </h3>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-0.5">
                       {contactData.quarterlyCalls.map((call, idx) => {
                         const statusConfig = {
                           "Spoke": { 
-                            bg: "bg-gradient-to-br from-success/10 to-success/5",
-                            border: "border-success/30",
-                            icon: CheckCircle2,
-                            iconColor: "text-success",
-                            dotColor: "bg-success"
+                            dotColor: "bg-success",
+                            textColor: "text-success"
                           },
                           "Voicemail": { 
-                            bg: "bg-gradient-to-br from-caution/10 to-caution/5",
-                            border: "border-caution/30",
-                            icon: MessageSquare,
-                            iconColor: "text-caution",
-                            dotColor: "bg-caution"
+                            dotColor: "bg-caution",
+                            textColor: "text-caution"
                           },
                           "No Answer": { 
-                            bg: "bg-gradient-to-br from-destructive/10 to-destructive/5",
-                            border: "border-destructive/30",
-                            icon: Phone,
-                            iconColor: "text-destructive",
-                            dotColor: "bg-destructive"
+                            dotColor: "bg-destructive",
+                            textColor: "text-destructive"
                           },
                           "Scheduled": { 
-                            bg: "bg-gradient-to-br from-info/10 to-info/5",
-                            border: "border-info/30",
-                            icon: Calendar,
-                            iconColor: "text-info",
-                            dotColor: "bg-info"
+                            dotColor: "bg-muted-foreground",
+                            textColor: "text-muted-foreground"
                           }
                         };
                         const config = statusConfig[call.status as keyof typeof statusConfig];
-                        const StatusIcon = config.icon;
                         
                         return (
-                          <Card key={idx} className={`p-4 ${config.bg} border ${config.border} hover:shadow-md transition-all cursor-pointer group`}>
-                            <div className="space-y-3">
-                              <div className="flex items-start justify-between">
-                                <div className={`p-2 rounded-lg bg-background/50 ${config.iconColor}`}>
-                                  <StatusIcon className="h-4 w-4" />
+                          <div 
+                            key={idx} 
+                            className="flex items-center justify-between py-3 px-1 hover:bg-muted/30 -mx-1 rounded-lg transition-colors cursor-pointer group"
+                          >
+                            <div className="flex items-center gap-4 flex-1">
+                              <div className="text-sm font-medium text-foreground min-w-[100px]">
+                                {call.date}
+                              </div>
+                              {call.time && (
+                                <div className="text-sm text-muted-foreground">
+                                  {call.time}
                                 </div>
-                                <Badge variant="outline" className="text-xs border-0 bg-background/50">
-                                  {call.quarter}
-                                </Badge>
+                              )}
+                              <div className="flex items-center gap-2">
+                                <div className={`w-2 h-2 rounded-full ${config.dotColor}`} />
+                                <span className={`text-sm font-medium ${config.textColor}`}>
+                                  {call.quarter}: {call.status}
+                                </span>
                               </div>
-                              
-                              <div>
-                                <div className="text-xs text-muted-foreground mb-1">{call.date}</div>
-                                <div className="text-sm font-semibold text-foreground">{call.status}</div>
-                                {call.time && <div className="text-xs text-muted-foreground mt-0.5">{call.time}</div>}
-                              </div>
-                              
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className="w-full text-xs group-hover:bg-background/50"
-                              >
-                                Summary →
-                              </Button>
                             </div>
-                          </Card>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              className="text-xs text-muted-foreground group-hover:text-foreground"
+                            >
+                              Summary &gt;
+                            </Button>
+                          </div>
                         );
                       })}
                     </div>
