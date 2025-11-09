@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -94,6 +94,30 @@ export default function Transactions() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [volumeKpiIndex, setVolumeKpiIndex] = useState(0);
+  const [agentKpiIndex, setAgentKpiIndex] = useState(0);
+
+  // Auto-rotate volume KPIs every 4 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setVolumeKpiIndex((prev) => (prev + 1) % 3);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Auto-rotate agent KPIs every 4 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setAgentKpiIndex((prev) => (prev + 1) % topAgents.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const volumeKpis = [
+    { title: "Total Volume YTD", value: "$22.8M", change: "+18.5%", data: monthlyData },
+    { title: "Avg Transaction", value: "$446K", change: "+12.3%", data: monthlyData.map(d => ({ ...d, volume: d.volume / d.deals })) },
+    { title: "Commission Earned", value: "$684K", change: "+22.1%", data: monthlyData.map(d => ({ ...d, volume: d.volume * 0.03 })) }
+  ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -138,53 +162,90 @@ export default function Transactions() {
 
         {/* Compact Analytics - Robinhood Style */}
         <div className="grid grid-cols-5 gap-4">
-          {/* Mini Volume Chart */}
-          <Card className="col-span-3 p-4">
-            <div className="flex items-baseline justify-between mb-3">
-              <div>
-                <div className="text-2xl font-bold">$22.8M</div>
-                <div className="text-xs text-muted-foreground">Total Volume YTD</div>
+          {/* Mini Volume Chart - Rotating KPIs */}
+          <Card className="col-span-3 p-4 relative overflow-hidden">
+            <div 
+              key={volumeKpiIndex}
+              className="animate-fade-in"
+            >
+              <div className="flex items-baseline justify-between mb-3">
+                <div>
+                  <div className="text-2xl font-bold">{volumeKpis[volumeKpiIndex].value}</div>
+                  <div className="text-xs text-muted-foreground">{volumeKpis[volumeKpiIndex].title}</div>
+                </div>
+                <div className="flex items-center gap-1 text-xs text-success">
+                  <TrendingUp className="h-3 w-3" />
+                  {volumeKpis[volumeKpiIndex].change}
+                </div>
               </div>
-              <div className="flex items-center gap-1 text-xs text-success">
-                <TrendingUp className="h-3 w-3" />
-                +18.5%
+              <div className="h-16 flex items-end justify-between gap-1.5">
+                {volumeKpis[volumeKpiIndex].data.map((data) => {
+                  const currentMax = Math.max(...volumeKpis[volumeKpiIndex].data.map(d => d.volume));
+                  return (
+                    <div key={data.month} className="flex-1 flex flex-col justify-end items-center gap-1">
+                      <div 
+                        className="w-full bg-foreground/80 hover:bg-foreground rounded-t transition-all min-h-[4px]"
+                        style={{ height: `${(data.volume / currentMax) * 100}%` }}
+                      />
+                      <span className="text-[9px] text-muted-foreground">{data.month}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
-            <div className="h-16 flex items-end justify-between gap-1.5">
-              {monthlyData.map((data) => (
-                <div key={data.month} className="flex-1 flex flex-col justify-end items-center gap-1">
-                  <div 
-                    className="w-full bg-foreground/80 hover:bg-foreground rounded-t transition-all min-h-[4px]"
-                    style={{ height: `${(data.volume / maxVolume) * 100}%` }}
-                  />
-                  <span className="text-[9px] text-muted-foreground">{data.month}</span>
-                </div>
+            <div className="absolute bottom-2 right-2 flex gap-1">
+              {volumeKpis.map((_, idx) => (
+                <div 
+                  key={idx}
+                  className={`h-1 w-1 rounded-full transition-all ${
+                    idx === volumeKpiIndex ? 'bg-foreground w-3' : 'bg-muted-foreground/30'
+                  }`}
+                />
               ))}
             </div>
           </Card>
 
-          {/* Top Agent Mini Card */}
-          <Card className="col-span-2 p-4">
-            <div className="flex items-start justify-between mb-2">
-              <div>
-                <div className="text-xs text-muted-foreground mb-1">Top Agent</div>
-                <div className="text-sm font-semibold">{topAgents[0].name}</div>
+          {/* Top Agent Mini Card - Rotating Agents */}
+          <Card className="col-span-2 p-4 relative overflow-hidden">
+            <div
+              key={agentKpiIndex}
+              className="animate-fade-in"
+            >
+              <div className="flex items-start justify-between mb-2">
+                <div>
+                  <div className="text-xs text-muted-foreground mb-1">
+                    {agentKpiIndex === 0 ? 'Top Agent' : `#${agentKpiIndex + 1} Agent`}
+                  </div>
+                  <div className="text-sm font-semibold">{topAgents[agentKpiIndex].name}</div>
+                </div>
+                {topAgents[agentKpiIndex].trend === "up" && <TrendingUp className="h-4 w-4 text-success" />}
+                {topAgents[agentKpiIndex].trend === "down" && <TrendingDown className="h-4 w-4 text-destructive" />}
+                {topAgents[agentKpiIndex].trend === "same" && <Minus className="h-4 w-4 text-muted-foreground" />}
               </div>
-              <TrendingUp className="h-4 w-4 text-success" />
+              <div className="space-y-2 mt-3">
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">Volume</span>
+                  <span className="font-semibold">{formatCurrency(topAgents[agentKpiIndex].volume)}</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">Deals</span>
+                  <span className="font-semibold">{topAgents[agentKpiIndex].deals}</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-muted-foreground">Avg</span>
+                  <span className="font-semibold">{formatCurrency(Math.round(topAgents[agentKpiIndex].volume / topAgents[agentKpiIndex].deals))}</span>
+                </div>
+              </div>
             </div>
-            <div className="space-y-2 mt-3">
-              <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground">Volume</span>
-                <span className="font-semibold">{formatCurrency(topAgents[0].volume)}</span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground">Deals</span>
-                <span className="font-semibold">{topAgents[0].deals}</span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground">Avg</span>
-                <span className="font-semibold">$425K</span>
-              </div>
+            <div className="absolute bottom-2 right-2 flex gap-1">
+              {topAgents.map((_, idx) => (
+                <div 
+                  key={idx}
+                  className={`h-1 w-1 rounded-full transition-all ${
+                    idx === agentKpiIndex ? 'bg-foreground w-3' : 'bg-muted-foreground/30'
+                  }`}
+                />
+              ))}
             </div>
           </Card>
         </div>
