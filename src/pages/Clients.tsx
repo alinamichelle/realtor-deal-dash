@@ -13,8 +13,10 @@ import {
   Filter
 } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Clients = () => {
+  const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState("All");
   const [hoveredClient, setHoveredClient] = useState<number | null>(null);
   const [expandedGroups, setExpandedGroups] = useState<string[]>(["Investor", "Builder", "Homeowner"]);
@@ -556,6 +558,7 @@ const Clients = () => {
                     {group.clients.map((client, index) => (
                       <div
                         key={client.id}
+                        onClick={() => navigate(`/contact/${client.id}`)}
                         onMouseEnter={() => setHoveredClient(client.id)}
                         onMouseLeave={() => setHoveredClient(null)}
                         className={`group relative grid grid-cols-12 gap-4 px-6 py-4 hover:bg-gray-50/80 transition-all duration-200 cursor-pointer ${
