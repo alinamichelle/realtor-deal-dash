@@ -13,6 +13,8 @@ import {
 import { Plus, TrendingUp, TrendingDown, DollarSign, Award, Users, Minus, ArrowLeft } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
+import { AppSidebar } from "@/components/AppSidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 // Mock data
 const kpiData = {
@@ -141,7 +143,10 @@ export default function Transactions() {
   const maxVolume = Math.max(...monthlyData.map(d => d.volume));
 
   return (
-    <div className="min-h-screen bg-background">
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <AppSidebar />
+        <div className="flex-1 bg-background">
       {/* Header */}
       <div className="border-b border-border bg-card px-8 py-6">
         <div className="flex items-center justify-between">
@@ -465,6 +470,8 @@ export default function Transactions() {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+        </div>
+      </div>
+    </SidebarProvider>
   );
 }
