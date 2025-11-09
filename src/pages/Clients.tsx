@@ -191,9 +191,9 @@ const Clients = () => {
     }
   ];
 
-  // Generate upcoming touchpoints
-  const upcomingTouchpoints = [
-    ...clients
+  // Generate all touchpoints organized by category
+  const allTouchpoints = {
+    anniversaries: clients
       .filter(c => c.homeAnniversary)
       .map(c => ({
         clientId: c.id,
@@ -204,7 +204,7 @@ const Clients = () => {
         icon: '🏠',
         color: 'emerald'
       })),
-    ...clients
+    quarterlyCalls: clients
       .filter(c => c.quarterlyCall)
       .map(c => ({
         clientId: c.id,
@@ -215,7 +215,7 @@ const Clients = () => {
         icon: '📞',
         color: 'blue'
       })),
-    ...clients
+    overdue: clients
       .filter(c => c.lastContactDays > 90)
       .map(c => ({
         clientId: c.id,
@@ -226,7 +226,37 @@ const Clients = () => {
         icon: '⚠️',
         color: 'red'
       }))
+  };
+
+  const upcomingTouchpoints = [
+    ...allTouchpoints.anniversaries,
+    ...allTouchpoints.quarterlyCalls,
+    ...allTouchpoints.overdue
   ].sort((a, b) => Math.abs(a.daysUntil) - Math.abs(b.daysUntil)).slice(0, 4);
+
+  const touchpointSummary = [
+    { 
+      label: 'Home Anniversaries', 
+      count: allTouchpoints.anniversaries.length,
+      urgent: allTouchpoints.anniversaries.filter(t => t.daysUntil <= 30).length,
+      icon: '🏠',
+      color: 'emerald'
+    },
+    { 
+      label: 'Quarterly Calls', 
+      count: allTouchpoints.quarterlyCalls.length,
+      urgent: allTouchpoints.quarterlyCalls.filter(t => t.daysUntil <= 7).length,
+      icon: '📞',
+      color: 'blue'
+    },
+    { 
+      label: 'Overdue Follow-ups', 
+      count: allTouchpoints.overdue.length,
+      urgent: allTouchpoints.overdue.length,
+      icon: '⚠️',
+      color: 'red'
+    }
+  ];
 
   // Group clients by type with priority order
   const clientGroups = [
@@ -346,12 +376,49 @@ const Clients = () => {
           {/* Upcoming Touchpoints */}
           {upcomingTouchpoints.length > 0 && (
             <div className="max-w-[1400px] mx-auto px-6 sm:px-8 py-6">
-              <div className="mb-3 flex items-center gap-2">
-                <h2 className="text-[13px] font-semibold text-gray-600 uppercase tracking-wider">
-                  Needs Attention
-                </h2>
-                <div className="flex-1 h-px bg-gray-200" />
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-[13px] font-semibold text-gray-600 uppercase tracking-wider">
+                    Needs Attention
+                  </h2>
+                  <div className="flex-1 h-px bg-gray-200" />
+                </div>
               </div>
+
+              {/* Summary Cards */}
+              <div className="grid grid-cols-3 gap-3 mb-4">
+                {touchpointSummary.map((summary, idx) => (
+                  <button
+                    key={idx}
+                    className="bg-white border border-gray-200 rounded-xl p-4 hover:border-gray-300 hover:shadow-sm transition-all duration-200 text-left group"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">{summary.icon}</span>
+                        <span className="text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
+                          {summary.label}
+                        </span>
+                      </div>
+                      {summary.urgent > 0 && (
+                        <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-100 border border-red-200">
+                          <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                          <span className="text-[10px] font-bold text-red-700">{summary.urgent}</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-end justify-between">
+                      <div className="text-[32px] font-bold tracking-tight text-[hsl(var(--charcoal))] leading-none">
+                        {summary.count}
+                      </div>
+                      <div className="text-[11px] text-gray-500 font-medium group-hover:text-[hsl(var(--coral))] transition-colors">
+                        View all →
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Top 4 Urgent Touchpoints */}
               <div className="grid grid-cols-4 gap-3">
                 {upcomingTouchpoints.map((touchpoint, idx) => {
                   const isOverdue = touchpoint.daysUntil < 0;
