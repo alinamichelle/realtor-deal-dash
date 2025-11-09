@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, TrendingUp, TrendingDown, DollarSign, Award, Users } from "lucide-react";
+import { Plus, TrendingUp, TrendingDown, DollarSign, Award, Users, Minus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 // Mock data
@@ -301,100 +301,87 @@ export default function Transactions() {
 
         {/* Analytics Section */}
         <div className="grid grid-cols-3 gap-6">
-          {/* Volume Trend Chart */}
+          {/* Volume Trend - Clean minimal bars */}
           <Card className="col-span-2 p-6">
-            <h3 className="text-lg font-semibold mb-6 flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-primary" />
-              Monthly Volume Trend
-            </h3>
-            <div className="space-y-3">
+            <div className="flex items-baseline justify-between mb-6">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Monthly Volume</h3>
+              <div className="text-xs text-muted-foreground">Last 6 months</div>
+            </div>
+            <div className="space-y-4">
               {monthlyData.map((data) => (
-                <div key={data.month} className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium">{data.month}</span>
-                    <div className="flex items-center gap-4">
-                      <span className="text-muted-foreground">{data.deals} deals</span>
-                      <span className="font-bold">{formatCurrency(data.volume)}</span>
-                    </div>
-                  </div>
-                  <div className="h-8 bg-muted rounded-lg overflow-hidden">
+                <div key={data.month} className="flex items-center gap-4">
+                  <div className="w-12 text-xs font-medium text-muted-foreground">{data.month}</div>
+                  <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-gradient-to-r from-primary to-primary/70 transition-all duration-500"
+                      className="h-full bg-foreground transition-all duration-500"
                       style={{ width: `${(data.volume / maxVolume) * 100}%` }}
                     />
                   </div>
+                  <div className="text-sm font-semibold w-28 text-right">{formatCurrency(data.volume)}</div>
+                  <div className="text-xs text-muted-foreground w-16 text-right">{data.deals} deals</div>
                 </div>
               ))}
             </div>
           </Card>
 
-          {/* Total Volume Card */}
-          <Card className="p-6 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+          {/* YTD Stats - Clean minimal card */}
+          <Card className="p-6">
             <div className="space-y-6">
               <div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                  <DollarSign className="h-4 w-4" />
-                  Total Volume (YTD)
-                </div>
-                <div className="text-4xl font-bold text-primary">$22.8M</div>
-                <div className="flex items-center gap-1 text-sm text-success mt-2">
-                  <TrendingUp className="h-4 w-4" />
-                  <span>+18.5% vs last year</span>
+                <div className="text-xs text-muted-foreground mb-2 uppercase tracking-wide">Total Volume YTD</div>
+                <div className="text-4xl font-bold">$22.8M</div>
+                <div className="flex items-center gap-1 text-xs text-success mt-1">
+                  <TrendingUp className="h-3 w-3" />
+                  +18.5% vs last year
                 </div>
               </div>
               
-              <div className="pt-6 border-t border-border space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Avg Deal Size</span>
-                  <span className="text-lg font-bold">$425K</span>
+              <div className="pt-6 border-t space-y-4">
+                <div className="flex justify-between items-baseline">
+                  <span className="text-xs text-muted-foreground">Avg Deal Size</span>
+                  <span className="text-xl font-bold">$425K</span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Deals Closed</span>
-                  <span className="text-lg font-bold">106</span>
+                <div className="flex justify-between items-baseline">
+                  <span className="text-xs text-muted-foreground">Deals Closed</span>
+                  <span className="text-xl font-bold">106</span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Avg Days to Close</span>
-                  <span className="text-lg font-bold">42</span>
+                <div className="flex justify-between items-baseline">
+                  <span className="text-xs text-muted-foreground">Days to Close</span>
+                  <span className="text-xl font-bold">42</span>
                 </div>
               </div>
             </div>
           </Card>
         </div>
 
-        {/* Top Agents Leaderboard */}
+        {/* Top Agents - Clean list */}
         <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-6 flex items-center gap-2">
-            <Award className="h-5 w-5 text-primary" />
-            Top Performing Agents
-          </h3>
-          <div className="space-y-3">
+          <div className="flex items-baseline justify-between mb-6">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Top Agents</h3>
+            <div className="text-xs text-muted-foreground">By volume</div>
+          </div>
+          <div className="space-y-1">
             {topAgents.map((agent, index) => (
               <div 
                 key={agent.name} 
-                className="flex items-center justify-between p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
+                className="flex items-center justify-between py-3 px-3 rounded-lg hover:bg-muted/30 transition-colors"
               >
-                <div className="flex items-center gap-4">
-                  <div className={`
-                    w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm
-                    ${index === 0 ? 'bg-amber-500 text-white' : 
-                      index === 1 ? 'bg-slate-400 text-white' : 
-                      index === 2 ? 'bg-amber-700 text-white' : 
-                      'bg-muted text-muted-foreground'}
-                  `}>
+                <div className="flex items-center gap-3">
+                  <div className="w-6 text-sm font-bold text-muted-foreground">
                     {index + 1}
                   </div>
                   <div>
-                    <div className="font-semibold">{agent.name}</div>
-                    <div className="text-sm text-muted-foreground">{agent.deals} deals closed</div>
+                    <div className="text-sm font-semibold">{agent.name}</div>
+                    <div className="text-xs text-muted-foreground">{agent.deals} deals</div>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-4">
-                  {agent.trend === "up" && <TrendingUp className="h-5 w-5 text-success" />}
-                  {agent.trend === "down" && <TrendingDown className="h-5 w-5 text-destructive" />}
+                <div className="flex items-center gap-3">
+                  {agent.trend === "up" && <TrendingUp className="h-4 w-4 text-success" />}
+                  {agent.trend === "down" && <TrendingDown className="h-4 w-4 text-destructive" />}
+                  {agent.trend === "same" && <Minus className="h-4 w-4 text-muted-foreground" />}
                   <div className="text-right">
-                    <div className="text-lg font-bold">{formatCurrency(agent.volume)}</div>
-                    <div className="text-xs text-muted-foreground">Total Volume</div>
+                    <div className="text-sm font-bold">{formatCurrency(agent.volume)}</div>
                   </div>
                 </div>
               </div>
