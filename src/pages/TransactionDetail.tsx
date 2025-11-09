@@ -133,7 +133,6 @@ export default function TransactionDetail() {
   const [newTaskAssignee, setNewTaskAssignee] = useState("");
   const [newTaskDueDate, setNewTaskDueDate] = useState("");
   const [newTaskPriority, setNewTaskPriority] = useState("medium");
-  const [isPartiesOpen, setIsPartiesOpen] = useState(true);
   const [taskComments, setTaskComments] = useState<{ [key: number]: string }>({});
   const [showTaskComments, setShowTaskComments] = useState<{ [key: number]: boolean }>({});
 
@@ -547,109 +546,120 @@ export default function TransactionDetail() {
                   </Tabs>
                 </Card>
 
-                {/* Transaction Parties - Collapsible */}
+                {/* Transaction Parties */}
                 <Card className="p-6">
-                  <Collapsible open={isPartiesOpen} onOpenChange={setIsPartiesOpen}>
-                    <CollapsibleTrigger className="flex items-center justify-between w-full group">
-                      <h3 className="text-lg font-semibold">Transaction Parties</h3>
-                      <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${isPartiesOpen ? 'rotate-180' : ''}`} />
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="mt-4">
-                  
                   {/* Transaction Team */}
-                  <div className="mb-6">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Briefcase className="h-4 w-4 text-muted-foreground" />
-                      <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Transaction Team</h4>
-                    </div>
-                    <div className="space-y-2">
-                      {transactionTeam.map((member) => (
-                        <div 
-                          key={member.name}
-                          className="flex items-center gap-3 p-2.5 rounded-lg border border-border hover:border-primary/30 transition-colors cursor-pointer"
-                        >
-                          <Avatar className="h-8 w-8">
-                            <AvatarFallback className={`${member.color} text-xs font-semibold`}>
-                              {member.initials}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <div className="font-medium text-sm">{member.name}</div>
-                            <div className="text-xs text-muted-foreground">{member.role}</div>
+                  <Collapsible defaultOpen={true}>
+                    <CollapsibleTrigger className="flex items-center justify-between w-full group mb-3">
+                      <div className="flex items-center gap-2">
+                        <Briefcase className="h-4 w-4 text-muted-foreground" />
+                        <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Transaction Team</h4>
+                      </div>
+                      <ChevronDown className="h-3 w-3 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <div className="space-y-2 mb-6">
+                        {transactionTeam.map((member) => (
+                          <div 
+                            key={member.name}
+                            className="flex items-center gap-3 p-2.5 rounded-lg border border-border hover:border-primary/30 transition-colors cursor-pointer"
+                          >
+                            <Avatar className="h-8 w-8">
+                              <AvatarFallback className={`${member.color} text-xs font-semibold`}>
+                                {member.initials}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <div className="font-medium text-sm">{member.name}</div>
+                              <div className="text-xs text-muted-foreground">{member.role}</div>
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                        ))}
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
 
                   {/* Clients */}
-                  <div className="mb-6">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Users className="h-4 w-4 text-muted-foreground" />
-                      <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Clients</h4>
-                    </div>
-                    <div className="space-y-2">
-                      {clients.map((client) => (
-                        <div 
-                          key={client.name}
-                          className="flex items-center gap-3 p-2.5 rounded-lg border border-border hover:border-primary/30 transition-colors cursor-pointer"
-                        >
-                          <Avatar className="h-8 w-8">
-                            <AvatarFallback className={`${client.color} text-xs font-semibold`}>
-                              {client.initials}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <div className="font-medium text-sm">{client.name}</div>
-                            <div className="text-xs text-muted-foreground">{client.role}</div>
+                  <Collapsible defaultOpen={false}>
+                    <CollapsibleTrigger className="flex items-center justify-between w-full group mb-3">
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4 text-muted-foreground" />
+                        <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Clients</h4>
+                      </div>
+                      <ChevronDown className="h-3 w-3 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <div className="space-y-2 mb-6">
+                        {clients.map((client) => (
+                          <div 
+                            key={client.name}
+                            className="flex items-center gap-3 p-2.5 rounded-lg border border-border hover:border-primary/30 transition-colors cursor-pointer"
+                          >
+                            <Avatar className="h-8 w-8">
+                              <AvatarFallback className={`${client.color} text-xs font-semibold`}>
+                                {client.initials}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <div className="font-medium text-sm">{client.name}</div>
+                              <div className="text-xs text-muted-foreground">{client.role}</div>
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                        ))}
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
 
                   {/* Marketing */}
-                  <div className="mb-6">
-                    <div className="flex items-center gap-2 mb-3">
-                      <Megaphone className="h-4 w-4 text-muted-foreground" />
-                      <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Marketing</h4>
-                    </div>
-                    <div className="space-y-2">
-                      {marketingTeam.map((member) => (
-                        <div 
-                          key={member.name}
-                          className="flex items-center gap-3 p-2.5 rounded-lg border border-border hover:border-primary/30 transition-colors cursor-pointer"
-                        >
-                          <Avatar className="h-8 w-8">
-                            <AvatarFallback className={`${member.color} text-xs font-semibold`}>
-                              {member.initials}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <div className="font-medium text-sm">{member.name}</div>
-                            <div className="text-xs text-muted-foreground">{member.role}</div>
+                  <Collapsible defaultOpen={false}>
+                    <CollapsibleTrigger className="flex items-center justify-between w-full group mb-3">
+                      <div className="flex items-center gap-2">
+                        <Megaphone className="h-4 w-4 text-muted-foreground" />
+                        <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Marketing</h4>
+                      </div>
+                      <ChevronDown className="h-3 w-3 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <div className="space-y-2 mb-6">
+                        {marketingTeam.map((member) => (
+                          <div 
+                            key={member.name}
+                            className="flex items-center gap-3 p-2.5 rounded-lg border border-border hover:border-primary/30 transition-colors cursor-pointer"
+                          >
+                            <Avatar className="h-8 w-8">
+                              <AvatarFallback className={`${member.color} text-xs font-semibold`}>
+                                {member.initials}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <div className="font-medium text-sm">{member.name}</div>
+                              <div className="text-xs text-muted-foreground">{member.role}</div>
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                        ))}
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
 
                   {/* Property */}
-                  <div>
-                    <div className="flex items-center gap-2 mb-3">
-                      <Building2 className="h-4 w-4 text-muted-foreground" />
-                      <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Property</h4>
-                    </div>
-                    <div className="flex items-center gap-3 p-2.5 rounded-lg border border-border hover:border-primary/30 transition-colors cursor-pointer">
-                      <div className="p-2 rounded-lg bg-indigo-100">
-                        <Building2 className="h-4 w-4 text-indigo-600" />
+                  <Collapsible defaultOpen={false}>
+                    <CollapsibleTrigger className="flex items-center justify-between w-full group mb-3">
+                      <div className="flex items-center gap-2">
+                        <Building2 className="h-4 w-4 text-muted-foreground" />
+                        <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Property</h4>
                       </div>
-                      <div>
-                        <div className="font-medium text-sm">2644 Gwendolyn Lane</div>
-                        <div className="text-xs text-muted-foreground">View Property</div>
+                      <ChevronDown className="h-3 w-3 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <div className="flex items-center gap-3 p-2.5 rounded-lg border border-border hover:border-primary/30 transition-colors cursor-pointer">
+                        <div className="p-2 rounded-lg bg-indigo-100">
+                          <Building2 className="h-4 w-4 text-indigo-600" />
+                        </div>
+                        <div>
+                          <div className="font-medium text-sm">2644 Gwendolyn Lane</div>
+                          <div className="text-xs text-muted-foreground">View Property</div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
                     </CollapsibleContent>
                   </Collapsible>
                 </Card>
