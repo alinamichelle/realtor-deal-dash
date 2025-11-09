@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plus, TrendingUp, TrendingDown, DollarSign, Award, Users, Minus, ArrowLeft } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
 
 // Mock data
@@ -133,7 +134,20 @@ export default function Transactions() {
         </div>
       </div>
 
-      <div className="p-8 space-y-8 max-w-[1600px] mx-auto">
+      <div className="p-8 space-y-6 max-w-[1600px] mx-auto">
+        {/* Tab Filters */}
+        <Tabs defaultValue="all" className="w-full">
+          <TabsList className="w-full justify-start bg-muted/30 p-1">
+            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="active-listings">Active Listings</TabsTrigger>
+            <TabsTrigger value="under-contract">Under Contract</TabsTrigger>
+            <TabsTrigger value="pending">Pending</TabsTrigger>
+            <TabsTrigger value="closed">Closed</TabsTrigger>
+            <TabsTrigger value="withdrawn">Withdrawn</TabsTrigger>
+            <TabsTrigger value="active-leases">Active Leases</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="all" className="space-y-6 mt-6">
         {/* KPI Cards */}
         <div className="grid grid-cols-5 gap-4">
           <Card className="p-6 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-slate-200">
@@ -304,7 +318,7 @@ export default function Transactions() {
                           {/* Closed transactions - show closed price */}
                           {transaction.closedPrice && (
                             <>
-                              <div className="text-lg font-bold text-success">
+                              <div className="text-lg font-bold">
                                 {formatCurrency(transaction.closedPrice)}
                               </div>
                               <div className="text-xs text-muted-foreground">
@@ -341,7 +355,7 @@ export default function Transactions() {
                           {/* Under Contract - show contract price and expected close */}
                           {transaction.status === "Under Contract" && transaction.contractPrice && (
                             <>
-                              <div className="text-lg font-bold text-caution">
+                              <div className="text-lg font-bold">
                                 {formatCurrency(transaction.contractPrice)}
                               </div>
                               {transaction.expectedCloseDate && (
@@ -379,6 +393,32 @@ export default function Transactions() {
             </table>
           </div>
         </Card>
+          </TabsContent>
+          
+          <TabsContent value="active-listings" className="space-y-6 mt-6">
+            <p className="text-muted-foreground">Active Listings will be shown here</p>
+          </TabsContent>
+          
+          <TabsContent value="under-contract" className="space-y-6 mt-6">
+            <p className="text-muted-foreground">Under Contract transactions will be shown here</p>
+          </TabsContent>
+          
+          <TabsContent value="pending" className="space-y-6 mt-6">
+            <p className="text-muted-foreground">Pending transactions will be shown here</p>
+          </TabsContent>
+          
+          <TabsContent value="closed" className="space-y-6 mt-6">
+            <p className="text-muted-foreground">Closed transactions will be shown here</p>
+          </TabsContent>
+          
+          <TabsContent value="withdrawn" className="space-y-6 mt-6">
+            <p className="text-muted-foreground">Withdrawn transactions will be shown here</p>
+          </TabsContent>
+          
+          <TabsContent value="active-leases" className="space-y-6 mt-6">
+            <p className="text-muted-foreground">Active Leases will be shown here</p>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
