@@ -1,0 +1,388 @@
+import { useState } from "react";
+import { AppSidebar } from "@/components/AppSidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { 
+  Map, 
+  Grid3x3, 
+  List, 
+  Search, 
+  Home, 
+  Building2, 
+  KeyRound,
+  TrendingUp,
+  Calendar,
+  DollarSign,
+  MapPin,
+  Target
+} from "lucide-react";
+
+// Mock property data
+const properties = [
+  {
+    id: "1",
+    address: "1234 Maple Street, Austin, TX 78701",
+    type: "homeowner",
+    purchaseDate: "2023-06-15",
+    purchasePrice: "$485,000",
+    currentValue: "$520,000",
+    owner: "Sarah Johnson",
+    status: "Monitoring",
+    goal: "Retain for future sale",
+    daysMonitored: 365,
+    image: "https://images.unsplash.com/photo-1568605114967-8130f3a36994"
+  },
+  {
+    id: "2",
+    address: "5678 Oak Avenue, Austin, TX 78702",
+    type: "investment",
+    purchaseDate: "2022-03-20",
+    purchasePrice: "$650,000",
+    currentValue: "$725,000",
+    owner: "Michael Chen",
+    status: "Active",
+    goal: "Monitor for sale opportunity",
+    daysMonitored: 580,
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c"
+  },
+  {
+    id: "3",
+    address: "910 Pine Lane, Austin, TX 78703",
+    type: "renter",
+    leaseEnd: "2025-08-31",
+    monthlyRent: "$2,400",
+    owner: "Emily Rodriguez",
+    status: "Lease Active",
+    goal: "Convert to buyer",
+    daysMonitored: 180,
+    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9"
+  },
+  {
+    id: "4",
+    address: "1122 Elm Street, Austin, TX 78704",
+    type: "landlord",
+    purchaseDate: "2021-11-10",
+    purchasePrice: "$425,000",
+    currentValue: "$475,000",
+    monthlyRent: "$3,200",
+    owner: "David Park",
+    tenantLeaseEnd: "2025-12-15",
+    status: "Rented",
+    goal: "Maintain relationship",
+    daysMonitored: 820,
+    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c"
+  },
+];
+
+const getPropertyTypeInfo = (type: string) => {
+  switch (type) {
+    case "homeowner":
+      return { icon: Home, label: "Homeowner", color: "bg-blue-500" };
+    case "investment":
+      return { icon: TrendingUp, label: "Investment", color: "bg-green-500" };
+    case "renter":
+      return { icon: KeyRound, label: "Renter", color: "bg-purple-500" };
+    case "landlord":
+      return { icon: Building2, label: "Landlord", color: "bg-orange-500" };
+    default:
+      return { icon: Home, label: "Property", color: "bg-gray-500" };
+  }
+};
+
+export default function Properties() {
+  const [viewMode, setViewMode] = useState<"map" | "list" | "grid">("grid");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredProperties = properties.filter(property =>
+    property.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    property.owner.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  return (
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <AppSidebar />
+        <div className="flex-1 bg-background">
+          {/* Header */}
+          <div className="border-b border-border bg-card px-8 py-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h1 className="text-3xl font-bold text-foreground">HausWatch</h1>
+                <p className="text-muted-foreground mt-1">Monitor properties and nurture client relationships</p>
+              </div>
+              <Button>
+                <MapPin className="mr-2 h-4 w-4" />
+                Add Property
+              </Button>
+            </div>
+
+            {/* Search and View Controls */}
+            <div className="flex items-center gap-4">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search by address or owner..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <div className="flex items-center gap-2 border border-border rounded-lg p-1">
+                <Button
+                  variant={viewMode === "map" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("map")}
+                >
+                  <Map className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={viewMode === "list" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("list")}
+                >
+                  <List className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={viewMode === "grid" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("grid")}
+                >
+                  <Grid3x3 className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="p-8">
+            {/* Stats Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Total Properties</p>
+                      <p className="text-2xl font-bold">{properties.length}</p>
+                    </div>
+                    <Home className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Homeowners</p>
+                      <p className="text-2xl font-bold">{properties.filter(p => p.type === "homeowner").length}</p>
+                    </div>
+                    <Home className="h-8 w-8 text-blue-500" />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Renters to Convert</p>
+                      <p className="text-2xl font-bold">{properties.filter(p => p.type === "renter").length}</p>
+                    </div>
+                    <KeyRound className="h-8 w-8 text-purple-500" />
+                  </div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Landlords</p>
+                      <p className="text-2xl font-bold">{properties.filter(p => p.type === "landlord").length}</p>
+                    </div>
+                    <Building2 className="h-8 w-8 text-orange-500" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Views */}
+            {viewMode === "map" && (
+              <Card>
+                <CardContent className="p-0">
+                  <div className="h-[600px] bg-muted rounded-lg flex items-center justify-center">
+                    <div className="text-center">
+                      <Map className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                      <p className="text-muted-foreground">Map view coming soon</p>
+                      <p className="text-sm text-muted-foreground mt-2">Properties will be displayed on an interactive map</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {viewMode === "list" && (
+              <div className="space-y-4">
+                {filteredProperties.map((property) => {
+                  const typeInfo = getPropertyTypeInfo(property.type);
+                  const TypeIcon = typeInfo.icon;
+                  
+                  return (
+                    <Card key={property.id} className="hover:shadow-md transition-shadow cursor-pointer">
+                      <CardContent className="p-6">
+                        <div className="flex items-start gap-6">
+                          <img 
+                            src={property.image} 
+                            alt={property.address}
+                            className="w-32 h-32 object-cover rounded-lg"
+                          />
+                          <div className="flex-1">
+                            <div className="flex items-start justify-between mb-2">
+                              <div>
+                                <h3 className="font-semibold text-lg">{property.address}</h3>
+                                <p className="text-muted-foreground">{property.owner}</p>
+                              </div>
+                              <Badge className={`${typeInfo.color} text-white`}>
+                                <TypeIcon className="h-3 w-3 mr-1" />
+                                {typeInfo.label}
+                              </Badge>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                              {property.type === "renter" ? (
+                                <>
+                                  <div>
+                                    <p className="text-xs text-muted-foreground">Monthly Rent</p>
+                                    <p className="font-medium">{property.monthlyRent}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-xs text-muted-foreground">Lease Ends</p>
+                                    <p className="font-medium">{property.leaseEnd}</p>
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <div>
+                                    <p className="text-xs text-muted-foreground">Purchase Price</p>
+                                    <p className="font-medium">{property.purchasePrice}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-xs text-muted-foreground">Current Value</p>
+                                    <p className="font-medium">{property.currentValue}</p>
+                                  </div>
+                                </>
+                              )}
+                              <div>
+                                <p className="text-xs text-muted-foreground">Status</p>
+                                <Badge variant="outline">{property.status}</Badge>
+                              </div>
+                              <div>
+                                <p className="text-xs text-muted-foreground">Monitoring</p>
+                                <p className="font-medium">{property.daysMonitored} days</p>
+                              </div>
+                            </div>
+
+                            <div className="mt-4 p-3 bg-muted rounded-lg flex items-center gap-2">
+                              <Target className="h-4 w-4 text-primary" />
+                              <p className="text-sm"><strong>Goal:</strong> {property.goal}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
+
+            {viewMode === "grid" && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredProperties.map((property) => {
+                  const typeInfo = getPropertyTypeInfo(property.type);
+                  const TypeIcon = typeInfo.icon;
+                  
+                  return (
+                    <Card key={property.id} className="hover:shadow-lg transition-shadow cursor-pointer overflow-hidden">
+                      <div className="relative h-48">
+                        <img 
+                          src={property.image} 
+                          alt={property.address}
+                          className="w-full h-full object-cover"
+                        />
+                        <Badge className={`absolute top-3 right-3 ${typeInfo.color} text-white`}>
+                          <TypeIcon className="h-3 w-3 mr-1" />
+                          {typeInfo.label}
+                        </Badge>
+                      </div>
+                      
+                      <CardHeader>
+                        <CardTitle className="text-base">{property.address}</CardTitle>
+                        <p className="text-sm text-muted-foreground">{property.owner}</p>
+                      </CardHeader>
+                      
+                      <CardContent>
+                        <div className="space-y-3">
+                          {property.type === "renter" ? (
+                            <>
+                              <div className="flex justify-between text-sm">
+                                <span className="text-muted-foreground">Monthly Rent</span>
+                                <span className="font-medium">{property.monthlyRent}</span>
+                              </div>
+                              <div className="flex justify-between text-sm">
+                                <span className="text-muted-foreground">Lease Ends</span>
+                                <span className="font-medium">{property.leaseEnd}</span>
+                              </div>
+                            </>
+                          ) : property.type === "landlord" ? (
+                            <>
+                              <div className="flex justify-between text-sm">
+                                <span className="text-muted-foreground">Current Value</span>
+                                <span className="font-medium">{property.currentValue}</span>
+                              </div>
+                              <div className="flex justify-between text-sm">
+                                <span className="text-muted-foreground">Monthly Rent</span>
+                                <span className="font-medium">{property.monthlyRent}</span>
+                              </div>
+                              <div className="flex justify-between text-sm">
+                                <span className="text-muted-foreground">Tenant Lease</span>
+                                <span className="font-medium">{property.tenantLeaseEnd}</span>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="flex justify-between text-sm">
+                                <span className="text-muted-foreground">Purchase</span>
+                                <span className="font-medium">{property.purchasePrice}</span>
+                              </div>
+                              <div className="flex justify-between text-sm">
+                                <span className="text-muted-foreground">Current Value</span>
+                                <span className="font-medium">{property.currentValue}</span>
+                              </div>
+                            </>
+                          )}
+                          
+                          <div className="flex justify-between items-center text-sm">
+                            <span className="text-muted-foreground">Status</span>
+                            <Badge variant="outline" className="text-xs">{property.status}</Badge>
+                          </div>
+                          
+                          <div className="pt-3 border-t">
+                            <div className="flex items-center gap-2 text-sm">
+                              <Target className="h-4 w-4 text-primary flex-shrink-0" />
+                              <p className="text-muted-foreground">{property.goal}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </SidebarProvider>
+  );
+}
