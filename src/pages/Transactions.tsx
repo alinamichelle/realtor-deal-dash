@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, TrendingUp, TrendingDown, DollarSign, Award, Users, Minus } from "lucide-react";
+import { Plus, TrendingUp, TrendingDown, DollarSign, Award, Users, Minus, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 // Mock data
@@ -120,7 +120,12 @@ export default function Transactions() {
       {/* Header */}
       <div className="border-b border-border bg-card px-8 py-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Transactions</h1>
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" className="rounded-full" onClick={() => navigate('/')}>
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <h1 className="text-3xl font-bold">Transactions</h1>
+          </div>
           <Button className="gap-2">
             <Plus className="h-4 w-4" />
             New Transaction
@@ -261,13 +266,16 @@ export default function Transactions() {
               <tbody>
                 {transactions.map((transaction) => {
                   const getStatusDot = (status: string) => {
+                    // No dot for closed transactions
+                    if (status === "Closed") {
+                      return null;
+                    }
+                    
                     switch (status) {
                       case "Active":
                         return <div className="h-2 w-2 rounded-full bg-info animate-pulse" />;
                       case "Under Contract":
                         return <div className="h-2 w-2 rounded-full bg-purple-500" />;
-                      case "Closed":
-                        return <div className="h-2 w-2 rounded-full bg-success" />;
                       case "Cancelled":
                         return <div className="h-2 w-2 rounded-full bg-destructive" />;
                       default:
