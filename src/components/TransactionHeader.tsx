@@ -7,14 +7,21 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useNavigate } from "react-router-dom";
 
 export function TransactionHeader() {
+  const navigate = useNavigate();
   return (
     <div className="border-b border-border bg-card">
       <div className="px-8 py-6">
         <div className="flex items-start justify-between mb-6">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="rounded-full">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="rounded-full"
+              onClick={() => navigate('/transactions')}
+            >
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
