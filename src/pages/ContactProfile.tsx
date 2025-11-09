@@ -13,6 +13,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 // Mock data
 const contactData = {
@@ -75,6 +76,7 @@ const contactData = {
 };
 
 export default function ContactProfile() {
+  const navigate = useNavigate();
   const [showPropertyDetails, setShowPropertyDetails] = useState(false);
   const [showMoreInfo, setShowMoreInfo] = useState(false);
 
@@ -86,7 +88,7 @@ export default function ContactProfile() {
       <header className="sticky top-0 z-20 border-b border-border bg-card">
         <div className="px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="rounded-full">
+            <Button variant="ghost" size="icon" className="rounded-full" onClick={() => navigate('/clients')}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
             
