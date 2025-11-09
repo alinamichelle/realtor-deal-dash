@@ -83,48 +83,50 @@ export default function ContactProfile() {
   return (
     <div className="min-h-screen bg-background">
       {/* Sticky Header with Contact Info */}
-      <header className="sticky top-0 z-20 border-b border-border bg-card/95 backdrop-blur-sm">
-        <div className="px-6 py-3 flex items-center justify-between gap-4">
+      <header className="sticky top-0 z-20 border-b border-border bg-card">
+        <div className="px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" className="rounded-full">
               <ArrowLeft className="h-5 w-5" />
             </Button>
             
-            <Avatar className="h-10 w-10">
-              <AvatarFallback className="text-sm font-semibold bg-primary/10 text-primary">
+            <Avatar className="h-12 w-12">
+              <AvatarFallback className="text-base font-semibold bg-primary/10 text-primary">
                 {contactData.firstName[0]}{contactData.lastName[0]}
               </AvatarFallback>
             </Avatar>
 
-            <div className="flex items-center gap-3">
-              <h1 className="text-xl font-bold">{contactData.fullName}</h1>
-              <Badge variant="outline" className="bg-success/10 text-success border-success/20">
-                <Check className="h-3 w-3 mr-1" />
-                Past Client
-              </Badge>
-              {contactData.contactType === "VIP" && (
-                <Badge variant="outline" className="bg-amber-500/10 text-amber-700 border-amber-500/20">
-                  <Star className="h-3 w-3 mr-1 fill-amber-700" />
-                  VIP
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <h1 className="text-xl font-bold whitespace-nowrap">{contactData.fullName}</h1>
+                <Badge variant="outline" className="bg-success/10 text-success border-success/20 text-xs">
+                  <Check className="h-3 w-3 mr-1" />
+                  Past Client
                 </Badge>
-              )}
-            </div>
-
-            <div className="flex items-center gap-3 text-sm text-muted-foreground ml-2">
-              <span className="flex items-center gap-1.5">
-                <Mail className="h-3.5 w-3.5" />
-                {contactData.email}
-              </span>
-              <span>•</span>
-              <span className="flex items-center gap-1.5">
-                <Phone className="h-3.5 w-3.5" />
-                {contactData.phone}
-              </span>
-              <span>•</span>
-              <span className="flex items-center gap-1.5">
-                <MapPin className="h-3.5 w-3.5" />
-                {contactData.city}, {contactData.state}
-              </span>
+                {contactData.contactType === "VIP" && (
+                  <Badge variant="outline" className="bg-amber-500/10 text-amber-700 border-amber-500/20 text-xs">
+                    <Star className="h-3 w-3 mr-1 fill-amber-700" />
+                    VIP
+                  </Badge>
+                )}
+              </div>
+              
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <span className="flex items-center gap-1.5">
+                  <Mail className="h-3.5 w-3.5" />
+                  {contactData.email}
+                </span>
+                <span>•</span>
+                <span className="flex items-center gap-1.5">
+                  <Phone className="h-3.5 w-3.5" />
+                  {contactData.phone}
+                </span>
+                <span>•</span>
+                <span className="flex items-center gap-1.5">
+                  <MapPin className="h-3.5 w-3.5" />
+                  {contactData.city}, {contactData.state}
+                </span>
+              </div>
             </div>
           </div>
 
