@@ -27,10 +27,8 @@ const transactions = [
     id: 2294,
     type: "Purchase",
     status: "Closed",
+    address: "123 Street Blvd",
     primaryAgent: "Erica Barrientez",
-    secondaryAgent: "Anthony Gibson",
-    client: null,
-    property: null,
     closedPrice: 369881.00,
     closedDate: "11/03/2025",
     missingDrive: true,
@@ -40,10 +38,8 @@ const transactions = [
     id: 2299,
     type: "Sale",
     status: "Active",
+    address: "456 Oak Avenue",
     primaryAgent: "John May",
-    secondaryAgent: null,
-    client: "Vivek Deshpande",
-    property: null,
     listPrice: 990000.00,
     isDraft: true,
     missingDrive: true,
@@ -53,10 +49,8 @@ const transactions = [
     id: 2297,
     type: "Sale",
     status: "Active",
+    address: "789 Pine Street",
     primaryAgent: "Jared Fader",
-    secondaryAgent: null,
-    client: null,
-    property: null,
     listPrice: 825000.00,
     isDraft: true,
     missingDrive: true,
@@ -66,10 +60,8 @@ const transactions = [
     id: 2295,
     type: "Purchase",
     status: "Closed",
+    address: "321 Maple Drive",
     primaryAgent: "Anthony Gibson",
-    secondaryAgent: "Kyle Eden",
-    client: "Tommy Hulick",
-    property: null,
     closedPrice: 1225000.00,
     closedDate: "10/31/2025",
     missingDrive: true,
@@ -173,11 +165,11 @@ export default function Transactions() {
                 +18.5%
               </div>
             </div>
-            <div className="h-16 flex items-end gap-1">
+            <div className="h-16 flex items-end justify-between gap-1.5">
               {monthlyData.map((data) => (
                 <div key={data.month} className="flex-1 flex flex-col justify-end items-center gap-1">
                   <div 
-                    className="w-full bg-foreground/80 hover:bg-foreground rounded-t transition-all"
+                    className="w-full bg-foreground/80 hover:bg-foreground rounded-t transition-all min-h-[4px]"
                     style={{ height: `${(data.volume / maxVolume) * 100}%` }}
                   />
                   <span className="text-[9px] text-muted-foreground">{data.month}</span>
@@ -259,7 +251,7 @@ export default function Transactions() {
               <thead>
                 <tr className="border-b border-border bg-muted/30">
                   <th className="text-left p-4 font-semibold text-sm">Transaction Details</th>
-                  <th className="text-left p-4 font-semibold text-sm">Agents & Client</th>
+                  <th className="text-left p-4 font-semibold text-sm">Agent</th>
                   <th className="text-left p-4 font-semibold text-sm">Property Info</th>
                   <th className="text-left p-4 font-semibold text-sm">Status & Pricing</th>
                   <th className="text-left p-4 font-semibold text-sm">Actions</th>
@@ -271,33 +263,22 @@ export default function Transactions() {
                     <td className="p-4">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-semibold">{transaction.type} #{transaction.id}</span>
+                          <span className="font-semibold">{transaction.type}: {transaction.address}</span>
                           <Badge variant="outline" className={getStatusColor(transaction.status)}>
                             {transaction.status}
                           </Badge>
                         </div>
-                        <div className="text-sm text-muted-foreground">Type: {transaction.type}</div>
                         {transaction.isDraft && (
                           <div className="text-xs text-muted-foreground">Source: other</div>
                         )}
                       </div>
                     </td>
                     <td className="p-4">
-                      <div className="space-y-1 text-sm">
-                        <div><span className="font-medium">Primary:</span> {transaction.primaryAgent}</div>
-                        {transaction.secondaryAgent && (
-                          <div><span className="font-medium">Secondary:</span> {transaction.secondaryAgent}</div>
-                        )}
-                        {transaction.client ? (
-                          <div><span className="font-medium">Client:</span> {transaction.client}</div>
-                        ) : (
-                          <div className="text-muted-foreground">No client assigned</div>
-                        )}
-                      </div>
+                      <div className="text-sm">{transaction.primaryAgent}</div>
                     </td>
                     <td className="p-4">
                       <div className="text-sm text-muted-foreground">
-                        {transaction.property || "Property not assigned"}
+                        {transaction.address}
                       </div>
                     </td>
                     <td className="p-4">
@@ -309,9 +290,6 @@ export default function Transactions() {
                             </div>
                             <div className="text-xs text-muted-foreground">
                               Closed: {transaction.closedDate}
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                              Agent: {transaction.primaryAgent}
                             </div>
                           </>
                         )}
@@ -333,16 +311,17 @@ export default function Transactions() {
                           <Button variant="outline" size="sm">View</Button>
                           <Button variant="outline" size="sm">Edit</Button>
                         </div>
-                        {transaction.missingDrive && (
-                          <Badge variant="outline" className="text-xs bg-destructive/10 text-destructive border-destructive/20">
-                            Missing Drive
-                          </Badge>
-                        )}
-                        {transaction.noIntake && (
-                          <Badge variant="outline" className="text-xs bg-muted text-muted-foreground">
-                            No Intake
-                          </Badge>
-                        )}
+                        <div className="flex gap-1">
+                          {transaction.missingDrive && (
+                            <span className="text-[10px] text-destructive">Missing Drive</span>
+                          )}
+                          {transaction.noIntake && transaction.missingDrive && (
+                            <span className="text-[10px] text-muted-foreground">•</span>
+                          )}
+                          {transaction.noIntake && (
+                            <span className="text-[10px] text-muted-foreground">No Intake</span>
+                          )}
+                        </div>
                       </div>
                     </td>
                   </tr>
