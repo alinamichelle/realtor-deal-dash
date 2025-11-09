@@ -1,6 +1,7 @@
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { useNavigate, useParams } from "react-router-dom";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -16,8 +17,12 @@ import {
   Calendar,
   DollarSign,
   Clock,
-  CheckCircle2
+  CheckCircle2,
+  Send,
+  MessageSquare
 } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Textarea } from "@/components/ui/textarea";
 
 const stages = [
   { id: 1, name: "Intake", completed: true },
@@ -27,11 +32,39 @@ const stages = [
   { id: 5, name: "Completed", completed: false },
 ];
 
+const mockComments = [
+  {
+    id: 1,
+    author: "Colin Beatt",
+    initials: "CB",
+    message: "Just spoke with the client - they're ready to move forward with the inspection next week.",
+    timestamp: "2 hours ago",
+    date: "Nov 8, 2025 at 3:42 PM"
+  },
+  {
+    id: 2,
+    author: "Sarah Johnson",
+    initials: "SJ",
+    message: "Great! I'll coordinate with the inspection company. Should we schedule for Tuesday or Wednesday?",
+    timestamp: "1 hour ago",
+    date: "Nov 8, 2025 at 4:15 PM"
+  },
+  {
+    id: 3,
+    author: "Colin Beatt",
+    initials: "CB",
+    message: "Wednesday works better for them. Let's aim for 10 AM.",
+    timestamp: "45 min ago",
+    date: "Nov 8, 2025 at 4:30 PM"
+  }
+];
+
 export default function TransactionDetail() {
   const navigate = useNavigate();
   const { id } = useParams();
   const completedStages = stages.filter(s => s.completed).length;
   const progressPercentage = (completedStages / stages.length) * 100;
+  const [newComment, setNewComment] = useState("");
 
   return (
     <SidebarProvider>
@@ -216,6 +249,52 @@ export default function TransactionDetail() {
                         <div className="font-medium">Transaction created</div>
                         <div className="text-sm text-muted-foreground mt-1">Sep 28 at 8:54 PM</div>
                       </div>
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Comments Section */}
+                <Card className="p-6">
+                  <div className="flex items-center gap-2 mb-6">
+                    <MessageSquare className="h-5 w-5 text-primary" />
+                    <h3 className="text-lg font-semibold">Team Comments</h3>
+                    <Badge variant="secondary" className="ml-auto">{mockComments.length}</Badge>
+                  </div>
+                  
+                  <div className="space-y-4 mb-6">
+                    {mockComments.map((comment) => (
+                      <div key={comment.id} className="flex gap-3 pb-4 border-b border-border last:border-0">
+                        <Avatar className="h-9 w-9 mt-0.5">
+                          <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
+                            {comment.initials}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-sm">{comment.author}</span>
+                            <span className="text-xs text-muted-foreground">{comment.timestamp}</span>
+                          </div>
+                          <p className="text-sm text-foreground">{comment.message}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="space-y-3">
+                    <Textarea 
+                      placeholder="Add a comment to this transaction..."
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      className="min-h-[80px] resize-none"
+                    />
+                    <div className="flex justify-end">
+                      <Button 
+                        className="gap-2"
+                        disabled={!newComment.trim()}
+                      >
+                        <Send className="h-4 w-4" />
+                        Post Comment
+                      </Button>
                     </div>
                   </div>
                 </Card>
