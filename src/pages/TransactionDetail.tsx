@@ -19,10 +19,25 @@ import {
   Clock,
   CheckCircle2,
   Send,
-  MessageSquare
+  MessageSquare,
+  CheckSquare,
+  Plus,
+  Users,
+  Briefcase,
+  Megaphone
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const stages = [
   { id: 1, name: "Intake", completed: true },
@@ -59,12 +74,65 @@ const mockComments = [
   }
 ];
 
+const mockTasks = [
+  {
+    id: 1,
+    title: "Schedule property inspection",
+    assignedTo: "Sarah Johnson",
+    assignedToInitials: "SJ",
+    dueDate: "Nov 13, 2025",
+    completed: false,
+    priority: "high"
+  },
+  {
+    id: 2,
+    title: "Review and sign purchase agreement",
+    assignedTo: "Rylee Whited",
+    assignedToInitials: "RW",
+    dueDate: "Nov 10, 2025",
+    completed: true,
+    priority: "high"
+  },
+  {
+    id: 3,
+    title: "Create social media listing posts",
+    assignedTo: "Marketing Team",
+    assignedToInitials: "MT",
+    dueDate: "Nov 15, 2025",
+    completed: false,
+    priority: "medium"
+  }
+];
+
+const transactionTeam = [
+  { name: "Colin Beatt", role: "Primary Agent", initials: "CB", color: "bg-blue-100 text-blue-600" },
+  { name: "Anthony Gibson", role: "Secondary Agent", initials: "AG", color: "bg-purple-100 text-purple-600" },
+  { name: "Sarah Johnson", role: "CTC", initials: "SJ", color: "bg-green-100 text-green-600" },
+  { name: "Mike Roberts", role: "Listing Coordinator", initials: "MR", color: "bg-amber-100 text-amber-600" }
+];
+
+const clients = [
+  { name: "Rylee Whited", role: "Primary Client", initials: "RW", color: "bg-pink-100 text-pink-600" },
+  { name: "Jordan Whited", role: "Secondary Client", initials: "JW", color: "bg-rose-100 text-rose-600" }
+];
+
+const marketingTeam = [
+  { name: "Marketing Team", role: "Marketing", initials: "MT", color: "bg-orange-100 text-orange-600" }
+];
+
 export default function TransactionDetail() {
   const navigate = useNavigate();
   const { id } = useParams();
   const completedStages = stages.filter(s => s.completed).length;
   const progressPercentage = (completedStages / stages.length) * 100;
   const [newComment, setNewComment] = useState("");
+  const [showTaskForm, setShowTaskForm] = useState(false);
+  const [newTaskTitle, setNewTaskTitle] = useState("");
+  const [newTaskAssignee, setNewTaskAssignee] = useState("");
+  const [newTaskDueDate, setNewTaskDueDate] = useState("");
+  const [newTaskPriority, setNewTaskPriority] = useState("medium");
+
+  const allTeamMembers = [...transactionTeam, ...clients, ...marketingTeam];
 
   return (
     <SidebarProvider>
@@ -253,6 +321,144 @@ export default function TransactionDetail() {
                   </div>
                 </Card>
 
+                {/* Tasks Section */}
+                <Card className="p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-2">
+                      <CheckSquare className="h-5 w-5 text-primary" />
+                      <h3 className="text-lg font-semibold">Tasks</h3>
+                      <Badge variant="secondary">{mockTasks.length}</Badge>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="gap-2"
+                      onClick={() => setShowTaskForm(!showTaskForm)}
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add Task
+                    </Button>
+                  </div>
+
+                  {showTaskForm && (
+                    <Card className="p-4 mb-4 bg-muted/30">
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="taskTitle" className="text-sm font-medium">Task Title</Label>
+                          <Input 
+                            id="taskTitle"
+                            placeholder="Enter task title..."
+                            value={newTaskTitle}
+                            onChange={(e) => setNewTaskTitle(e.target.value)}
+                            className="mt-1"
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <Label htmlFor="assignee" className="text-sm font-medium">Assign To</Label>
+                            <Select value={newTaskAssignee} onValueChange={setNewTaskAssignee}>
+                              <SelectTrigger id="assignee" className="mt-1">
+                                <SelectValue placeholder="Select person" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {allTeamMembers.map((member) => (
+                                  <SelectItem key={member.name} value={member.name}>
+                                    {member.name} - {member.role}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div>
+                            <Label htmlFor="dueDate" className="text-sm font-medium">Due Date</Label>
+                            <Input 
+                              id="dueDate"
+                              type="date"
+                              value={newTaskDueDate}
+                              onChange={(e) => setNewTaskDueDate(e.target.value)}
+                              className="mt-1"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <Label htmlFor="priority" className="text-sm font-medium">Priority</Label>
+                          <Select value={newTaskPriority} onValueChange={setNewTaskPriority}>
+                            <SelectTrigger id="priority" className="mt-1">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="high">High</SelectItem>
+                              <SelectItem value="medium">Medium</SelectItem>
+                              <SelectItem value="low">Low</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button 
+                            className="flex-1"
+                            disabled={!newTaskTitle.trim() || !newTaskAssignee}
+                          >
+                            Create Task
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            onClick={() => {
+                              setShowTaskForm(false);
+                              setNewTaskTitle("");
+                              setNewTaskAssignee("");
+                              setNewTaskDueDate("");
+                              setNewTaskPriority("medium");
+                            }}
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  )}
+
+                  <div className="space-y-3">
+                    {mockTasks.map((task) => (
+                      <div 
+                        key={task.id}
+                        className={`flex items-start gap-3 p-3 rounded-lg border transition-colors ${
+                          task.completed ? 'bg-muted/30 border-border' : 'bg-background border-border hover:border-primary/30'
+                        }`}
+                      >
+                        <Checkbox 
+                          checked={task.completed}
+                          className="mt-1"
+                        />
+                        <div className="flex-1 space-y-1">
+                          <div className="flex items-start justify-between gap-2">
+                            <p className={`text-sm font-medium ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
+                              {task.title}
+                            </p>
+                            <Badge 
+                              variant={task.priority === 'high' ? 'destructive' : task.priority === 'medium' ? 'default' : 'secondary'}
+                              className="text-xs shrink-0"
+                            >
+                              {task.priority}
+                            </Badge>
+                          </div>
+                          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                            <div className="flex items-center gap-1.5">
+                              <Avatar className="h-5 w-5">
+                                <AvatarFallback className="bg-primary/10 text-primary text-[10px]">
+                                  {task.assignedToInitials}
+                                </AvatarFallback>
+                              </Avatar>
+                              <span>{task.assignedTo}</span>
+                            </div>
+                            <span>•</span>
+                            <span>Due {task.dueDate}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+
                 {/* Comments Section */}
                 <Card className="p-6">
                   <div className="flex items-center gap-2 mb-6">
@@ -321,35 +527,101 @@ export default function TransactionDetail() {
                   </div>
                 </Card>
 
-                {/* Related */}
+                {/* Transaction Parties */}
                 <Card className="p-6">
-                  <h3 className="text-lg font-semibold mb-4">Related</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-primary/30 transition-colors cursor-pointer">
-                      <div className="p-2 rounded-lg bg-blue-100">
-                        <User className="h-4 w-4 text-blue-600" />
-                      </div>
-                      <div>
-                        <div className="text-xs text-muted-foreground">Primary Agent</div>
-                        <div className="font-medium text-sm">Colin Beatt</div>
-                      </div>
+                  <h3 className="text-lg font-semibold mb-4">Transaction Parties</h3>
+                  
+                  {/* Transaction Team */}
+                  <div className="mb-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Briefcase className="h-4 w-4 text-muted-foreground" />
+                      <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Transaction Team</h4>
                     </div>
-                    <div className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-primary/30 transition-colors cursor-pointer">
-                      <div className="p-2 rounded-lg bg-green-100">
-                        <User className="h-4 w-4 text-green-600" />
-                      </div>
-                      <div>
-                        <div className="text-xs text-muted-foreground">Client</div>
-                        <div className="font-medium text-sm">Rylee Whited</div>
-                      </div>
+                    <div className="space-y-2">
+                      {transactionTeam.map((member) => (
+                        <div 
+                          key={member.name}
+                          className="flex items-center gap-3 p-2.5 rounded-lg border border-border hover:border-primary/30 transition-colors cursor-pointer"
+                        >
+                          <Avatar className="h-8 w-8">
+                            <AvatarFallback className={`${member.color} text-xs font-semibold`}>
+                              {member.initials}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <div className="font-medium text-sm">{member.name}</div>
+                            <div className="text-xs text-muted-foreground">{member.role}</div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                    <div className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-primary/30 transition-colors cursor-pointer">
-                      <div className="p-2 rounded-lg bg-purple-100">
-                        <Building2 className="h-4 w-4 text-purple-600" />
+                  </div>
+
+                  {/* Clients */}
+                  <div className="mb-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                      <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Clients</h4>
+                    </div>
+                    <div className="space-y-2">
+                      {clients.map((client) => (
+                        <div 
+                          key={client.name}
+                          className="flex items-center gap-3 p-2.5 rounded-lg border border-border hover:border-primary/30 transition-colors cursor-pointer"
+                        >
+                          <Avatar className="h-8 w-8">
+                            <AvatarFallback className={`${client.color} text-xs font-semibold`}>
+                              {client.initials}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <div className="font-medium text-sm">{client.name}</div>
+                            <div className="text-xs text-muted-foreground">{client.role}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Marketing */}
+                  <div className="mb-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Megaphone className="h-4 w-4 text-muted-foreground" />
+                      <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Marketing</h4>
+                    </div>
+                    <div className="space-y-2">
+                      {marketingTeam.map((member) => (
+                        <div 
+                          key={member.name}
+                          className="flex items-center gap-3 p-2.5 rounded-lg border border-border hover:border-primary/30 transition-colors cursor-pointer"
+                        >
+                          <Avatar className="h-8 w-8">
+                            <AvatarFallback className={`${member.color} text-xs font-semibold`}>
+                              {member.initials}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <div className="font-medium text-sm">{member.name}</div>
+                            <div className="text-xs text-muted-foreground">{member.role}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Property */}
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <Building2 className="h-4 w-4 text-muted-foreground" />
+                      <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Property</h4>
+                    </div>
+                    <div className="flex items-center gap-3 p-2.5 rounded-lg border border-border hover:border-primary/30 transition-colors cursor-pointer">
+                      <div className="p-2 rounded-lg bg-indigo-100">
+                        <Building2 className="h-4 w-4 text-indigo-600" />
                       </div>
                       <div>
-                        <div className="text-xs text-muted-foreground">Property</div>
                         <div className="font-medium text-sm">2644 Gwendolyn Lane</div>
+                        <div className="text-xs text-muted-foreground">View Property</div>
                       </div>
                     </div>
                   </div>
