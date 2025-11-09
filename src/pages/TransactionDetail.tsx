@@ -25,7 +25,9 @@ import {
   Users,
   Briefcase,
   Megaphone,
-  ChevronDown
+  ChevronDown,
+  Download,
+  Eye
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
@@ -40,6 +42,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 const stages = [
   { id: 1, name: "Intake", completed: true },
@@ -135,6 +144,7 @@ export default function TransactionDetail() {
   const [newTaskPriority, setNewTaskPriority] = useState("medium");
   const [taskComments, setTaskComments] = useState<{ [key: number]: string }>({});
   const [showTaskComments, setShowTaskComments] = useState<{ [key: number]: boolean }>({});
+  const [showIntakeModal, setShowIntakeModal] = useState(false);
 
   const allTeamMembers = [...transactionTeam, ...clients, ...marketingTeam];
 
@@ -173,6 +183,14 @@ export default function TransactionDetail() {
                 </div>
 
                 <div className="flex items-center gap-2">
+                  <Button 
+                    variant="outline" 
+                    className="gap-2"
+                    onClick={() => setShowIntakeModal(true)}
+                  >
+                    <FileText className="h-4 w-4" />
+                    View Intake Form
+                  </Button>
                   <Button className="gap-2 bg-primary hover:bg-primary/90">
                     Edit Transaction
                   </Button>
@@ -668,6 +686,154 @@ export default function TransactionDetail() {
           </div>
         </div>
       </div>
+
+      {/* Intake Form Modal */}
+      <Dialog open={showIntakeModal} onOpenChange={setShowIntakeModal}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle>Intake Form Preview</DialogTitle>
+          </DialogHeader>
+          
+          <div className="flex-1 overflow-y-auto pr-2">
+            <div className="space-y-6 py-4">
+              {/* Transaction Info */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-foreground">Transaction Information</h3>
+                <div className="grid grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <span className="text-muted-foreground">Transaction Type:</span>
+                    <p className="font-medium mt-1">Purchase</p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Status:</span>
+                    <p className="font-medium mt-1">Active</p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Target Live Date:</span>
+                    <p className="font-medium mt-1">Nov 15, 2025</p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Created:</span>
+                    <p className="font-medium mt-1">Sep 28, 2025</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Client Info */}
+              <div className="space-y-3 pt-3 border-t">
+                <h3 className="text-sm font-semibold text-foreground">Client Information</h3>
+                <div className="grid grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <span className="text-muted-foreground">Primary Client:</span>
+                    <p className="font-medium mt-1">Rylee Whited</p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Email:</span>
+                    <p className="font-medium mt-1">rylee@example.com</p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Phone:</span>
+                    <p className="font-medium mt-1">(555) 123-4567</p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Client Source:</span>
+                    <p className="font-medium mt-1">Referral</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Property Info */}
+              <div className="space-y-3 pt-3 border-t">
+                <h3 className="text-sm font-semibold text-foreground">Property Details</h3>
+                <div className="grid grid-cols-2 gap-4 text-xs">
+                  <div className="col-span-2">
+                    <span className="text-muted-foreground">Address:</span>
+                    <p className="font-medium mt-1">2644 Gwendolyn Lane, Austin, TX 78745</p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Beds:</span>
+                    <p className="font-medium mt-1">4</p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Baths:</span>
+                    <p className="font-medium mt-1">3.5</p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Square Feet:</span>
+                    <p className="font-medium mt-1">2,800</p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Year Built:</span>
+                    <p className="font-medium mt-1">2018</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Financial Info */}
+              <div className="space-y-3 pt-3 border-t">
+                <h3 className="text-sm font-semibold text-foreground">Financial Details</h3>
+                <div className="grid grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <span className="text-muted-foreground">List Price:</span>
+                    <p className="font-medium mt-1">$625,000</p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Contract Price:</span>
+                    <p className="font-medium mt-1">$615,000</p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Buyer Commission:</span>
+                    <p className="font-medium mt-1">2.5%</p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Listing Commission:</span>
+                    <p className="font-medium mt-1">2.5%</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Agent Info */}
+              <div className="space-y-3 pt-3 border-t">
+                <h3 className="text-sm font-semibold text-foreground">Agent Information</h3>
+                <div className="grid grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <span className="text-muted-foreground">Primary Agent:</span>
+                    <p className="font-medium mt-1">Colin Beatt</p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Secondary Agent:</span>
+                    <p className="font-medium mt-1">Anthony Gibson</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button 
+              variant="outline" 
+              className="gap-2"
+              onClick={() => {
+                // TODO: Implement PDF download
+                console.log('Download PDF');
+              }}
+            >
+              <Download className="h-4 w-4" />
+              Download PDF
+            </Button>
+            <Button 
+              className="gap-2"
+              onClick={() => {
+                navigate(`/intake/${id}`);
+                setShowIntakeModal(false);
+              }}
+            >
+              <Eye className="h-4 w-4" />
+              View Full Form
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </SidebarProvider>
   );
 }
