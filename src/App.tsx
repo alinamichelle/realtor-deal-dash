@@ -14,6 +14,8 @@ import IntakeForms from "./pages/IntakeForms";
 import IntakeFormDetail from "./pages/IntakeFormDetail";
 import Listings from "./pages/Listings";
 import ListingDetail from "./pages/ListingDetail";
+import Leads from "./pages/Leads";
+import LeadDetail from "./pages/LeadDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +38,8 @@ const App = () => (
           <Route path="/intake/:id" element={<IntakeFormDetail />} />
           <Route path="/listings" element={<Listings />} />
           <Route path="/listing/:id" element={<ListingDetail />} />
+          <Route path="/leads" element={<Leads />} />
+          <Route path="/lead/:id" element={<LeadDetail />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
