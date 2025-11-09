@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/select";
 import {
   ArrowLeft,
-  User,
   Mail,
   Phone,
   MapPin,
@@ -50,17 +49,14 @@ const LeadDetail = () => {
 
             {/* Header */}
             <div className="mb-10">
-              <div className="flex items-start justify-between mb-8">
-                <div className="flex items-start gap-6">
-                  <div className="p-4 bg-primary/5 rounded-2xl">
-                    <User className="h-10 w-10 text-primary" />
-                  </div>
+              <div className="flex items-start justify-between">
+                <div className="space-y-6">
                   <div>
                     <div className="flex items-center gap-3 mb-3">
                       <h1 className="text-4xl font-semibold tracking-tight text-foreground">
                         Sarah Johnson
                       </h1>
-                      <Flag className="h-5 w-5 text-destructive fill-destructive cursor-pointer hover:scale-110 transition-transform" />
+                      <Flag className="h-5 w-5 text-destructive fill-destructive cursor-pointer" />
                     </div>
                     <div className="flex items-center gap-3 mb-4">
                       <Badge className="bg-info text-info-foreground rounded-full px-3">New</Badge>
@@ -68,6 +64,47 @@ const LeadDetail = () => {
                         Buyer
                       </Badge>
                       <Badge variant="secondary" className="rounded-full px-3">Website</Badge>
+                    </div>
+                    <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        <Mail className="h-4 w-4" />
+                        <span>sarah.j@email.com</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Phone className="h-4 w-4" />
+                        <span>(512) 555-0123</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4" />
+                        <span>78701</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Lead Info & Score */}
+                  <div className="flex items-start gap-8">
+                    <div className="flex items-start gap-12">
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">Assigned Agent</p>
+                        <p className="text-sm font-medium text-foreground">John Smith</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">Price Point</p>
+                        <p className="text-sm font-medium text-foreground">$400K - $500K</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">Registered</p>
+                        <p className="text-sm font-medium text-foreground">Dec 10, 2024</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 pl-8 border-l">
+                      <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-success/10">
+                        <span className="text-2xl font-bold text-success">85</span>
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground mb-1">Lead Score</p>
+                        <p className="text-sm font-semibold text-success">High Priority</p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -79,27 +116,11 @@ const LeadDetail = () => {
                   <Button size="default" className="rounded-full">Convert to Client</Button>
                 </div>
               </div>
-
-              {/* Contact Info */}
-              <div className="flex items-center gap-6 text-sm text-muted-foreground pl-[88px]">
-                <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4" />
-                  <span>sarah.j@email.com</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Phone className="h-4 w-4" />
-                  <span>(512) 555-0123</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
-                  <span>78701</span>
-                </div>
-              </div>
             </div>
 
             {/* Quick Actions */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-10">
-              <Button variant="outline" className="justify-start gap-4 h-20 rounded-2xl border-2 hover:bg-accent/50 transition-all">
+              <Button variant="outline" className="justify-start gap-4 h-20 rounded-2xl border-2">
                 <div className="p-3 bg-primary/10 rounded-xl">
                   <Phone className="h-5 w-5 text-primary" />
                 </div>
@@ -108,7 +129,7 @@ const LeadDetail = () => {
                   <p className="text-xs text-muted-foreground">Quick dial</p>
                 </div>
               </Button>
-              <Button variant="outline" className="justify-start gap-4 h-20 rounded-2xl border-2 hover:bg-accent/50 transition-all">
+              <Button variant="outline" className="justify-start gap-4 h-20 rounded-2xl border-2">
                 <div className="p-3 bg-success/10 rounded-xl">
                   <Mail className="h-5 w-5 text-success" />
                 </div>
@@ -117,7 +138,7 @@ const LeadDetail = () => {
                   <p className="text-xs text-muted-foreground">Compose message</p>
                 </div>
               </Button>
-              <Button variant="outline" className="justify-start gap-4 h-20 rounded-2xl border-2 hover:bg-accent/50 transition-all">
+              <Button variant="outline" className="justify-start gap-4 h-20 rounded-2xl border-2">
                 <div className="p-3 bg-info/10 rounded-xl">
                   <MessageSquare className="h-5 w-5 text-info" />
                 </div>
@@ -126,7 +147,7 @@ const LeadDetail = () => {
                   <p className="text-xs text-muted-foreground">Text message</p>
                 </div>
               </Button>
-              <Button variant="outline" className="justify-start gap-4 h-20 rounded-2xl border-2 hover:bg-accent/50 transition-all">
+              <Button variant="outline" className="justify-start gap-4 h-20 rounded-2xl border-2">
                 <div className="p-3 bg-caution/10 rounded-xl">
                   <Calendar className="h-5 w-5 text-caution" />
                 </div>
@@ -149,10 +170,10 @@ const LeadDetail = () => {
               {/* Overview Tab */}
               <TabsContent value="overview" className="space-y-6">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {/* Lead Information */}
+                  {/* Lead Details */}
                   <Card className="p-8 rounded-2xl border-2 shadow-sm">
                     <h3 className="text-xl font-semibold text-foreground mb-6">
-                      Lead Information
+                      Lead Details
                     </h3>
                     <div className="space-y-5">
                       <div>
@@ -171,76 +192,6 @@ const LeadDetail = () => {
                           </SelectContent>
                         </Select>
                       </div>
-                      <div className="grid grid-cols-2 gap-5">
-                        <div>
-                          <p className="text-sm text-muted-foreground mb-2">Lead Type</p>
-                          <p className="text-sm font-medium text-foreground">Buyer</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground mb-2">Source</p>
-                          <p className="text-sm font-medium text-foreground">Website</p>
-                        </div>
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground mb-2">Assigned Agent</p>
-                        <Select defaultValue="john">
-                          <SelectTrigger className="rounded-lg">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="john">John Smith</SelectItem>
-                            <SelectItem value="emma">Emma Davis</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="grid grid-cols-2 gap-5">
-                        <div>
-                          <p className="text-sm text-muted-foreground mb-2">Price Point</p>
-                          <p className="text-sm font-medium text-foreground">$400K - $500K</p>
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground mb-2">Registered</p>
-                          <p className="text-sm font-medium text-foreground">Dec 10, 2024</p>
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-
-                  {/* Lead Score */}
-                  <Card className="p-8 rounded-2xl border-2 shadow-sm">
-                    <h3 className="text-xl font-semibold text-foreground mb-6">
-                      Lead Score
-                    </h3>
-                    <div className="flex items-center justify-between mb-6">
-                      <div className="inline-flex items-center justify-center w-28 h-28 rounded-full bg-success/10">
-                        <span className="text-4xl font-bold text-success">85</span>
-                      </div>
-                      <div className="flex-1 ml-8 space-y-3">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Engagement</span>
-                          <span className="font-semibold text-foreground">High</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Response Time</span>
-                          <span className="font-semibold text-foreground">Fast</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Budget Match</span>
-                          <span className="font-semibold text-foreground">Good</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="pt-5 border-t">
-                      <p className="text-sm font-medium text-success text-center">High Priority Lead</p>
-                    </div>
-                  </Card>
-
-                  {/* Lead Details */}
-                  <Card className="p-8 rounded-2xl border-2 shadow-sm">
-                    <h3 className="text-xl font-semibold text-foreground mb-6">
-                      Lead Details
-                    </h3>
-                    <div className="space-y-5">
                       <div>
                         <p className="text-sm text-muted-foreground mb-2">Interest</p>
                         <p className="text-sm text-foreground leading-relaxed">
@@ -368,16 +319,16 @@ const LeadDetail = () => {
                     Activity History
                   </h3>
                   <div className="space-y-4">
-                    <div className="flex items-start gap-4 p-5 hover:bg-muted/30 rounded-xl transition-colors">
+                    <div className="flex items-start gap-4 p-5 rounded-xl">
                       <div className="p-3 bg-primary/10 rounded-xl">
-                        <User className="h-5 w-5 text-primary" />
+                        <Users className="h-5 w-5 text-primary" />
                       </div>
                       <div className="flex-1">
                         <p className="text-sm font-semibold text-foreground mb-1">Lead registered from website</p>
                         <p className="text-xs text-muted-foreground">Dec 10, 2024 at 2:30 PM</p>
                       </div>
                     </div>
-                    <div className="flex items-start gap-4 p-5 hover:bg-muted/30 rounded-xl transition-colors">
+                    <div className="flex items-start gap-4 p-5 rounded-xl">
                       <div className="p-3 bg-success/10 rounded-xl">
                         <Users className="h-5 w-5 text-success" />
                       </div>
