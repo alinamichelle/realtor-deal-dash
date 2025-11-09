@@ -40,11 +40,15 @@ const Clients = () => {
       agent: "Matt Cordova",
       transactions: 1,
       lastActivity: "Jun 25, 2022",
+      lastContactDays: 645,
       status: "Active",
       clientType: "Homeowner",
       priority: "medium",
       propertyValue: "$850K",
-      yearsAsClient: 3
+      yearsAsClient: 3,
+      homeAnniversary: "Mar 15, 2025",
+      birthday: "Aug 12",
+      quarterlyCall: null
     },
     {
       id: 2,
@@ -56,11 +60,15 @@ const Clients = () => {
       agent: "Anthony Gibson",
       transactions: 0,
       lastActivity: "Dec 6, 2023",
+      lastContactDays: 420,
       status: "Active",
       clientType: "Investor",
       priority: "high",
       propertyValue: "$2.4M",
-      yearsAsClient: 1
+      yearsAsClient: 1,
+      homeAnniversary: null,
+      birthday: "Nov 28",
+      quarterlyCall: "Dec 15, 2024"
     },
     {
       id: 3,
@@ -71,11 +79,15 @@ const Clients = () => {
       source: "Open House",
       transactions: 5,
       lastActivity: "Sep 15, 2025",
+      lastContactDays: 2,
       status: "Active",
       clientType: "Builder",
       priority: "high",
       propertyValue: "$5.2M",
-      yearsAsClient: 4
+      yearsAsClient: 4,
+      homeAnniversary: null,
+      birthday: "Jan 3",
+      quarterlyCall: "Nov 20, 2024"
     },
     {
       id: 4,
@@ -87,11 +99,15 @@ const Clients = () => {
       agent: "Matt Cordova",
       transactions: 2,
       lastActivity: "Jan 10, 2025",
+      lastContactDays: 45,
       status: "Active",
       clientType: "Homeowner",
       priority: "high",
       propertyValue: "$1.2M",
-      yearsAsClient: 2
+      yearsAsClient: 2,
+      homeAnniversary: "Feb 28, 2025",
+      birthday: "Apr 5",
+      quarterlyCall: null
     },
     {
       id: 5,
@@ -103,11 +119,15 @@ const Clients = () => {
       agent: "Anthony Gibson",
       transactions: 3,
       lastActivity: "Feb 3, 2025",
+      lastContactDays: 21,
       status: "Active",
       clientType: "Investor",
       priority: "high",
       propertyValue: "$3.8M",
-      yearsAsClient: 2
+      yearsAsClient: 2,
+      homeAnniversary: null,
+      birthday: "Oct 18",
+      quarterlyCall: "Feb 28, 2025"
     },
     {
       id: 6,
@@ -119,11 +139,15 @@ const Clients = () => {
       agent: "Matt Cordova",
       transactions: 1,
       lastActivity: "Mar 2, 2023",
+      lastContactDays: 680,
       status: "Inactive",
       clientType: "Moved Away",
       priority: "low",
       propertyValue: "$675K",
-      yearsAsClient: 5
+      yearsAsClient: 5,
+      homeAnniversary: null,
+      birthday: "May 22",
+      quarterlyCall: null
     },
     {
       id: 7,
@@ -135,11 +159,15 @@ const Clients = () => {
       agent: "Anthony Gibson",
       transactions: 8,
       lastActivity: "Nov 20, 2024",
+      lastContactDays: 95,
       status: "Active",
       clientType: "Builder",
       priority: "high",
       propertyValue: "$12M",
-      yearsAsClient: 6
+      yearsAsClient: 6,
+      homeAnniversary: null,
+      birthday: "Dec 8",
+      quarterlyCall: "Mar 1, 2025"
     },
     {
       id: 8,
@@ -151,13 +179,54 @@ const Clients = () => {
       agent: "Matt Cordova",
       transactions: 1,
       lastActivity: "Aug 12, 2023",
+      lastContactDays: 520,
       status: "Inactive",
       clientType: "Moved Away",
       priority: "low",
       propertyValue: "$920K",
-      yearsAsClient: 3
+      yearsAsClient: 3,
+      homeAnniversary: null,
+      birthday: "Jul 14",
+      quarterlyCall: null
     }
   ];
+
+  // Generate upcoming touchpoints
+  const upcomingTouchpoints = [
+    ...clients
+      .filter(c => c.homeAnniversary)
+      .map(c => ({
+        clientId: c.id,
+        clientName: c.name,
+        type: 'Home Anniversary',
+        date: c.homeAnniversary!,
+        daysUntil: Math.ceil((new Date(c.homeAnniversary!).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)),
+        icon: '🏠',
+        color: 'emerald'
+      })),
+    ...clients
+      .filter(c => c.quarterlyCall)
+      .map(c => ({
+        clientId: c.id,
+        clientName: c.name,
+        type: 'Quarterly Check-in',
+        date: c.quarterlyCall!,
+        daysUntil: Math.ceil((new Date(c.quarterlyCall!).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)),
+        icon: '📞',
+        color: 'blue'
+      })),
+    ...clients
+      .filter(c => c.lastContactDays > 90)
+      .map(c => ({
+        clientId: c.id,
+        clientName: c.name,
+        type: 'Overdue Follow-up',
+        date: `${c.lastContactDays} days ago`,
+        daysUntil: -c.lastContactDays,
+        icon: '⚠️',
+        color: 'red'
+      }))
+  ].sort((a, b) => Math.abs(a.daysUntil) - Math.abs(b.daysUntil)).slice(0, 4);
 
   // Group clients by type with priority order
   const clientGroups = [
@@ -273,6 +342,83 @@ const Clients = () => {
               </div>
             </div>
           </header>
+
+          {/* Upcoming Touchpoints */}
+          {upcomingTouchpoints.length > 0 && (
+            <div className="max-w-[1400px] mx-auto px-6 sm:px-8 py-6">
+              <div className="mb-3 flex items-center gap-2">
+                <h2 className="text-[13px] font-semibold text-gray-600 uppercase tracking-wider">
+                  Needs Attention
+                </h2>
+                <div className="flex-1 h-px bg-gray-200" />
+              </div>
+              <div className="grid grid-cols-4 gap-3">
+                {upcomingTouchpoints.map((touchpoint, idx) => {
+                  const isOverdue = touchpoint.daysUntil < 0;
+                  const isUrgent = touchpoint.daysUntil >= 0 && touchpoint.daysUntil <= 7;
+                  const isSoon = touchpoint.daysUntil > 7 && touchpoint.daysUntil <= 30;
+                  
+                  return (
+                    <div 
+                      key={idx}
+                      className={`relative bg-white border rounded-xl p-4 hover:shadow-md transition-all duration-200 cursor-pointer group ${
+                        isOverdue 
+                          ? 'border-red-300 bg-red-50/30' 
+                          : isUrgent 
+                          ? 'border-amber-300 bg-amber-50/30'
+                          : 'border-gray-200'
+                      }`}
+                    >
+                      {/* Urgency indicator */}
+                      <div className={`absolute top-0 left-0 w-1 h-full rounded-l-xl ${
+                        isOverdue 
+                          ? 'bg-gradient-to-b from-red-500 to-red-600' 
+                          : isUrgent 
+                          ? 'bg-gradient-to-b from-amber-400 to-amber-500'
+                          : 'bg-gradient-to-b from-blue-400 to-blue-500'
+                      }`} />
+                      
+                      <div className="flex items-start gap-3 ml-2">
+                        <div className="text-2xl flex-shrink-0 mt-0.5">
+                          {touchpoint.icon}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">
+                            {touchpoint.type}
+                          </div>
+                          <div className="text-[15px] font-semibold tracking-tight text-[hsl(var(--charcoal))] truncate group-hover:text-[hsl(var(--coral))] transition-colors">
+                            {touchpoint.clientName}
+                          </div>
+                          <div className="text-[12px] text-gray-600 mt-1.5 font-medium">
+                            {isOverdue ? (
+                              <span className="text-red-600 font-semibold">{touchpoint.date}</span>
+                            ) : (
+                              <>
+                                {touchpoint.daysUntil === 0 ? (
+                                  <span className="text-amber-600 font-semibold">Today</span>
+                                ) : touchpoint.daysUntil === 1 ? (
+                                  <span className="text-amber-600 font-semibold">Tomorrow</span>
+                                ) : (
+                                  <span>in {touchpoint.daysUntil} days</span>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Quick action on hover */}
+                      <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <button className="p-1.5 rounded-lg bg-[hsl(var(--charcoal))] text-white text-[10px] font-bold uppercase tracking-wide hover:scale-105 transition-transform">
+                          {isOverdue ? 'Reach out' : 'Schedule'}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Stats Overview - Robinhood-inspired subtle visualization */}
           <div className="max-w-[1400px] mx-auto px-6 sm:px-8 py-6">
