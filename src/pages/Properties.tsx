@@ -18,8 +18,11 @@ import {
   Calendar,
   DollarSign,
   MapPin,
-  Target
+  Target,
+  Clock,
+  AlertCircle
 } from "lucide-react";
+import { differenceInYears, differenceInMonths, parseISO } from "date-fns";
 
 // Mock property data
 const properties = [
@@ -53,6 +56,7 @@ const properties = [
     id: "3",
     address: "910 Pine Lane, Austin, TX 78703",
     type: "renter",
+    moveInDate: "2023-09-01",
     leaseEnd: "2025-08-31",
     monthlyRent: "$2,400",
     owner: "Emily Rodriguez",
@@ -76,7 +80,120 @@ const properties = [
     daysMonitored: 820,
     image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c"
   },
+  {
+    id: "5",
+    address: "2233 Willow Drive, Austin, TX 78705",
+    type: "homeowner",
+    purchaseDate: "2019-04-12",
+    purchasePrice: "$395,000",
+    currentValue: "$515,000",
+    owner: "Jennifer Martinez",
+    status: "Prime Window",
+    goal: "5+ year sweet spot - likely to sell",
+    daysMonitored: 1680,
+    image: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde"
+  },
 ];
+
+// Calculate years and months from a date
+const getTimeFromDate = (dateString: string) => {
+  const date = parseISO(dateString);
+  const now = new Date();
+  const years = differenceInYears(now, date);
+  const months = differenceInMonths(now, date) % 12;
+  
+  if (years === 0) {
+    return `${months} month${months !== 1 ? 's' : ''}`;
+  } else if (months === 0) {
+    return `${years} year${years !== 1 ? 's' : ''}`;
+  }
+  return `${years} year${years !== 1 ? 's' : ''}, ${months} month${months !== 1 ? 's' : ''}`;
+};
+
+// Get contextual insight based on property type and duration
+const getPropertyInsight = (property: any) => {
+  const relevantDate = property.purchaseDate || property.moveInDate;
+  if (!relevantDate) return null;
+  
+  const years = differenceInYears(new Date(), parseISO(relevantDate));
+  
+  switch (property.type) {
+    case "homeowner":
+      if (years >= 5 && years <= 7) {
+        return {
+          type: "hot",
+          message: "Prime selling window! Average homeowner sells after 5-7 years. High conversion potential."
+        };
+      } else if (years >= 3 && years < 5) {
+        return {
+          type: "warm",
+          message: "Building equity. Approaching typical 5-year selling window."
+        };
+      } else if (years > 7) {
+        return {
+          type: "info",
+          message: "Long-term owner. May be ready for upgrade or downsize."
+        };
+      } else {
+        return {
+          type: "info",
+          message: "Recent purchase. Build relationship for future opportunities."
+        };
+      }
+    
+    case "renter":
+      if (years >= 2) {
+        return {
+          type: "hot",
+          message: `Renting ${years}+ years - prime conversion opportunity! They've paid significant rent.`
+        };
+      } else if (years >= 1) {
+        return {
+          type: "warm",
+          message: "Over 1 year renting. Start buyer conversion conversations."
+        };
+      } else {
+        return {
+          type: "info",
+          message: "New renter. Build relationship and assess buyer potential."
+        };
+      }
+    
+    case "investment":
+      if (years >= 5) {
+        return {
+          type: "hot",
+          message: "5+ year hold. Excellent ROI window - may consider exit strategy."
+        };
+      } else if (years >= 3) {
+        return {
+          type: "warm",
+          message: "Mid-term hold. Monitor for portfolio rebalancing opportunities."
+        };
+      } else {
+        return {
+          type: "info",
+          message: "Recent acquisition. Watch for portfolio expansion needs."
+        };
+      }
+    
+    case "landlord":
+      if (years >= 5) {
+        return {
+          type: "info",
+          message: "Experienced landlord. Opportunity for portfolio growth or 1031 exchange."
+        };
+      } else {
+        return {
+          type: "info",
+          message: "Newer landlord. Stay engaged for additional investment opportunities."
+        };
+      }
+    
+    default:
+      return null;
+  }
+};
 
 const getPropertyTypeInfo = (type: string) => {
   switch (type) {
@@ -227,6 +344,9 @@ export default function Properties() {
                 {filteredProperties.map((property) => {
                   const typeInfo = getPropertyTypeInfo(property.type);
                   const TypeIcon = typeInfo.icon;
+                  const relevantDate = property.purchaseDate || property.moveInDate;
+                  const timeLabel = property.type === "renter" ? "Renting For" : "Owned For";
+                  const insight = getPropertyInsight(property);
                   
                   return (
                     <Card key={property.id} className="hover:shadow-md transition-shadow cursor-pointer">
@@ -249,7 +369,7 @@ export default function Properties() {
                               </Badge>
                             </div>
                             
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-4">
                               {property.type === "renter" ? (
                                 <>
                                   <div>
@@ -273,6 +393,12 @@ export default function Properties() {
                                   </div>
                                 </>
                               )}
+                              {relevantDate && (
+                                <div>
+                                  <p className="text-xs text-muted-foreground">{timeLabel}</p>
+                                  <p className="font-medium">{getTimeFromDate(relevantDate)}</p>
+                                </div>
+                              )}
                               <div>
                                 <p className="text-xs text-muted-foreground">Status</p>
                                 <Badge variant="outline">{property.status}</Badge>
@@ -283,7 +409,22 @@ export default function Properties() {
                               </div>
                             </div>
 
-                            <div className="mt-4 p-3 bg-muted rounded-lg flex items-center gap-2">
+                            {insight && (
+                              <div className={`mt-4 p-3 rounded-lg flex items-start gap-2 ${
+                                insight.type === 'hot' ? 'bg-orange-500/10 border border-orange-500/20' :
+                                insight.type === 'warm' ? 'bg-yellow-500/10 border border-yellow-500/20' :
+                                'bg-blue-500/10 border border-blue-500/20'
+                              }`}>
+                                <AlertCircle className={`h-4 w-4 mt-0.5 flex-shrink-0 ${
+                                  insight.type === 'hot' ? 'text-orange-500' :
+                                  insight.type === 'warm' ? 'text-yellow-500' :
+                                  'text-blue-500'
+                                }`} />
+                                <p className="text-sm">{insight.message}</p>
+                              </div>
+                            )}
+
+                            <div className="mt-3 p-3 bg-muted rounded-lg flex items-center gap-2">
                               <Target className="h-4 w-4 text-primary" />
                               <p className="text-sm"><strong>Goal:</strong> {property.goal}</p>
                             </div>
@@ -301,6 +442,9 @@ export default function Properties() {
                 {filteredProperties.map((property) => {
                   const typeInfo = getPropertyTypeInfo(property.type);
                   const TypeIcon = typeInfo.icon;
+                  const relevantDate = property.purchaseDate || property.moveInDate;
+                  const timeLabel = property.type === "renter" ? "Renting For" : "Owned For";
+                  const insight = getPropertyInsight(property);
                   
                   return (
                     <Card key={property.id} className="hover:shadow-lg transition-shadow cursor-pointer overflow-hidden">
@@ -314,6 +458,12 @@ export default function Properties() {
                           <TypeIcon className="h-3 w-3 mr-1" />
                           {typeInfo.label}
                         </Badge>
+                        {relevantDate && (
+                          <Badge className="absolute top-3 left-3 bg-background/90 text-foreground">
+                            <Clock className="h-3 w-3 mr-1" />
+                            {getTimeFromDate(relevantDate)}
+                          </Badge>
+                        )}
                       </div>
                       
                       <CardHeader>
@@ -367,9 +517,22 @@ export default function Properties() {
                             <Badge variant="outline" className="text-xs">{property.status}</Badge>
                           </div>
                           
-                          <div className="pt-3 border-t">
-                            <div className="flex items-center gap-2 text-sm">
-                              <Target className="h-4 w-4 text-primary flex-shrink-0" />
+                          {insight && (
+                            <div className={`p-2 rounded text-xs ${
+                              insight.type === 'hot' ? 'bg-orange-500/10 text-orange-700 dark:text-orange-300 border border-orange-500/20' :
+                              insight.type === 'warm' ? 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-300 border border-yellow-500/20' :
+                              'bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/20'
+                            }`}>
+                              <div className="flex items-start gap-1">
+                                <AlertCircle className="h-3 w-3 mt-0.5 flex-shrink-0" />
+                                <span>{insight.message}</span>
+                              </div>
+                            </div>
+                          )}
+                          
+                          <div className="pt-2 border-t">
+                            <div className="flex items-center gap-2 text-xs">
+                              <Target className="h-3 w-3 text-primary flex-shrink-0" />
                               <p className="text-muted-foreground">{property.goal}</p>
                             </div>
                           </div>
