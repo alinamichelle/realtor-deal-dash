@@ -41,6 +41,7 @@ const transactions = [
     address: "456 Oak Avenue",
     primaryAgent: "John May",
     listPrice: 990000.00,
+    adom: 12,
     isDraft: true,
     missingDrive: true,
     noIntake: true
@@ -52,6 +53,7 @@ const transactions = [
     address: "789 Pine Street",
     primaryAgent: "Jared Fader",
     listPrice: 825000.00,
+    adom: 8,
     isDraft: true,
     missingDrive: true,
     noIntake: true
@@ -59,11 +61,11 @@ const transactions = [
   {
     id: 2295,
     type: "Purchase",
-    status: "Closed",
+    status: "Under Contract",
     address: "321 Maple Drive",
     primaryAgent: "Anthony Gibson",
-    closedPrice: 1225000.00,
-    closedDate: "10/31/2025",
+    contractPrice: 1225000.00,
+    expectedCloseDate: "12/15/2025",
     missingDrive: true,
     noIntake: false
   }
@@ -291,6 +293,7 @@ export default function Transactions() {
                       </td>
                       <td className="p-4">
                         <div className="space-y-1">
+                          {/* Closed transactions - show closed price */}
                           {transaction.closedPrice && (
                             <>
                               <div className="text-lg font-bold text-success">
@@ -301,13 +304,42 @@ export default function Transactions() {
                               </div>
                             </>
                           )}
-                          {transaction.listPrice && (
+                          {/* Active Sale/Listing - show list price and ADOM */}
+                          {transaction.status === "Active" && transaction.type === "Sale" && transaction.listPrice && (
                             <>
                               <div className="text-lg font-bold">
                                 {formatCurrency(transaction.listPrice)}
                               </div>
-                              {transaction.isDraft && (
-                                <div className="text-xs text-muted-foreground">Draft</div>
+                              {transaction.adom !== undefined && (
+                                <div className="text-xs text-muted-foreground">
+                                  ADOM: {transaction.adom} days
+                                </div>
+                              )}
+                            </>
+                          )}
+                          {/* Active Purchase - show list price and expected close */}
+                          {transaction.status === "Active" && transaction.type === "Purchase" && transaction.listPrice && (
+                            <>
+                              <div className="text-lg font-bold">
+                                {formatCurrency(transaction.listPrice)}
+                              </div>
+                              {transaction.expectedCloseDate && (
+                                <div className="text-xs text-muted-foreground">
+                                  Expected: {transaction.expectedCloseDate}
+                                </div>
+                              )}
+                            </>
+                          )}
+                          {/* Under Contract - show contract price and expected close */}
+                          {transaction.status === "Under Contract" && transaction.contractPrice && (
+                            <>
+                              <div className="text-lg font-bold text-caution">
+                                {formatCurrency(transaction.contractPrice)}
+                              </div>
+                              {transaction.expectedCloseDate && (
+                                <div className="text-xs text-muted-foreground">
+                                  Expected: {transaction.expectedCloseDate}
+                                </div>
                               )}
                             </>
                           )}
