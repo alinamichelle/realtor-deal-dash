@@ -24,7 +24,8 @@ import {
   Plus,
   Users,
   Briefcase,
-  Megaphone
+  Megaphone,
+  ChevronDown
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
@@ -38,6 +39,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 const stages = [
   { id: 1, name: "Intake", completed: true },
@@ -131,6 +133,9 @@ export default function TransactionDetail() {
   const [newTaskAssignee, setNewTaskAssignee] = useState("");
   const [newTaskDueDate, setNewTaskDueDate] = useState("");
   const [newTaskPriority, setNewTaskPriority] = useState("medium");
+  const [isPartiesOpen, setIsPartiesOpen] = useState(true);
+  const [taskComments, setTaskComments] = useState<{ [key: number]: string }>({});
+  const [showTaskComments, setShowTaskComments] = useState<{ [key: number]: boolean }>({});
 
   const allTeamMembers = [...transactionTeam, ...clients, ...marketingTeam];
 
@@ -187,47 +192,43 @@ export default function TransactionDetail() {
 
           {/* Content */}
           <div className="p-8 space-y-6">
-            {/* Progress Timeline */}
-            <Card className="p-6">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold">Transaction Progress</h3>
-                  <span className="text-sm text-muted-foreground">{progressPercentage}% Complete</span>
-                </div>
-                <Progress value={progressPercentage} className="h-2" />
-                <div className="flex justify-between mt-6">
-                  {stages.map((stage, idx) => (
-                    <div key={stage.id} className="flex flex-col items-center gap-2 relative flex-1">
-                      {idx !== 0 && (
-                        <div 
-                          className={`absolute right-1/2 top-5 w-full h-0.5 -z-10 ${
-                            stages[idx - 1].completed && stage.completed
-                              ? 'bg-primary'
-                              : 'bg-muted'
-                          }`}
-                        />
-                      )}
-                      <div
-                        className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${
-                          stage.completed
-                            ? 'bg-primary border-primary text-primary-foreground'
-                            : 'bg-background border-muted text-muted-foreground'
+            {/* Progress Timeline - Compact */}
+            <Card className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold">Transaction Progress</h3>
+                <span className="text-xs text-muted-foreground">{progressPercentage}% Complete</span>
+              </div>
+              <Progress value={progressPercentage} className="h-1.5 mb-4" />
+              <div className="flex justify-between">
+                {stages.map((stage, idx) => (
+                  <div key={stage.id} className="flex flex-col items-center gap-1.5 relative flex-1">
+                    {idx !== 0 && (
+                      <div 
+                        className={`absolute right-1/2 top-3.5 w-full h-0.5 -z-10 ${
+                          stages[idx - 1].completed && stage.completed ? 'bg-primary' : 'bg-muted'
                         }`}
-                      >
-                        {stage.completed ? (
-                          <CheckCircle2 className="h-5 w-5" />
-                        ) : (
-                          <span className="text-sm font-semibold">{stage.id}</span>
-                        )}
-                      </div>
-                      <span className={`text-xs font-medium text-center ${
-                        stage.completed ? 'text-foreground' : 'text-muted-foreground'
-                      }`}>
-                        {stage.name}
-                      </span>
+                      />
+                    )}
+                    <div
+                      className={`w-7 h-7 rounded-full flex items-center justify-center border transition-all ${
+                        stage.completed
+                          ? 'bg-primary border-primary text-primary-foreground'
+                          : 'bg-background border-muted text-muted-foreground'
+                      }`}
+                    >
+                      {stage.completed ? (
+                        <CheckCircle2 className="h-3.5 w-3.5" />
+                      ) : (
+                        <span className="text-[10px] font-semibold">{stage.id}</span>
+                      )}
                     </div>
-                  ))}
-                </div>
+                    <span className={`text-[10px] font-medium text-center ${
+                      stage.completed ? 'text-foreground' : 'text-muted-foreground'
+                    }`}>
+                      {stage.name}
+                    </span>
+                  </div>
+                ))}
               </div>
             </Card>
 
@@ -305,204 +306,246 @@ export default function TransactionDetail() {
                   </Tabs>
                 </Card>
 
-                {/* Activity */}
+                {/* Tasks, Comments & Activity - Tabbed */}
                 <Card className="p-6">
-                  <h3 className="text-lg font-semibold mb-4">Recent Activity</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-start gap-3 pb-4 border-b border-border">
-                      <div className="p-2 bg-muted rounded-lg mt-0.5">
-                        <Clock className="h-4 w-4 text-muted-foreground" />
-                      </div>
-                      <div>
-                        <div className="font-medium">Transaction created</div>
-                        <div className="text-sm text-muted-foreground mt-1">Sep 28 at 8:54 PM</div>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
+                  <Tabs defaultValue="tasks" className="w-full">
+                    <TabsList className="bg-muted w-full">
+                      <TabsTrigger value="tasks" className="flex-1 gap-2">
+                        <CheckSquare className="h-4 w-4" />
+                        Tasks
+                        <Badge variant="secondary" className="ml-1">{mockTasks.length}</Badge>
+                      </TabsTrigger>
+                      <TabsTrigger value="comments" className="flex-1 gap-2">
+                        <MessageSquare className="h-4 w-4" />
+                        Comments
+                        <Badge variant="secondary" className="ml-1">{mockComments.length}</Badge>
+                      </TabsTrigger>
+                      <TabsTrigger value="activity" className="flex-1 gap-2">
+                        <Clock className="h-4 w-4" />
+                        Activity
+                      </TabsTrigger>
+                    </TabsList>
 
-                {/* Tasks Section */}
-                <Card className="p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-2">
-                      <CheckSquare className="h-5 w-5 text-primary" />
-                      <h3 className="text-lg font-semibold">Tasks</h3>
-                      <Badge variant="secondary">{mockTasks.length}</Badge>
-                    </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="gap-2"
-                      onClick={() => setShowTaskForm(!showTaskForm)}
-                    >
-                      <Plus className="h-4 w-4" />
-                      Add Task
-                    </Button>
-                  </div>
-
-                  {showTaskForm && (
-                    <Card className="p-4 mb-4 bg-muted/30">
-                      <div className="space-y-4">
-                        <div>
-                          <Label htmlFor="taskTitle" className="text-sm font-medium">Task Title</Label>
-                          <Input 
-                            id="taskTitle"
-                            placeholder="Enter task title..."
-                            value={newTaskTitle}
-                            onChange={(e) => setNewTaskTitle(e.target.value)}
-                            className="mt-1"
-                          />
-                        </div>
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <Label htmlFor="assignee" className="text-sm font-medium">Assign To</Label>
-                            <Select value={newTaskAssignee} onValueChange={setNewTaskAssignee}>
-                              <SelectTrigger id="assignee" className="mt-1">
-                                <SelectValue placeholder="Select person" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {allTeamMembers.map((member) => (
-                                  <SelectItem key={member.name} value={member.name}>
-                                    {member.name} - {member.role}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div>
-                            <Label htmlFor="dueDate" className="text-sm font-medium">Due Date</Label>
-                            <Input 
-                              id="dueDate"
-                              type="date"
-                              value={newTaskDueDate}
-                              onChange={(e) => setNewTaskDueDate(e.target.value)}
-                              className="mt-1"
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <Label htmlFor="priority" className="text-sm font-medium">Priority</Label>
-                          <Select value={newTaskPriority} onValueChange={setNewTaskPriority}>
-                            <SelectTrigger id="priority" className="mt-1">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="high">High</SelectItem>
-                              <SelectItem value="medium">Medium</SelectItem>
-                              <SelectItem value="low">Low</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button 
-                            className="flex-1"
-                            disabled={!newTaskTitle.trim() || !newTaskAssignee}
-                          >
-                            Create Task
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            onClick={() => {
-                              setShowTaskForm(false);
-                              setNewTaskTitle("");
-                              setNewTaskAssignee("");
-                              setNewTaskDueDate("");
-                              setNewTaskPriority("medium");
-                            }}
-                          >
-                            Cancel
-                          </Button>
-                        </div>
+                    {/* Tasks Tab */}
+                    <TabsContent value="tasks" className="mt-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="gap-2"
+                          onClick={() => setShowTaskForm(!showTaskForm)}
+                        >
+                          <Plus className="h-4 w-4" />
+                          Add Task
+                        </Button>
                       </div>
-                    </Card>
-                  )}
 
-                  <div className="space-y-3">
-                    {mockTasks.map((task) => (
-                      <div 
-                        key={task.id}
-                        className={`flex items-start gap-3 p-3 rounded-lg border transition-colors ${
-                          task.completed ? 'bg-muted/30 border-border' : 'bg-background border-border hover:border-primary/30'
-                        }`}
-                      >
-                        <Checkbox 
-                          checked={task.completed}
-                          className="mt-1"
-                        />
-                        <div className="flex-1 space-y-1">
-                          <div className="flex items-start justify-between gap-2">
-                            <p className={`text-sm font-medium ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
-                              {task.title}
-                            </p>
-                            <Badge 
-                              variant={task.priority === 'high' ? 'destructive' : task.priority === 'medium' ? 'default' : 'secondary'}
-                              className="text-xs shrink-0"
-                            >
-                              {task.priority}
-                            </Badge>
-                          </div>
-                          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                            <div className="flex items-center gap-1.5">
-                              <Avatar className="h-5 w-5">
-                                <AvatarFallback className="bg-primary/10 text-primary text-[10px]">
-                                  {task.assignedToInitials}
-                                </AvatarFallback>
-                              </Avatar>
-                              <span>{task.assignedTo}</span>
+                      {showTaskForm && (
+                        <Card className="p-4 mb-4 bg-muted/30">
+                          <div className="space-y-4">
+                            <div>
+                              <Label htmlFor="taskTitle" className="text-sm font-medium">Task Title</Label>
+                              <Input 
+                                id="taskTitle"
+                                placeholder="Enter task title..."
+                                value={newTaskTitle}
+                                onChange={(e) => setNewTaskTitle(e.target.value)}
+                                className="mt-1"
+                              />
                             </div>
-                            <span>•</span>
-                            <span>Due {task.dueDate}</span>
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <Label htmlFor="assignee" className="text-sm font-medium">Assign To</Label>
+                                <Select value={newTaskAssignee} onValueChange={setNewTaskAssignee}>
+                                  <SelectTrigger id="assignee" className="mt-1">
+                                    <SelectValue placeholder="Select person" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {allTeamMembers.map((member) => (
+                                      <SelectItem key={member.name} value={member.name}>
+                                        {member.name} - {member.role}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div>
+                                <Label htmlFor="dueDate" className="text-sm font-medium">Due Date</Label>
+                                <Input 
+                                  id="dueDate"
+                                  type="date"
+                                  value={newTaskDueDate}
+                                  onChange={(e) => setNewTaskDueDate(e.target.value)}
+                                  className="mt-1"
+                                />
+                              </div>
+                            </div>
+                            <div>
+                              <Label htmlFor="priority" className="text-sm font-medium">Priority</Label>
+                              <Select value={newTaskPriority} onValueChange={setNewTaskPriority}>
+                                <SelectTrigger id="priority" className="mt-1">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="high">High</SelectItem>
+                                  <SelectItem value="medium">Medium</SelectItem>
+                                  <SelectItem value="low">Low</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button 
+                                className="flex-1"
+                                disabled={!newTaskTitle.trim() || !newTaskAssignee}
+                              >
+                                Create Task
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                onClick={() => {
+                                  setShowTaskForm(false);
+                                  setNewTaskTitle("");
+                                  setNewTaskAssignee("");
+                                  setNewTaskDueDate("");
+                                  setNewTaskPriority("medium");
+                                }}
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          </div>
+                        </Card>
+                      )}
+
+                      <div className="space-y-3">
+                        {mockTasks.map((task) => (
+                          <div 
+                            key={task.id}
+                            className={`rounded-lg border transition-colors ${
+                              task.completed ? 'bg-muted/30 border-border' : 'bg-background border-border'
+                            }`}
+                          >
+                            <div className="flex items-start gap-3 p-3">
+                              <Checkbox 
+                                checked={task.completed}
+                                className="mt-1"
+                              />
+                              <div className="flex-1 space-y-1">
+                                <div className="flex items-start justify-between gap-2">
+                                  <p className={`text-sm font-medium ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
+                                    {task.title}
+                                  </p>
+                                  <Badge 
+                                    variant={task.priority === 'high' ? 'destructive' : task.priority === 'medium' ? 'default' : 'secondary'}
+                                    className="text-xs shrink-0"
+                                  >
+                                    {task.priority}
+                                  </Badge>
+                                </div>
+                                <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                                  <div className="flex items-center gap-1.5">
+                                    <Avatar className="h-5 w-5">
+                                      <AvatarFallback className="bg-primary/10 text-primary text-[10px]">
+                                        {task.assignedToInitials}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                    <span>{task.assignedTo}</span>
+                                  </div>
+                                  <span>•</span>
+                                  <span>Due {task.dueDate}</span>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-auto p-0 ml-auto text-xs hover:text-primary"
+                                    onClick={() => setShowTaskComments(prev => ({ ...prev, [task.id]: !prev[task.id] }))}
+                                  >
+                                    <MessageSquare className="h-3 w-3 mr-1" />
+                                    Comment
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {showTaskComments[task.id] && (
+                              <div className="border-t border-border p-3 bg-muted/20">
+                                <Textarea 
+                                  placeholder="Add a comment on this task..."
+                                  value={taskComments[task.id] || ""}
+                                  onChange={(e) => setTaskComments(prev => ({ ...prev, [task.id]: e.target.value }))}
+                                  className="min-h-[60px] resize-none text-sm mb-2"
+                                />
+                                <div className="flex justify-end">
+                                  <Button 
+                                    size="sm"
+                                    className="gap-2"
+                                    disabled={!taskComments[task.id]?.trim()}
+                                  >
+                                    <Send className="h-3 w-3" />
+                                    Post
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </TabsContent>
+
+                    {/* Comments Tab */}
+                    <TabsContent value="comments" className="mt-6">
+                      <div className="space-y-4 mb-6">
+                        {mockComments.map((comment) => (
+                          <div key={comment.id} className="flex gap-3 pb-4 border-b border-border last:border-0">
+                            <Avatar className="h-9 w-9 mt-0.5">
+                              <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
+                                {comment.initials}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 space-y-1">
+                              <div className="flex items-center gap-2">
+                                <span className="font-semibold text-sm">{comment.author}</span>
+                                <span className="text-xs text-muted-foreground">{comment.timestamp}</span>
+                              </div>
+                              <p className="text-sm text-foreground">{comment.message}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="space-y-3">
+                        <Textarea 
+                          placeholder="Add a comment to this transaction..."
+                          value={newComment}
+                          onChange={(e) => setNewComment(e.target.value)}
+                          className="min-h-[80px] resize-none"
+                        />
+                        <div className="flex justify-end">
+                          <Button 
+                            className="gap-2"
+                            disabled={!newComment.trim()}
+                          >
+                            <Send className="h-4 w-4" />
+                            Post Comment
+                          </Button>
+                        </div>
+                      </div>
+                    </TabsContent>
+
+                    {/* Activity Tab */}
+                    <TabsContent value="activity" className="mt-6">
+                      <div className="space-y-4">
+                        <div className="flex items-start gap-3 pb-4 border-b border-border">
+                          <div className="p-2 bg-muted rounded-lg mt-0.5">
+                            <Clock className="h-4 w-4 text-muted-foreground" />
+                          </div>
+                          <div>
+                            <div className="font-medium">Transaction created</div>
+                            <div className="text-sm text-muted-foreground mt-1">Sep 28 at 8:54 PM</div>
                           </div>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </Card>
-
-                {/* Comments Section */}
-                <Card className="p-6">
-                  <div className="flex items-center gap-2 mb-6">
-                    <MessageSquare className="h-5 w-5 text-primary" />
-                    <h3 className="text-lg font-semibold">Team Comments</h3>
-                    <Badge variant="secondary" className="ml-auto">{mockComments.length}</Badge>
-                  </div>
-                  
-                  <div className="space-y-4 mb-6">
-                    {mockComments.map((comment) => (
-                      <div key={comment.id} className="flex gap-3 pb-4 border-b border-border last:border-0">
-                        <Avatar className="h-9 w-9 mt-0.5">
-                          <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
-                            {comment.initials}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 space-y-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold text-sm">{comment.author}</span>
-                            <span className="text-xs text-muted-foreground">{comment.timestamp}</span>
-                          </div>
-                          <p className="text-sm text-foreground">{comment.message}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="space-y-3">
-                    <Textarea 
-                      placeholder="Add a comment to this transaction..."
-                      value={newComment}
-                      onChange={(e) => setNewComment(e.target.value)}
-                      className="min-h-[80px] resize-none"
-                    />
-                    <div className="flex justify-end">
-                      <Button 
-                        className="gap-2"
-                        disabled={!newComment.trim()}
-                      >
-                        <Send className="h-4 w-4" />
-                        Post Comment
-                      </Button>
-                    </div>
-                  </div>
+                    </TabsContent>
+                  </Tabs>
                 </Card>
               </div>
 
@@ -527,9 +570,14 @@ export default function TransactionDetail() {
                   </div>
                 </Card>
 
-                {/* Transaction Parties */}
+                {/* Transaction Parties - Collapsible */}
                 <Card className="p-6">
-                  <h3 className="text-lg font-semibold mb-4">Transaction Parties</h3>
+                  <Collapsible open={isPartiesOpen} onOpenChange={setIsPartiesOpen}>
+                    <CollapsibleTrigger className="flex items-center justify-between w-full group">
+                      <h3 className="text-lg font-semibold">Transaction Parties</h3>
+                      <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${isPartiesOpen ? 'rotate-180' : ''}`} />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="mt-4">
                   
                   {/* Transaction Team */}
                   <div className="mb-6">
@@ -625,6 +673,8 @@ export default function TransactionDetail() {
                       </div>
                     </div>
                   </div>
+                    </CollapsibleContent>
+                  </Collapsible>
                 </Card>
               </div>
             </div>
