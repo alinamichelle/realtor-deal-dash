@@ -1,4 +1,4 @@
-import { ArrowLeft, Phone, Mail, MessageSquare, MoreVertical, Calendar, Home, TrendingUp, Users, FileText, Clock, MapPin, Cake, Globe, Tag, UserCheck, AlertCircle, CheckCircle2, Star } from "lucide-react";
+import { ArrowLeft, Phone, Mail, MessageSquare, MoreVertical, Calendar, Home, TrendingUp, Users, FileText, Clock, MapPin, Cake, Globe, Tag, UserCheck, AlertCircle, CheckCircle2, Star, ChevronDown, ChevronUp, TrendingDown, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -12,6 +12,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useState } from "react";
 
 // Mock data - in real app this would come from props/API
 const contactData = {
@@ -77,6 +79,23 @@ const contactData = {
   hausYears: 7,
   hauswatchOpenRate: 60,
   propertyAlerts: 60,
+  propertyValueChange: -7.2, // percentage change
+  propertyValueTrend: "down" as "up" | "down" | "same",
+  
+  // Email engagement breakdown
+  emailEngagement: {
+    hauswatch: { rate: 60, color: "hsl(217 91% 60%)" },
+    propertyAlerts: { rate: 25, color: "hsl(142 71% 45%)" },
+    hausiversaries: { rate: 15, color: "hsl(11 88% 55%)" },
+  },
+  
+  // Neighbors data
+  neighbors: [
+    { initials: "BE", color: "hsl(217 91% 60%)" },
+    { initials: "PM", color: "hsl(38 92% 50%)" },
+    { initials: "JK", color: "hsl(142 71% 45%)" },
+  ],
+  totalNeighbors: 12,
   
   // Engagement Metrics
   viableCalls: 32,
@@ -111,6 +130,8 @@ const contactData = {
 };
 
 export default function ContactProfile() {
+  const [showPropertyDetails, setShowPropertyDetails] = useState(false);
+  
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Past Client": return "bg-success/10 text-success border-success/20";
@@ -269,70 +290,173 @@ export default function ContactProfile() {
         <div className="col-span-3 space-y-4">
           {/* Property Card - Only for Past Clients */}
           {isPastClient && (
-            <Card className="overflow-hidden">
-              <div className="aspect-video bg-muted">
+            <Card className="overflow-hidden border-success/20 bg-gradient-to-br from-success/5 to-background">
+              <div className="aspect-video bg-muted relative">
                 <img src={contactData.propertyImage} alt="Property" className="w-full h-full object-cover" />
-              </div>
-              <div className="p-4 space-y-3">
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <h3 className="font-semibold text-foreground">{contactData.streetAddress}</h3>
-                    <Badge variant="secondary" className="text-xs">
-                      {contactData.propertyType}
+                <div className="absolute top-3 left-3 flex gap-2">
+                  <Badge variant="secondary" className="bg-background/90 backdrop-blur-sm text-xs">
+                    {contactData.propertyType}
+                  </Badge>
+                  {contactData.propertyIsRental && (
+                    <Badge variant="secondary" className="bg-info/90 text-white backdrop-blur-sm text-xs">
+                      Rental Property
                     </Badge>
-                  </div>
+                  )}
+                </div>
+              </div>
+              <div className="p-5 space-y-4">
+                <div>
+                  <h3 className="font-semibold text-lg text-foreground mb-1">{contactData.streetAddress}</h3>
                   <p className="text-sm text-muted-foreground">{contactData.city}, {contactData.state} {contactData.zipcode}</p>
                 </div>
                 
-                <div className="grid grid-cols-3 gap-2 text-center">
+                <div className="flex items-center justify-between py-3 px-4 bg-success/10 rounded-lg border border-success/20">
                   <div>
-                    <div className="text-xs text-muted-foreground">Beds</div>
-                    <div className="text-sm font-semibold">{contactData.propertyBeds}</div>
+                    <div className="text-xs text-muted-foreground mb-0.5">Current Value</div>
+                    <div className="text-2xl font-bold text-foreground">{contactData.propertyValue}</div>
                   </div>
-                  <div>
-                    <div className="text-xs text-muted-foreground">Baths</div>
-                    <div className="text-sm font-semibold">{contactData.propertyBaths}</div>
+                  <div className="flex items-center gap-2">
+                    {contactData.propertyValueTrend === "up" && (
+                      <>
+                        <TrendingUp className="h-5 w-5 text-success" />
+                        <span className="text-success font-semibold">+{Math.abs(contactData.propertyValueChange)}%</span>
+                      </>
+                    )}
+                    {contactData.propertyValueTrend === "down" && (
+                      <>
+                        <TrendingDown className="h-5 w-5 text-destructive" />
+                        <span className="text-destructive font-semibold">{contactData.propertyValueChange}%</span>
+                      </>
+                    )}
+                    {contactData.propertyValueTrend === "same" && (
+                      <>
+                        <Minus className="h-5 w-5 text-muted-foreground" />
+                        <span className="text-muted-foreground font-semibold">0%</span>
+                      </>
+                    )}
                   </div>
-                  <div>
-                    <div className="text-xs text-muted-foreground">Sqft</div>
-                    <div className="text-sm font-semibold">{contactData.propertySqft}</div>
+                </div>
+                
+                <Collapsible open={showPropertyDetails} onOpenChange={setShowPropertyDetails}>
+                  <CollapsibleTrigger asChild>
+                    <Button variant="ghost" size="sm" className="w-full justify-between text-muted-foreground hover:text-foreground">
+                      <span className="text-xs font-medium">Property Details</span>
+                      {showPropertyDetails ? (
+                        <ChevronUp className="h-4 w-4" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="pt-2">
+                    <div className="grid grid-cols-3 gap-3 px-2">
+                      <div className="text-center p-2 bg-muted/30 rounded-lg">
+                        <div className="text-xs text-muted-foreground mb-1">Beds</div>
+                        <div className="text-lg font-semibold text-foreground">{contactData.propertyBeds}</div>
+                      </div>
+                      <div className="text-center p-2 bg-muted/30 rounded-lg">
+                        <div className="text-xs text-muted-foreground mb-1">Baths</div>
+                        <div className="text-lg font-semibold text-foreground">{contactData.propertyBaths}</div>
+                      </div>
+                      <div className="text-center p-2 bg-muted/30 rounded-lg">
+                        <div className="text-xs text-muted-foreground mb-1">Sqft</div>
+                        <div className="text-sm font-semibold text-foreground">{contactData.propertySqft}</div>
+                      </div>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+                
+                <div className="grid grid-cols-2 gap-3 pt-2">
+                  <div className="text-center p-3 bg-muted/20 rounded-lg">
+                    <div className="text-xs text-muted-foreground mb-1">Purchased</div>
+                    <div className="text-sm font-semibold text-foreground">{contactData.purchaseDate}</div>
+                  </div>
+                  <div className="text-center p-3 bg-muted/20 rounded-lg">
+                    <div className="text-xs text-muted-foreground mb-1">Haus Year</div>
+                    <div className="text-sm font-semibold text-foreground">{contactData.hausYears}</div>
                   </div>
                 </div>
                 
                 <Separator />
                 
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Purchased</span>
-                    <span className="font-medium">{contactData.purchaseDate}</span>
+                {/* Stacked Email Engagement Bar */}
+                <div className="space-y-3">
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-semibold text-foreground">Email Engagement</span>
+                      <span className="text-sm font-bold text-foreground">60%</span>
+                    </div>
+                    <div className="h-3 bg-muted/30 rounded-full overflow-hidden flex">
+                      <div 
+                        className="transition-all duration-500"
+                        style={{ 
+                          width: `${contactData.emailEngagement.hauswatch.rate}%`,
+                          backgroundColor: contactData.emailEngagement.hauswatch.color 
+                        }}
+                      />
+                      <div 
+                        className="transition-all duration-500"
+                        style={{ 
+                          width: `${contactData.emailEngagement.propertyAlerts.rate}%`,
+                          backgroundColor: contactData.emailEngagement.propertyAlerts.color 
+                        }}
+                      />
+                      <div 
+                        className="transition-all duration-500"
+                        style={{ 
+                          width: `${contactData.emailEngagement.hausiversaries.rate}%`,
+                          backgroundColor: contactData.emailEngagement.hausiversaries.color 
+                        }}
+                      />
+                    </div>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Haus Year</span>
-                    <span className="font-medium">{contactData.hausYears}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Value</span>
-                    <span className="font-semibold text-success">{contactData.propertyValue}</span>
+                  
+                  <div className="grid grid-cols-3 gap-2 text-xs">
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: contactData.emailEngagement.hauswatch.color }} />
+                      <span className="text-muted-foreground">Hauswatch {contactData.emailEngagement.hauswatch.rate}%</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: contactData.emailEngagement.propertyAlerts.color }} />
+                      <span className="text-muted-foreground">Alerts {contactData.emailEngagement.propertyAlerts.rate}%</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: contactData.emailEngagement.hausiversaries.color }} />
+                      <span className="text-muted-foreground">Anniv. {contactData.emailEngagement.hausiversaries.rate}%</span>
+                    </div>
                   </div>
                 </div>
                 
                 <Separator />
                 
-                <div className="space-y-2">
-                  <div>
-                    <div className="flex justify-between text-xs mb-1">
-                      <span className="text-muted-foreground">Hauswatch Open Rate</span>
-                      <span className="font-medium">{contactData.hauswatchOpenRate}%</span>
-                    </div>
-                    <Progress value={contactData.hauswatchOpenRate} className="h-1.5" />
+                {/* Neighbors Section */}
+                <div className="space-y-3">
+                  <h4 className="text-sm font-semibold text-foreground">Neighbors</h4>
+                  <div className="flex items-center justify-center gap-3 py-4">
+                    {contactData.neighbors.map((neighbor, idx) => (
+                      <Avatar 
+                        key={idx} 
+                        className="h-14 w-14 border-2 border-background shadow-md"
+                        style={{ 
+                          backgroundColor: neighbor.color,
+                          transform: `translateX(${idx * -8}px)`,
+                          zIndex: contactData.neighbors.length - idx 
+                        }}
+                      >
+                        <AvatarFallback className="text-white font-semibold" style={{ backgroundColor: neighbor.color }}>
+                          {neighbor.initials}
+                        </AvatarFallback>
+                      </Avatar>
+                    ))}
+                    <Avatar className="h-14 w-14 border-2 border-background shadow-md bg-muted" style={{ transform: 'translateX(-24px)', zIndex: 0 }}>
+                      <AvatarFallback className="text-muted-foreground font-semibold bg-muted">
+                        +{contactData.totalNeighbors - contactData.neighbors.length}
+                      </AvatarFallback>
+                    </Avatar>
                   </div>
-                  <div>
-                    <div className="flex justify-between text-xs mb-1">
-                      <span className="text-muted-foreground">Property Alerts</span>
-                      <span className="font-medium">{contactData.propertyAlerts}%</span>
-                    </div>
-                    <Progress value={contactData.propertyAlerts} className="h-1.5" />
-                  </div>
+                  <Button variant="outline" className="w-full bg-primary/5 border-primary/20 text-primary hover:bg-primary/10">
+                    View all Neighbors
+                  </Button>
                 </div>
               </div>
             </Card>
@@ -571,29 +695,72 @@ export default function ContactProfile() {
                 {/* Quarterly Calls - Only for Past Clients */}
                 {isPastClient && (
                   <div>
-                    <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+                    <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
                       <Phone className="h-4 w-4 text-primary" />
                       Quarterly Calls
                     </h3>
-                    <div className="space-y-2">
+                    <div className="grid grid-cols-2 gap-3">
                       {contactData.quarterlyCalls.map((call, idx) => {
-                        const statusColors = {
-                          "Spoke": "bg-success/10 text-success border-success/20",
-                          "Voicemail": "bg-caution/10 text-caution border-caution/20",
-                          "No Answer": "bg-destructive/10 text-destructive border-destructive/20",
-                          "Scheduled": "bg-info/10 text-info border-info/20"
+                        const statusConfig = {
+                          "Spoke": { 
+                            bg: "bg-gradient-to-br from-success/10 to-success/5",
+                            border: "border-success/30",
+                            icon: CheckCircle2,
+                            iconColor: "text-success",
+                            dotColor: "bg-success"
+                          },
+                          "Voicemail": { 
+                            bg: "bg-gradient-to-br from-caution/10 to-caution/5",
+                            border: "border-caution/30",
+                            icon: MessageSquare,
+                            iconColor: "text-caution",
+                            dotColor: "bg-caution"
+                          },
+                          "No Answer": { 
+                            bg: "bg-gradient-to-br from-destructive/10 to-destructive/5",
+                            border: "border-destructive/30",
+                            icon: Phone,
+                            iconColor: "text-destructive",
+                            dotColor: "bg-destructive"
+                          },
+                          "Scheduled": { 
+                            bg: "bg-gradient-to-br from-info/10 to-info/5",
+                            border: "border-info/30",
+                            icon: Calendar,
+                            iconColor: "text-info",
+                            dotColor: "bg-info"
+                          }
                         };
+                        const config = statusConfig[call.status as keyof typeof statusConfig];
+                        const StatusIcon = config.icon;
+                        
                         return (
-                          <div key={idx} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
-                            <div className="flex items-center gap-3">
-                              <div className="text-sm font-medium text-foreground">{call.date}</div>
-                              {call.time && <div className="text-sm text-muted-foreground">{call.time}</div>}
-                              <Badge variant="outline" className={statusColors[call.status as keyof typeof statusColors]}>
-                                {call.status}
-                              </Badge>
+                          <Card key={idx} className={`p-4 ${config.bg} border ${config.border} hover:shadow-md transition-all cursor-pointer group`}>
+                            <div className="space-y-3">
+                              <div className="flex items-start justify-between">
+                                <div className={`p-2 rounded-lg bg-background/50 ${config.iconColor}`}>
+                                  <StatusIcon className="h-4 w-4" />
+                                </div>
+                                <Badge variant="outline" className="text-xs border-0 bg-background/50">
+                                  {call.quarter}
+                                </Badge>
+                              </div>
+                              
+                              <div>
+                                <div className="text-xs text-muted-foreground mb-1">{call.date}</div>
+                                <div className="text-sm font-semibold text-foreground">{call.status}</div>
+                                {call.time && <div className="text-xs text-muted-foreground mt-0.5">{call.time}</div>}
+                              </div>
+                              
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="w-full text-xs group-hover:bg-background/50"
+                              >
+                                Summary →
+                              </Button>
                             </div>
-                            <Button variant="ghost" size="sm">Summary →</Button>
-                          </div>
+                          </Card>
                         );
                       })}
                     </div>
