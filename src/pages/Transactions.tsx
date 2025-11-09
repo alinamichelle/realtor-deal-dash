@@ -135,42 +135,6 @@ export default function Transactions() {
       </div>
 
       <div className="p-8 space-y-6 max-w-[1600px] mx-auto">
-        {/* Tab Filters */}
-        <Tabs defaultValue="all" className="w-full">
-          <TabsList className="w-full justify-start bg-muted/30 p-1">
-            <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="active-listings">Active Listings</TabsTrigger>
-            <TabsTrigger value="under-contract">Under Contract</TabsTrigger>
-            <TabsTrigger value="pending">Pending</TabsTrigger>
-            <TabsTrigger value="closed">Closed</TabsTrigger>
-            <TabsTrigger value="withdrawn">Withdrawn</TabsTrigger>
-            <TabsTrigger value="active-leases">Active Leases</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="all" className="space-y-6 mt-6">
-        {/* KPI Cards */}
-        <div className="grid grid-cols-5 gap-4">
-          <Card className="p-6 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 border-slate-200">
-            <div className="text-sm text-muted-foreground mb-2">Total</div>
-            <div className="text-4xl font-bold text-slate-700 dark:text-slate-200">{kpiData.total}</div>
-          </Card>
-          <Card className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200">
-            <div className="text-sm text-blue-700 dark:text-blue-300 mb-2">Active</div>
-            <div className="text-4xl font-bold text-blue-700 dark:text-blue-300">{kpiData.active}</div>
-          </Card>
-          <Card className="p-6 bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900 border-amber-200">
-            <div className="text-sm text-amber-700 dark:text-amber-300 mb-2">Under Contract</div>
-            <div className="text-4xl font-bold text-amber-700 dark:text-amber-300">{kpiData.underContract}</div>
-          </Card>
-          <Card className="p-6 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 border-green-200">
-            <div className="text-sm text-green-700 dark:text-green-300 mb-2">Closed</div>
-            <div className="text-4xl font-bold text-green-700 dark:text-green-300">{kpiData.closed}</div>
-          </Card>
-          <Card className="p-6 bg-gradient-to-br from-red-50 to-red-100 dark:from-red-950 dark:to-red-900 border-red-200">
-            <div className="text-sm text-red-700 dark:text-red-300 mb-2">Cancelled</div>
-            <div className="text-4xl font-bold text-red-700 dark:text-red-300">{kpiData.cancelled}</div>
-          </Card>
-        </div>
 
         {/* Compact Analytics - Robinhood Style */}
         <div className="grid grid-cols-5 gap-4">
@@ -264,6 +228,20 @@ export default function Transactions() {
             </div>
           </div>
         </Card>
+
+        {/* Tab Filters */}
+        <Tabs defaultValue="all" className="w-full">
+          <TabsList className="w-full justify-start bg-muted/30 p-1">
+            <TabsTrigger value="all">All ({kpiData.total})</TabsTrigger>
+            <TabsTrigger value="active-listings">Active Listings ({kpiData.active})</TabsTrigger>
+            <TabsTrigger value="under-contract">Under Contract ({kpiData.underContract})</TabsTrigger>
+            <TabsTrigger value="pending">Pending (0)</TabsTrigger>
+            <TabsTrigger value="closed">Closed ({kpiData.closed})</TabsTrigger>
+            <TabsTrigger value="withdrawn">Withdrawn ({kpiData.cancelled})</TabsTrigger>
+            <TabsTrigger value="active-leases">Active Leases (0)</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="all" className="space-y-6 mt-6">
 
         {/* Transactions Table */}
         <Card>
