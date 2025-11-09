@@ -236,68 +236,68 @@ export default function TransactionDetail() {
               {/* Main Content */}
               <div className="lg:col-span-2 space-y-6">
                 {/* Transaction Details */}
-                <Card className="p-6">
+                <Card className="p-4">
                   <Tabs defaultValue="info" className="w-full">
-                    <TabsList className="bg-muted">
-                      <TabsTrigger value="financial" className="gap-2">
-                        <DollarSign className="h-4 w-4" />
+                    <TabsList className="bg-muted h-9">
+                      <TabsTrigger value="financial" className="gap-2 text-xs">
+                        <DollarSign className="h-3.5 w-3.5" />
                         Financial
                       </TabsTrigger>
-                      <TabsTrigger value="info" className="gap-2">
-                        <FileText className="h-4 w-4" />
+                      <TabsTrigger value="info" className="gap-2 text-xs">
+                        <FileText className="h-3.5 w-3.5" />
                         Details
                       </TabsTrigger>
-                      <TabsTrigger value="dates" className="gap-2">
-                        <Calendar className="h-4 w-4" />
+                      <TabsTrigger value="dates" className="gap-2 text-xs">
+                        <Calendar className="h-3.5 w-3.5" />
                         Dates
                       </TabsTrigger>
                     </TabsList>
 
-                    <TabsContent value="financial" className="space-y-4 mt-6">
-                      <div className="space-y-3">
-                        <div className="flex justify-between py-3 border-b border-border">
+                    <TabsContent value="financial" className="mt-3">
+                      <div className="space-y-2">
+                        <div className="flex justify-between py-2 border-b border-border text-sm">
                           <span className="text-muted-foreground">Purchase Price</span>
                           <span className="font-semibold">—</span>
                         </div>
-                        <div className="flex justify-between py-3 border-b border-border">
+                        <div className="flex justify-between py-2 border-b border-border text-sm">
                           <span className="text-muted-foreground">Commission Rate</span>
                           <span className="font-semibold">—</span>
                         </div>
-                        <div className="flex justify-between py-3">
+                        <div className="flex justify-between py-2 text-sm">
                           <span className="text-muted-foreground">Estimated Commission</span>
                           <span className="font-semibold">—</span>
                         </div>
                       </div>
                     </TabsContent>
 
-                    <TabsContent value="info" className="space-y-4 mt-6">
-                      <div className="space-y-3">
-                        <div className="flex justify-between py-3 border-b border-border">
+                    <TabsContent value="info" className="mt-3">
+                      <div className="space-y-2">
+                        <div className="flex justify-between py-2 border-b border-border text-sm">
                           <span className="text-muted-foreground">Status</span>
                           <span className="font-semibold">Active</span>
                         </div>
-                        <div className="flex justify-between py-3 border-b border-border">
+                        <div className="flex justify-between py-2 border-b border-border text-sm">
                           <span className="text-muted-foreground">Type</span>
                           <span className="font-semibold">Purchase</span>
                         </div>
-                        <div className="flex justify-between py-3">
+                        <div className="flex justify-between py-2 text-sm">
                           <span className="text-muted-foreground">Property</span>
                           <span className="font-semibold">2644 Gwendolyn Lane</span>
                         </div>
                       </div>
                     </TabsContent>
 
-                    <TabsContent value="dates" className="space-y-4 mt-6">
-                      <div className="space-y-3">
-                        <div className="flex justify-between py-3 border-b border-border">
+                    <TabsContent value="dates" className="mt-3">
+                      <div className="space-y-2">
+                        <div className="flex justify-between py-2 border-b border-border text-sm">
                           <span className="text-muted-foreground">Created Date</span>
                           <span className="font-semibold">Sep 28, 2025</span>
                         </div>
-                        <div className="flex justify-between py-3 border-b border-border">
+                        <div className="flex justify-between py-2 border-b border-border text-sm">
                           <span className="text-muted-foreground">Expected Close</span>
                           <span className="font-semibold">—</span>
                         </div>
-                        <div className="flex justify-between py-3">
+                        <div className="flex justify-between py-2 text-sm">
                           <span className="text-muted-foreground">Days Active</span>
                           <span className="font-semibold">41 days</span>
                         </div>
