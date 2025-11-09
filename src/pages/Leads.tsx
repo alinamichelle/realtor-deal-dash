@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { NavLink } from "@/components/NavLink";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
   SelectContent,
@@ -274,20 +275,6 @@ const Leads = () => {
                   className="pl-10"
                 />
               </div>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-full sm:w-[180px]">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="new">New</SelectItem>
-                  <SelectItem value="contacted">Contacted</SelectItem>
-                  <SelectItem value="qualified">Qualified</SelectItem>
-                  <SelectItem value="nurturing">Nurturing</SelectItem>
-                  <SelectItem value="converted">Converted</SelectItem>
-                  <SelectItem value="lost">Lost</SelectItem>
-                </SelectContent>
-              </Select>
               <Select value={leadTypeFilter} onValueChange={setLeadTypeFilter}>
                 <SelectTrigger className="w-full sm:w-[180px]">
                   <SelectValue placeholder="Lead Type" />
@@ -316,6 +303,31 @@ const Leads = () => {
                 </Button>
               </div>
             </div>
+
+            {/* Pipeline Tabs */}
+            <Tabs defaultValue="all" className="space-y-4">
+              <TabsList className="w-full justify-start">
+                <TabsTrigger value="all" className="gap-2">
+                  All <Badge variant="secondary" className="ml-1">{leads.length}</Badge>
+                </TabsTrigger>
+                <TabsTrigger value="new" className="gap-2">
+                  New <Badge variant="secondary" className="ml-1">{leads.filter((l) => l.status === "new").length}</Badge>
+                </TabsTrigger>
+                <TabsTrigger value="contacted" className="gap-2">
+                  Contacted <Badge variant="secondary" className="ml-1">{leads.filter((l) => l.status === "contacted").length}</Badge>
+                </TabsTrigger>
+                <TabsTrigger value="qualified" className="gap-2">
+                  Qualified <Badge variant="secondary" className="ml-1">{leads.filter((l) => l.status === "qualified").length}</Badge>
+                </TabsTrigger>
+                <TabsTrigger value="nurturing" className="gap-2">
+                  Nurturing <Badge variant="secondary" className="ml-1">{leads.filter((l) => l.status === "nurturing").length}</Badge>
+                </TabsTrigger>
+                <TabsTrigger value="converted" className="gap-2">
+                  Converted <Badge variant="secondary" className="ml-1">{leads.filter((l) => l.status === "converted").length}</Badge>
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="all" className="space-y-0">
 
             {/* Kanban View */}
             {viewMode === "kanban" && (
@@ -654,129 +666,286 @@ const Leads = () => {
 
             {/* List View */}
             {viewMode === "list" && (
-              <div className="space-y-3">
-                {filteredLeads.map((lead) => (
-                  <Card key={lead.id} className="p-6 hover:shadow-md transition-all">
-                    <div className="flex items-start gap-4">
-                      {lead.flagged && (
-                        <Flag className="h-5 w-5 text-destructive fill-destructive shrink-0 mt-1" />
-                      )}
-                      <div className="p-3 bg-primary/10 rounded-lg shrink-0">
-                        <User className="h-6 w-6 text-primary" />
+              <div className="bg-card rounded-lg border border-border overflow-hidden">
+                {/* Table Header */}
+                <div className="grid grid-cols-12 gap-4 px-4 py-3 bg-muted/50 border-b border-border text-xs font-medium text-muted-foreground">
+                  <div className="col-span-3">Contact</div>
+                  <div className="col-span-2">Type</div>
+                  <div className="col-span-2">Source</div>
+                  <div className="col-span-2">Price Point</div>
+                  <div className="col-span-2">Agent</div>
+                  <div className="col-span-1 text-right">Actions</div>
+                </div>
+
+                {/* Table Body */}
+                <div className="divide-y divide-border">
+                  {filteredLeads.map((lead) => (
+                    <div
+                      key={lead.id}
+                      className="grid grid-cols-12 gap-4 px-4 py-3 hover:bg-muted/30 transition-colors cursor-pointer items-center"
+                      onClick={() => window.location.href = `/lead/${lead.id}`}
+                    >
+                      {/* Contact */}
+                      <div className="col-span-3 flex items-center gap-2 min-w-0">
+                        {lead.flagged && (
+                          <Flag className="h-3 w-3 text-destructive fill-destructive shrink-0" />
+                        )}
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-foreground truncate">
+                            {lead.first_name} {lead.last_name}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">{lead.email}</p>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-4 mb-3">
-                          <div>
-                            <h3 className="text-lg font-semibold text-foreground">
-                              {lead.first_name} {lead.last_name}
-                            </h3>
-                            <div className="flex items-center gap-2 mt-1">
-                              <Badge className={getStatusColor(lead.status)}>
-                                {lead.status}
-                              </Badge>
-                              <Badge className={`${getLeadTypeColor(lead.lead_type)} text-xs`} variant="outline">
-                                {lead.lead_type}
-                              </Badge>
-                            </div>
-                          </div>
-                          <div className="flex gap-2">
-                            <Button variant="outline" size="sm" className="gap-2">
-                              <Phone className="h-3 w-3" />
-                              Call
-                            </Button>
-                            <Button variant="outline" size="sm" className="gap-2">
-                              <Mail className="h-3 w-3" />
-                              Email
-                            </Button>
-                            <Button size="sm" asChild>
-                              <NavLink to={`/lead/${lead.id}`}>
-                                View Details
-                              </NavLink>
-                            </Button>
-                          </div>
-                        </div>
 
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-1">Email</p>
-                            <div className="flex items-center gap-2 text-sm text-foreground">
-                              <Mail className="h-3 w-3 text-muted-foreground" />
-                              <span className="truncate">{lead.email}</span>
-                            </div>
-                          </div>
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-1">Phone</p>
-                            <div className="flex items-center gap-2 text-sm text-foreground">
-                              <Phone className="h-3 w-3 text-muted-foreground" />
-                              <span>{lead.phone}</span>
-                            </div>
-                          </div>
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-1">Source</p>
-                            <p className="text-sm font-medium text-foreground">{lead.source}</p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-1">Price Point</p>
-                            <p className="text-sm font-medium text-foreground">{lead.price_point}</p>
-                          </div>
-                        </div>
+                      {/* Type */}
+                      <div className="col-span-2">
+                        <Badge className={`${getLeadTypeColor(lead.lead_type)} text-xs`} variant="outline">
+                          {lead.lead_type}
+                        </Badge>
+                      </div>
 
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-2 text-sm">
-                              <MapPin className="h-3 w-3 text-muted-foreground" />
-                              <span className="text-muted-foreground">{lead.zip_code}</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-sm">
-                              <User className="h-3 w-3 text-muted-foreground" />
-                              <span className="text-muted-foreground">{lead.routed_agent}</span>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                            <Clock className="h-3 w-3" />
-                            <span>{getTimeSince(lead.registered_at)}</span>
-                          </div>
-                        </div>
+                      {/* Source */}
+                      <div className="col-span-2">
+                        <p className="text-sm text-foreground">{lead.source}</p>
+                      </div>
 
-                        {lead.notes && (
-                          <div className="mt-3 pt-3 border-t border-border">
-                            <p className="text-sm text-muted-foreground italic">
-                              "{lead.notes}"
-                            </p>
-                          </div>
-                        )}
+                      {/* Price Point */}
+                      <div className="col-span-2">
+                        <p className="text-sm text-foreground">{lead.price_point}</p>
+                      </div>
 
-                        {lead.tags && lead.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mt-3">
-                            {lead.tags.map((tag, index) => (
-                              <Badge key={index} variant="secondary" className="text-xs">
-                                {tag.replace("_", " ")}
-                              </Badge>
-                            ))}
-                          </div>
-                        )}
+                      {/* Agent */}
+                      <div className="col-span-2">
+                        <p className="text-sm text-muted-foreground">{lead.routed_agent}</p>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="col-span-1 flex justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}
+                        >
+                          <Phone className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}
+                        >
+                          <Mail className="h-3 w-3" />
+                        </Button>
                       </div>
                     </div>
-                  </Card>
-                ))}
+                  ))}
+                </div>
               </div>
             )}
 
-            {filteredLeads.length === 0 && (
-              <Card className="p-12 text-center mt-6">
-                <UserPlus className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-foreground mb-2">
-                  No leads found
-                </h3>
-                <p className="text-muted-foreground mb-4">
-                  Try adjusting your filters or add a new lead
-                </p>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Lead
-                </Button>
-              </Card>
-            )}
+              </TabsContent>
+
+              {/* New Tab */}
+              <TabsContent value="new" className="space-y-0">
+                {viewMode === "list" && (
+                  <div className="bg-card rounded-lg border border-border overflow-hidden">
+                    <div className="grid grid-cols-12 gap-4 px-4 py-3 bg-muted/50 border-b border-border text-xs font-medium text-muted-foreground">
+                      <div className="col-span-3">Contact</div>
+                      <div className="col-span-2">Type</div>
+                      <div className="col-span-2">Source</div>
+                      <div className="col-span-2">Price Point</div>
+                      <div className="col-span-2">Agent</div>
+                      <div className="col-span-1 text-right">Actions</div>
+                    </div>
+                    <div className="divide-y divide-border">
+                      {leads.filter((l) => l.status === "new").map((lead) => (
+                        <div key={lead.id} className="grid grid-cols-12 gap-4 px-4 py-3 hover:bg-muted/30 transition-colors cursor-pointer items-center" onClick={() => window.location.href = `/lead/${lead.id}`}>
+                          <div className="col-span-3 flex items-center gap-2 min-w-0">
+                            {lead.flagged && <Flag className="h-3 w-3 text-destructive fill-destructive shrink-0" />}
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium text-foreground truncate">{lead.first_name} {lead.last_name}</p>
+                              <p className="text-xs text-muted-foreground truncate">{lead.email}</p>
+                            </div>
+                          </div>
+                          <div className="col-span-2">
+                            <Badge className={`${getLeadTypeColor(lead.lead_type)} text-xs`} variant="outline">{lead.lead_type}</Badge>
+                          </div>
+                          <div className="col-span-2"><p className="text-sm text-foreground">{lead.source}</p></div>
+                          <div className="col-span-2"><p className="text-sm text-foreground">{lead.price_point}</p></div>
+                          <div className="col-span-2"><p className="text-sm text-muted-foreground">{lead.routed_agent}</p></div>
+                          <div className="col-span-1 flex justify-end gap-1">
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}><Phone className="h-3 w-3" /></Button>
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}><Mail className="h-3 w-3" /></Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* Contacted Tab */}
+              <TabsContent value="contacted" className="space-y-0">
+                {viewMode === "list" && (
+                  <div className="bg-card rounded-lg border border-border overflow-hidden">
+                    <div className="grid grid-cols-12 gap-4 px-4 py-3 bg-muted/50 border-b border-border text-xs font-medium text-muted-foreground">
+                      <div className="col-span-3">Contact</div>
+                      <div className="col-span-2">Type</div>
+                      <div className="col-span-2">Source</div>
+                      <div className="col-span-2">Price Point</div>
+                      <div className="col-span-2">Agent</div>
+                      <div className="col-span-1 text-right">Actions</div>
+                    </div>
+                    <div className="divide-y divide-border">
+                      {leads.filter((l) => l.status === "contacted").map((lead) => (
+                        <div key={lead.id} className="grid grid-cols-12 gap-4 px-4 py-3 hover:bg-muted/30 transition-colors cursor-pointer items-center" onClick={() => window.location.href = `/lead/${lead.id}`}>
+                          <div className="col-span-3 flex items-center gap-2 min-w-0">
+                            {lead.flagged && <Flag className="h-3 w-3 text-destructive fill-destructive shrink-0" />}
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium text-foreground truncate">{lead.first_name} {lead.last_name}</p>
+                              <p className="text-xs text-muted-foreground truncate">{lead.email}</p>
+                            </div>
+                          </div>
+                          <div className="col-span-2">
+                            <Badge className={`${getLeadTypeColor(lead.lead_type)} text-xs`} variant="outline">{lead.lead_type}</Badge>
+                          </div>
+                          <div className="col-span-2"><p className="text-sm text-foreground">{lead.source}</p></div>
+                          <div className="col-span-2"><p className="text-sm text-foreground">{lead.price_point}</p></div>
+                          <div className="col-span-2"><p className="text-sm text-muted-foreground">{lead.routed_agent}</p></div>
+                          <div className="col-span-1 flex justify-end gap-1">
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}><Phone className="h-3 w-3" /></Button>
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}><Mail className="h-3 w-3" /></Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* Qualified Tab */}
+              <TabsContent value="qualified" className="space-y-0">
+                {viewMode === "list" && (
+                  <div className="bg-card rounded-lg border border-border overflow-hidden">
+                    <div className="grid grid-cols-12 gap-4 px-4 py-3 bg-muted/50 border-b border-border text-xs font-medium text-muted-foreground">
+                      <div className="col-span-3">Contact</div>
+                      <div className="col-span-2">Type</div>
+                      <div className="col-span-2">Source</div>
+                      <div className="col-span-2">Price Point</div>
+                      <div className="col-span-2">Agent</div>
+                      <div className="col-span-1 text-right">Actions</div>
+                    </div>
+                    <div className="divide-y divide-border">
+                      {leads.filter((l) => l.status === "qualified").map((lead) => (
+                        <div key={lead.id} className="grid grid-cols-12 gap-4 px-4 py-3 hover:bg-muted/30 transition-colors cursor-pointer items-center" onClick={() => window.location.href = `/lead/${lead.id}`}>
+                          <div className="col-span-3 flex items-center gap-2 min-w-0">
+                            {lead.flagged && <Flag className="h-3 w-3 text-destructive fill-destructive shrink-0" />}
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium text-foreground truncate">{lead.first_name} {lead.last_name}</p>
+                              <p className="text-xs text-muted-foreground truncate">{lead.email}</p>
+                            </div>
+                          </div>
+                          <div className="col-span-2">
+                            <Badge className={`${getLeadTypeColor(lead.lead_type)} text-xs`} variant="outline">{lead.lead_type}</Badge>
+                          </div>
+                          <div className="col-span-2"><p className="text-sm text-foreground">{lead.source}</p></div>
+                          <div className="col-span-2"><p className="text-sm text-foreground">{lead.price_point}</p></div>
+                          <div className="col-span-2"><p className="text-sm text-muted-foreground">{lead.routed_agent}</p></div>
+                          <div className="col-span-1 flex justify-end gap-1">
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}><Phone className="h-3 w-3" /></Button>
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}><Mail className="h-3 w-3" /></Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* Nurturing Tab */}
+              <TabsContent value="nurturing" className="space-y-0">
+                {viewMode === "list" && (
+                  <div className="bg-card rounded-lg border border-border overflow-hidden">
+                    <div className="grid grid-cols-12 gap-4 px-4 py-3 bg-muted/50 border-b border-border text-xs font-medium text-muted-foreground">
+                      <div className="col-span-3">Contact</div>
+                      <div className="col-span-2">Type</div>
+                      <div className="col-span-2">Source</div>
+                      <div className="col-span-2">Price Point</div>
+                      <div className="col-span-2">Agent</div>
+                      <div className="col-span-1 text-right">Actions</div>
+                    </div>
+                    <div className="divide-y divide-border">
+                      {leads.filter((l) => l.status === "nurturing").map((lead) => (
+                        <div key={lead.id} className="grid grid-cols-12 gap-4 px-4 py-3 hover:bg-muted/30 transition-colors cursor-pointer items-center" onClick={() => window.location.href = `/lead/${lead.id}`}>
+                          <div className="col-span-3 flex items-center gap-2 min-w-0">
+                            {lead.flagged && <Flag className="h-3 w-3 text-destructive fill-destructive shrink-0" />}
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium text-foreground truncate">{lead.first_name} {lead.last_name}</p>
+                              <p className="text-xs text-muted-foreground truncate">{lead.email}</p>
+                            </div>
+                          </div>
+                          <div className="col-span-2">
+                            <Badge className={`${getLeadTypeColor(lead.lead_type)} text-xs`} variant="outline">{lead.lead_type}</Badge>
+                          </div>
+                          <div className="col-span-2"><p className="text-sm text-foreground">{lead.source}</p></div>
+                          <div className="col-span-2"><p className="text-sm text-foreground">{lead.price_point}</p></div>
+                          <div className="col-span-2"><p className="text-sm text-muted-foreground">{lead.routed_agent}</p></div>
+                          <div className="col-span-1 flex justify-end gap-1">
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}><Phone className="h-3 w-3" /></Button>
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}><Mail className="h-3 w-3" /></Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* Converted Tab */}
+              <TabsContent value="converted" className="space-y-0">
+                {viewMode === "list" && (
+                  <div className="bg-card rounded-lg border border-border overflow-hidden">
+                    <div className="grid grid-cols-12 gap-4 px-4 py-3 bg-muted/50 border-b border-border text-xs font-medium text-muted-foreground">
+                      <div className="col-span-3">Contact</div>
+                      <div className="col-span-2">Type</div>
+                      <div className="col-span-2">Source</div>
+                      <div className="col-span-2">Price Point</div>
+                      <div className="col-span-2">Agent</div>
+                      <div className="col-span-1 text-right">Actions</div>
+                    </div>
+                    <div className="divide-y divide-border">
+                      {leads.filter((l) => l.status === "converted").map((lead) => (
+                        <div key={lead.id} className="grid grid-cols-12 gap-4 px-4 py-3 hover:bg-muted/30 transition-colors cursor-pointer items-center" onClick={() => window.location.href = `/lead/${lead.id}`}>
+                          <div className="col-span-3 flex items-center gap-2 min-w-0">
+                            {lead.flagged && <Flag className="h-3 w-3 text-destructive fill-destructive shrink-0" />}
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium text-foreground truncate">{lead.first_name} {lead.last_name}</p>
+                              <p className="text-xs text-muted-foreground truncate">{lead.email}</p>
+                            </div>
+                          </div>
+                          <div className="col-span-2">
+                            <Badge className={`${getLeadTypeColor(lead.lead_type)} text-xs`} variant="outline">{lead.lead_type}</Badge>
+                          </div>
+                          <div className="col-span-2"><p className="text-sm text-foreground">{lead.source}</p></div>
+                          <div className="col-span-2"><p className="text-sm text-foreground">{lead.price_point}</p></div>
+                          <div className="col-span-2"><p className="text-sm text-muted-foreground">{lead.routed_agent}</p></div>
+                          <div className="col-span-1 flex justify-end gap-1">
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}><Phone className="h-3 w-3" /></Button>
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => e.stopPropagation()}><Mail className="h-3 w-3" /></Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
           </div>
         </main>
       </div>
