@@ -125,7 +125,7 @@ const Leads = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [leadTypeFilter, setLeadTypeFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [viewMode, setViewMode] = useState<"kanban" | "list">("kanban");
+  const [viewMode, setViewMode] = useState<"kanban" | "list">("list");
 
   const getStatusColor = (status: string) => {
     switch (status) {
