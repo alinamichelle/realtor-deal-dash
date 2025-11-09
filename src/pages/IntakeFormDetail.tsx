@@ -1,13 +1,15 @@
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import { NavLink } from "@/components/NavLink";
 import { 
   Mail, 
   Phone, 
   FileText, 
   Flag,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  ArrowRight
 } from "lucide-react";
 
 const IntakeFormDetail = () => {
@@ -153,9 +155,17 @@ const IntakeFormDetail = () => {
                     {transaction.type}
                   </span>
                 </div>
-                <span className="border border-[hsl(var(--coral))]/30 bg-[hsl(var(--coral))] text-white px-4 py-1.5 rounded-full text-[13px] font-medium">
-                  {transaction.status}
-                </span>
+                <div className="flex items-center gap-3">
+                  <NavLink to={`/transaction/${transaction.id}`}>
+                    <Button className="h-10 px-4 text-[13px] font-semibold">
+                      View Transaction
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  </NavLink>
+                  <span className="border border-[hsl(var(--coral))]/30 bg-[hsl(var(--coral))] text-white px-4 py-1.5 rounded-full text-[13px] font-medium">
+                    {transaction.status}
+                  </span>
+                </div>
               </div>
               
               {/* Enhanced Timeline - Paco: Clean, minimal metrics bar */}
