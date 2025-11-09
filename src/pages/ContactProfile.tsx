@@ -398,22 +398,22 @@ export default function ContactProfile() {
 
                 {/* Right column - Stats & Calls */}
                 <div className="space-y-6">
-                  {/* Stats - AT THE TOP */}
-                  <div className="space-y-3">
-                    <Card className="p-4 text-center">
-                      <Phone className="h-5 w-5 mx-auto mb-2 text-primary" />
+                  {/* Stats - AT THE TOP - Horizontal */}
+                  <div className="grid grid-cols-3 gap-3">
+                    <Card className="p-3 text-center">
+                      <Phone className="h-4 w-4 mx-auto mb-2 text-primary" />
                       <div className="text-xs text-muted-foreground mb-1">Viable Calls</div>
-                      <div className="text-3xl font-bold">{contactData.viableCalls}</div>
+                      <div className="text-2xl font-bold">{contactData.viableCalls}</div>
                     </Card>
-                    <Card className="p-4 text-center">
-                      <MessageSquare className="h-5 w-5 mx-auto mb-2 text-primary" />
+                    <Card className="p-3 text-center">
+                      <MessageSquare className="h-4 w-4 mx-auto mb-2 text-primary" />
                       <div className="text-xs text-muted-foreground mb-1">Interactions</div>
-                      <div className="text-3xl font-bold">{contactData.interactions}</div>
+                      <div className="text-2xl font-bold">{contactData.interactions}</div>
                     </Card>
-                    <Card className="p-4 text-center">
-                      <Users className="h-5 w-5 mx-auto mb-2 text-primary" />
+                    <Card className="p-3 text-center">
+                      <Users className="h-4 w-4 mx-auto mb-2 text-primary" />
                       <div className="text-xs text-muted-foreground mb-1">Referrals</div>
-                      <div className="text-3xl font-bold">{contactData.referrals}</div>
+                      <div className="text-2xl font-bold">{contactData.referrals}</div>
                     </Card>
                   </div>
 
