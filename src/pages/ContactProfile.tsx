@@ -1,4 +1,4 @@
-import { ArrowLeft, Phone, Mail, MessageSquare, MoreVertical, Home, TrendingUp, TrendingDown, Minus, Check, X, Clock, Users } from "lucide-react";
+import { ArrowLeft, Phone, Mail, MessageSquare, MoreVertical, Home, TrendingUp, TrendingDown, Minus, Check, X, Clock, Users, MapPin, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -82,13 +82,81 @@ export default function ContactProfile() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Simple Header */}
-      <header className="border-b border-border bg-card px-6 py-3">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="text-lg font-semibold">Contact Profile</h1>
+      {/* Sticky Header with Contact Info */}
+      <header className="sticky top-0 z-20 border-b border-border bg-card/95 backdrop-blur-sm">
+        <div className="px-6 py-3 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" className="rounded-full">
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            
+            <Avatar className="h-10 w-10">
+              <AvatarFallback className="text-sm font-semibold bg-primary/10 text-primary">
+                {contactData.firstName[0]}{contactData.lastName[0]}
+              </AvatarFallback>
+            </Avatar>
+
+            <div className="flex items-center gap-3">
+              <h1 className="text-xl font-bold">{contactData.fullName}</h1>
+              <Badge variant="outline" className="bg-success/10 text-success border-success/20">
+                <Check className="h-3 w-3 mr-1" />
+                Past Client
+              </Badge>
+              {contactData.contactType === "VIP" && (
+                <Badge variant="outline" className="bg-amber-500/10 text-amber-700 border-amber-500/20">
+                  <Star className="h-3 w-3 mr-1 fill-amber-700" />
+                  VIP
+                </Badge>
+              )}
+            </div>
+
+            <div className="flex items-center gap-3 text-sm text-muted-foreground ml-2">
+              <span className="flex items-center gap-1.5">
+                <Mail className="h-3.5 w-3.5" />
+                {contactData.email}
+              </span>
+              <span>•</span>
+              <span className="flex items-center gap-1.5">
+                <Phone className="h-3.5 w-3.5" />
+                {contactData.phone}
+              </span>
+              <span>•</span>
+              <span className="flex items-center gap-1.5">
+                <MapPin className="h-3.5 w-3.5" />
+                {contactData.city}, {contactData.state}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" className="gap-2">
+              <Phone className="h-4 w-4" />
+              Call
+            </Button>
+            <Button variant="outline" size="sm" className="gap-2">
+              <MessageSquare className="h-4 w-4" />
+              Text
+            </Button>
+            <Button variant="outline" size="sm" className="gap-2">
+              <Mail className="h-4 w-4" />
+              Email
+            </Button>
+            <Button size="sm" className="bg-primary hover:bg-primary/90">
+              Edit Profile
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem>View Documents</DropdownMenuItem>
+                <DropdownMenuItem>Schedule Follow-up</DropdownMenuItem>
+                <DropdownMenuItem className="text-destructive">Archive Contact</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </header>
 
