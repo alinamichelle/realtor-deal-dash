@@ -93,6 +93,23 @@ const properties = [
     daysMonitored: 1680,
     image: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde"
   },
+  {
+    id: "6",
+    address: "4455 Cedar Court, Austin, TX 78706",
+    type: "full-circle",
+    purchaseDate: "2018-02-15",
+    purchasePrice: "$385,000",
+    becameLandlordDate: "2020-06-01",
+    soldDate: "2024-10-20",
+    salePrice: "$545,000",
+    owner: "Robert Kim",
+    status: "Completed",
+    goal: "Full lifecycle client - Perfect retention story",
+    totalLeases: 3,
+    yearsAsLandlord: 4,
+    daysMonitored: 2440,
+    image: "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6"
+  },
 ];
 
 // Calculate years and months from a date
@@ -118,6 +135,12 @@ const getPropertyInsight = (property: any) => {
   const years = differenceInYears(new Date(), parseISO(relevantDate));
   
   switch (property.type) {
+    case "full-circle":
+      return {
+        type: "success",
+        message: `🎯 Complete journey! Bought ${parseISO(property.purchaseDate).getFullYear()} → Landlord (${property.totalLeases} leases) → Sold ${parseISO(property.soldDate).getFullYear()} with you. Total relationship: ${differenceInYears(parseISO(property.soldDate), parseISO(property.purchaseDate))} years!`
+      };
+    
     case "homeowner":
       if (years >= 5 && years <= 7) {
         return {
@@ -205,6 +228,8 @@ const getPropertyTypeInfo = (type: string) => {
       return { icon: KeyRound, label: "Renter", color: "bg-purple-500" };
     case "landlord":
       return { icon: Building2, label: "Landlord", color: "bg-orange-500" };
+    case "full-circle":
+      return { icon: Target, label: "Full Circle", color: "bg-gradient-to-r from-green-500 to-blue-500" };
     default:
       return { icon: Home, label: "Property", color: "bg-gray-500" };
   }
@@ -370,7 +395,32 @@ export default function Properties() {
                             </div>
                             
                             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-4">
-                              {property.type === "renter" ? (
+                              {property.type === "full-circle" ? (
+                                <>
+                                  <div>
+                                    <p className="text-xs text-muted-foreground">Purchased</p>
+                                    <p className="font-medium">{property.purchasePrice}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-xs text-muted-foreground">Sold</p>
+                                    <p className="font-medium">{property.salePrice}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-xs text-muted-foreground">Total Profit</p>
+                                    <p className="font-medium text-green-600">
+                                      ${(parseInt(property.salePrice.replace(/[$,]/g, '')) - parseInt(property.purchasePrice.replace(/[$,]/g, ''))).toLocaleString()}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-xs text-muted-foreground">Leases</p>
+                                    <p className="font-medium">{property.totalLeases} managed</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-xs text-muted-foreground">Journey</p>
+                                    <p className="font-medium">{differenceInYears(parseISO(property.soldDate), parseISO(property.purchaseDate))} years</p>
+                                  </div>
+                                </>
+                              ) : property.type === "renter" ? (
                                 <>
                                   <div>
                                     <p className="text-xs text-muted-foreground">Monthly Rent</p>
@@ -411,11 +461,13 @@ export default function Properties() {
 
                             {insight && (
                               <div className={`mt-4 p-3 rounded-lg flex items-start gap-2 ${
+                                insight.type === 'success' ? 'bg-gradient-to-r from-green-500/10 to-blue-500/10 border border-green-500/30' :
                                 insight.type === 'hot' ? 'bg-orange-500/10 border border-orange-500/20' :
                                 insight.type === 'warm' ? 'bg-yellow-500/10 border border-yellow-500/20' :
                                 'bg-blue-500/10 border border-blue-500/20'
                               }`}>
                                 <AlertCircle className={`h-4 w-4 mt-0.5 flex-shrink-0 ${
+                                  insight.type === 'success' ? 'text-green-600' :
                                   insight.type === 'hot' ? 'text-orange-500' :
                                   insight.type === 'warm' ? 'text-yellow-500' :
                                   'text-blue-500'
@@ -473,7 +525,28 @@ export default function Properties() {
                       
                       <CardContent>
                         <div className="space-y-3">
-                          {property.type === "renter" ? (
+                          {property.type === "full-circle" ? (
+                            <>
+                              <div className="flex justify-between text-sm">
+                                <span className="text-muted-foreground">Purchased</span>
+                                <span className="font-medium">{property.purchasePrice}</span>
+                              </div>
+                              <div className="flex justify-between text-sm">
+                                <span className="text-muted-foreground">Sold</span>
+                                <span className="font-medium">{property.salePrice}</span>
+                              </div>
+                              <div className="flex justify-between text-sm">
+                                <span className="text-muted-foreground">Profit</span>
+                                <span className="font-medium text-green-600">
+                                  ${(parseInt(property.salePrice.replace(/[$,]/g, '')) - parseInt(property.purchasePrice.replace(/[$,]/g, ''))).toLocaleString()}
+                                </span>
+                              </div>
+                              <div className="flex justify-between text-sm">
+                                <span className="text-muted-foreground">Leases Managed</span>
+                                <span className="font-medium">{property.totalLeases} leases</span>
+                              </div>
+                            </>
+                          ) : property.type === "renter" ? (
                             <>
                               <div className="flex justify-between text-sm">
                                 <span className="text-muted-foreground">Monthly Rent</span>
@@ -519,6 +592,7 @@ export default function Properties() {
                           
                           {insight && (
                             <div className={`p-2 rounded text-xs ${
+                              insight.type === 'success' ? 'bg-gradient-to-r from-green-500/10 to-blue-500/10 text-green-700 dark:text-green-300 border border-green-500/30' :
                               insight.type === 'hot' ? 'bg-orange-500/10 text-orange-700 dark:text-orange-300 border border-orange-500/20' :
                               insight.type === 'warm' ? 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-300 border border-yellow-500/20' :
                               'bg-blue-500/10 text-blue-700 dark:text-blue-300 border border-blue-500/20'
