@@ -409,7 +409,13 @@ export default function Transactions() {
                       <td className="p-4">
                         <div className="space-y-2">
                           <div className="flex gap-2">
-                            <Button variant="outline" size="sm">View</Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => navigate(`/transaction/${transaction.id}`)}
+                            >
+                              View
+                            </Button>
                             <Button variant="outline" size="sm">Edit</Button>
                           </div>
                           <div className="flex gap-1">
