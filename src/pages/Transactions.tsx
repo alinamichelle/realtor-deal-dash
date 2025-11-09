@@ -250,82 +250,91 @@ export default function Transactions() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-border bg-muted/30">
-                  <th className="text-left p-4 font-semibold text-sm">Transaction Details</th>
+                  <th className="text-left p-4 font-semibold text-sm">Transaction</th>
                   <th className="text-left p-4 font-semibold text-sm">Agent</th>
-                  <th className="text-left p-4 font-semibold text-sm">Property Info</th>
-                  <th className="text-left p-4 font-semibold text-sm">Status & Pricing</th>
+                  <th className="text-left p-4 font-semibold text-sm">Pricing</th>
                   <th className="text-left p-4 font-semibold text-sm">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {transactions.map((transaction) => (
-                  <tr key={transaction.id} className="border-b border-border hover:bg-muted/20 transition-colors">
-                    <td className="p-4">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold">{transaction.type}: {transaction.address}</span>
-                          <Badge variant="outline" className={getStatusColor(transaction.status)}>
-                            {transaction.status}
-                          </Badge>
+                {transactions.map((transaction) => {
+                  const getStatusDot = (status: string) => {
+                    switch (status) {
+                      case "Active":
+                        return <div className="h-2 w-2 rounded-full bg-info animate-pulse" />;
+                      case "Under Contract":
+                        return <div className="h-2 w-2 rounded-full bg-purple-500" />;
+                      case "Closed":
+                        return <div className="h-2 w-2 rounded-full bg-success" />;
+                      case "Cancelled":
+                        return <div className="h-2 w-2 rounded-full bg-destructive" />;
+                      default:
+                        return <div className="h-2 w-2 rounded-full bg-muted-foreground" />;
+                    }
+                  };
+
+                  return (
+                    <tr key={transaction.id} className="border-b border-border hover:bg-muted/20 transition-colors">
+                      <td className="p-4">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            {getStatusDot(transaction.status)}
+                            <span className="font-semibold">{transaction.address}</span>
+                          </div>
+                          <div className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">
+                            {transaction.type}
+                          </div>
                         </div>
-                        {transaction.isDraft && (
-                          <div className="text-xs text-muted-foreground">Source: other</div>
-                        )}
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="text-sm">{transaction.primaryAgent}</div>
-                    </td>
-                    <td className="p-4">
-                      <div className="text-sm text-muted-foreground">
-                        {transaction.address}
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="space-y-1">
-                        {transaction.closedPrice && (
-                          <>
-                            <div className="text-lg font-bold text-success">
-                              {formatCurrency(transaction.closedPrice)}
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                              Closed: {transaction.closedDate}
-                            </div>
-                          </>
-                        )}
-                        {transaction.listPrice && (
-                          <>
-                            <div className="text-lg font-bold">
-                              List Price: {formatCurrency(transaction.listPrice)}
-                            </div>
-                            {transaction.isDraft && (
-                              <div className="text-xs text-muted-foreground">Draft transaction</div>
+                      </td>
+                      <td className="p-4">
+                        <div className="text-sm">{transaction.primaryAgent}</div>
+                      </td>
+                      <td className="p-4">
+                        <div className="space-y-1">
+                          {transaction.closedPrice && (
+                            <>
+                              <div className="text-lg font-bold text-success">
+                                {formatCurrency(transaction.closedPrice)}
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                Closed: {transaction.closedDate}
+                              </div>
+                            </>
+                          )}
+                          {transaction.listPrice && (
+                            <>
+                              <div className="text-lg font-bold">
+                                {formatCurrency(transaction.listPrice)}
+                              </div>
+                              {transaction.isDraft && (
+                                <div className="text-xs text-muted-foreground">Draft</div>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        <div className="space-y-2">
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm">View</Button>
+                            <Button variant="outline" size="sm">Edit</Button>
+                          </div>
+                          <div className="flex gap-1">
+                            {transaction.missingDrive && (
+                              <span className="text-[10px] text-destructive">Missing Drive</span>
                             )}
-                          </>
-                        )}
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="space-y-2">
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm">View</Button>
-                          <Button variant="outline" size="sm">Edit</Button>
+                            {transaction.noIntake && transaction.missingDrive && (
+                              <span className="text-[10px] text-muted-foreground">•</span>
+                            )}
+                            {transaction.noIntake && (
+                              <span className="text-[10px] text-muted-foreground">No Intake</span>
+                            )}
+                          </div>
                         </div>
-                        <div className="flex gap-1">
-                          {transaction.missingDrive && (
-                            <span className="text-[10px] text-destructive">Missing Drive</span>
-                          )}
-                          {transaction.noIntake && transaction.missingDrive && (
-                            <span className="text-[10px] text-muted-foreground">•</span>
-                          )}
-                          {transaction.noIntake && (
-                            <span className="text-[10px] text-muted-foreground">No Intake</span>
-                          )}
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
