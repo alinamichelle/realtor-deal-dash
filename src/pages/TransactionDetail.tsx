@@ -227,82 +227,8 @@ export default function TransactionDetail() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Main Content */}
               <div className="lg:col-span-2 space-y-6">
-                {/* Transaction Details */}
-                <Card className="p-4">
-                  <Tabs defaultValue="info" className="w-full">
-                    <TabsList className="bg-muted h-9">
-                      <TabsTrigger value="financial" className="gap-2 text-xs">
-                        <DollarSign className="h-3.5 w-3.5" />
-                        Financial
-                      </TabsTrigger>
-                      <TabsTrigger value="info" className="gap-2 text-xs">
-                        <FileText className="h-3.5 w-3.5" />
-                        Details
-                      </TabsTrigger>
-                      <TabsTrigger value="dates" className="gap-2 text-xs">
-                        <Calendar className="h-3.5 w-3.5" />
-                        Dates
-                      </TabsTrigger>
-                    </TabsList>
-
-                    <TabsContent value="financial" className="mt-3">
-                      <div className="space-y-2">
-                        <div className="flex justify-between py-2 border-b border-border text-sm">
-                          <span className="text-muted-foreground">Purchase Price</span>
-                          <span className="font-semibold">—</span>
-                        </div>
-                        <div className="flex justify-between py-2 border-b border-border text-sm">
-                          <span className="text-muted-foreground">Commission Rate</span>
-                          <span className="font-semibold">—</span>
-                        </div>
-                        <div className="flex justify-between py-2 text-sm">
-                          <span className="text-muted-foreground">Estimated Commission</span>
-                          <span className="font-semibold">—</span>
-                        </div>
-                      </div>
-                    </TabsContent>
-
-                    <TabsContent value="info" className="mt-3">
-                      <div className="space-y-2">
-                        <div className="flex justify-between py-2 border-b border-border text-sm">
-                          <span className="text-muted-foreground">Status</span>
-                          <span className="font-semibold">Active</span>
-                        </div>
-                        <div className="flex justify-between py-2 border-b border-border text-sm">
-                          <span className="text-muted-foreground">Type</span>
-                          <span className="font-semibold">Purchase</span>
-                        </div>
-                        <div className="flex justify-between py-2 text-sm">
-                          <span className="text-muted-foreground">Property</span>
-                          <span className="font-semibold">2644 Gwendolyn Lane</span>
-                        </div>
-                      </div>
-                    </TabsContent>
-
-                    <TabsContent value="dates" className="mt-3">
-                      <div className="space-y-2">
-                        <div className="flex justify-between py-2 border-b border-border text-sm">
-                          <span className="text-muted-foreground">Created Date</span>
-                          <span className="font-semibold">Sep 28, 2025</span>
-                        </div>
-                        <div className="flex justify-between py-2 border-b border-border text-sm">
-                          <span className="text-muted-foreground">Expected Close</span>
-                          <span className="font-semibold">—</span>
-                        </div>
-                        <div className="flex justify-between py-2 text-sm">
-                          <span className="text-muted-foreground">Days Active</span>
-                          <span className="font-semibold">41 days</span>
-                        </div>
-                      </div>
-                    </TabsContent>
-                  </Tabs>
-                </Card>
-              </div>
-
-              {/* Sidebar */}
-              <div className="space-y-6">
                 {/* Tasks, Comments & Activity - Tabbed */}
-                <Card className="p-4">
+                <Card className="p-6">
                   <Tabs defaultValue="tasks" className="w-full">
                     <TabsList className="bg-muted w-full">
                       <TabsTrigger value="tasks" className="flex-1 gap-2 text-xs">
@@ -541,6 +467,80 @@ export default function TransactionDetail() {
                             <div className="font-medium text-xs">Transaction created</div>
                             <div className="text-[10px] text-muted-foreground mt-0.5">Sep 28 at 8:54 PM</div>
                           </div>
+                        </div>
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                </Card>
+              </div>
+
+              {/* Sidebar */}
+              <div className="space-y-6">
+                {/* Transaction Details */}
+                <Card className="p-4">
+                  <Tabs defaultValue="info" className="w-full">
+                    <TabsList className="bg-muted h-9">
+                      <TabsTrigger value="financial" className="gap-2 text-xs">
+                        <DollarSign className="h-3.5 w-3.5" />
+                        Financial
+                      </TabsTrigger>
+                      <TabsTrigger value="info" className="gap-2 text-xs">
+                        <FileText className="h-3.5 w-3.5" />
+                        Details
+                      </TabsTrigger>
+                      <TabsTrigger value="dates" className="gap-2 text-xs">
+                        <Calendar className="h-3.5 w-3.5" />
+                        Dates
+                      </TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="financial" className="mt-3">
+                      <div className="space-y-2">
+                        <div className="flex justify-between py-2 border-b border-border text-sm">
+                          <span className="text-muted-foreground">Purchase Price</span>
+                          <span className="font-semibold">—</span>
+                        </div>
+                        <div className="flex justify-between py-2 border-b border-border text-sm">
+                          <span className="text-muted-foreground">Commission Rate</span>
+                          <span className="font-semibold">—</span>
+                        </div>
+                        <div className="flex justify-between py-2 text-sm">
+                          <span className="text-muted-foreground">Estimated Commission</span>
+                          <span className="font-semibold">—</span>
+                        </div>
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="info" className="mt-3">
+                      <div className="space-y-2">
+                        <div className="flex justify-between py-2 border-b border-border text-sm">
+                          <span className="text-muted-foreground">Status</span>
+                          <span className="font-semibold">Active</span>
+                        </div>
+                        <div className="flex justify-between py-2 border-b border-border text-sm">
+                          <span className="text-muted-foreground">Type</span>
+                          <span className="font-semibold">Purchase</span>
+                        </div>
+                        <div className="flex justify-between py-2 text-sm">
+                          <span className="text-muted-foreground">Property</span>
+                          <span className="font-semibold">2644 Gwendolyn Lane</span>
+                        </div>
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="dates" className="mt-3">
+                      <div className="space-y-2">
+                        <div className="flex justify-between py-2 border-b border-border text-sm">
+                          <span className="text-muted-foreground">Created Date</span>
+                          <span className="font-semibold">Sep 28, 2025</span>
+                        </div>
+                        <div className="flex justify-between py-2 border-b border-border text-sm">
+                          <span className="text-muted-foreground">Expected Close</span>
+                          <span className="font-semibold">—</span>
+                        </div>
+                        <div className="flex justify-between py-2 text-sm">
+                          <span className="text-muted-foreground">Days Active</span>
+                          <span className="font-semibold">41 days</span>
                         </div>
                       </div>
                     </TabsContent>
