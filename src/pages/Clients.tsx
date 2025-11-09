@@ -191,7 +191,7 @@ const Clients = () => {
     }
   ];
 
-  // Generate all touchpoints organized by category
+  // Generate touchpoints for gentle reminders only
   const allTouchpoints = {
     anniversaries: clients
       .filter(c => c.homeAnniversary)
@@ -214,47 +214,28 @@ const Clients = () => {
         daysUntil: Math.ceil((new Date(c.quarterlyCall!).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)),
         icon: '📞',
         color: 'blue'
-      })),
-    overdue: clients
-      .filter(c => c.lastContactDays > 90)
-      .map(c => ({
-        clientId: c.id,
-        clientName: c.name,
-        type: 'Overdue Follow-up',
-        date: `${c.lastContactDays} days ago`,
-        daysUntil: -c.lastContactDays,
-        icon: '⚠️',
-        color: 'red'
       }))
   };
 
   const upcomingTouchpoints = [
     ...allTouchpoints.anniversaries,
-    ...allTouchpoints.quarterlyCalls,
-    ...allTouchpoints.overdue
-  ].sort((a, b) => Math.abs(a.daysUntil) - Math.abs(b.daysUntil)).slice(0, 4);
+    ...allTouchpoints.quarterlyCalls
+  ].sort((a, b) => a.daysUntil - b.daysUntil).slice(0, 3);
 
   const touchpointSummary = [
     { 
-      label: 'Home Anniversaries', 
+      label: 'Anniversaries', 
       count: allTouchpoints.anniversaries.length,
-      urgent: allTouchpoints.anniversaries.filter(t => t.daysUntil <= 30).length,
+      urgent: allTouchpoints.anniversaries.filter(t => t.daysUntil >= 0 && t.daysUntil <= 30).length,
       icon: '🏠',
       color: 'emerald'
     },
     { 
       label: 'Quarterly Calls', 
       count: allTouchpoints.quarterlyCalls.length,
-      urgent: allTouchpoints.quarterlyCalls.filter(t => t.daysUntil <= 7).length,
+      urgent: allTouchpoints.quarterlyCalls.filter(t => t.daysUntil >= 0 && t.daysUntil <= 7).length,
       icon: '📞',
       color: 'blue'
-    },
-    { 
-      label: 'Overdue Follow-ups', 
-      count: allTouchpoints.overdue.length,
-      urgent: allTouchpoints.overdue.length,
-      icon: '⚠️',
-      color: 'red'
     }
   ];
 
@@ -373,116 +354,79 @@ const Clients = () => {
             </div>
           </header>
 
-          {/* Upcoming Touchpoints */}
+          {/* Gentle Reminders Strip */}
           {upcomingTouchpoints.length > 0 && (
-            <div className="max-w-[1400px] mx-auto px-6 sm:px-8 py-6">
-              <div className="mb-4 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <h2 className="text-[13px] font-semibold text-gray-600 uppercase tracking-wider">
-                    Needs Attention
-                  </h2>
-                  <div className="flex-1 h-px bg-gray-200" />
+            <div className="bg-gradient-to-r from-gray-50/50 to-white border-y border-gray-100">
+              <div className="max-w-[1400px] mx-auto px-6 sm:px-8 py-4">
+                <div className="mb-3 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+                      Quick Reminders
+                    </h2>
+                    <span className="text-[10px] text-gray-400 font-normal">• Upcoming touchpoints</span>
+                  </div>
                 </div>
-              </div>
 
-              {/* Summary Cards */}
-              <div className="grid grid-cols-3 gap-3 mb-4">
-                {touchpointSummary.map((summary, idx) => (
-                  <button
-                    key={idx}
-                    className="bg-white border border-gray-200 rounded-xl p-4 hover:border-gray-300 hover:shadow-sm transition-all duration-200 text-left group"
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl">{summary.icon}</span>
-                        <span className="text-[11px] font-semibold text-gray-600 uppercase tracking-wider">
-                          {summary.label}
-                        </span>
-                      </div>
-                      {summary.urgent > 0 && (
-                        <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-100 border border-red-200">
-                          <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                          <span className="text-[10px] font-bold text-red-700">{summary.urgent}</span>
+                {/* Compact Summary + Preview */}
+                <div className="flex items-center gap-3">{/* Summary Pills */}
+                  <div className="flex items-center gap-2">
+                    {touchpointSummary.map((summary, idx) => (
+                      <button
+                        key={idx}
+                        className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-lg hover:border-gray-300 hover:shadow-sm transition-all duration-150 group"
+                      >
+                        <span className="text-base">{summary.icon}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[20px] font-bold tracking-tight text-[hsl(var(--charcoal))]">
+                            {summary.count}
+                          </span>
+                          <span className="text-[11px] text-gray-500 font-medium">
+                            {summary.label}
+                          </span>
+                          {summary.urgent > 0 && (
+                            <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-amber-100 border border-amber-200">
+                              <div className="w-1 h-1 rounded-full bg-amber-500" />
+                              <span className="text-[9px] font-bold text-amber-700">{summary.urgent}</span>
+                            </span>
+                          )}
                         </div>
-                      )}
-                    </div>
-                    <div className="flex items-end justify-between">
-                      <div className="text-[32px] font-bold tracking-tight text-[hsl(var(--charcoal))] leading-none">
-                        {summary.count}
-                      </div>
-                      <div className="text-[11px] text-gray-500 font-medium group-hover:text-[hsl(var(--coral))] transition-colors">
-                        View all →
-                      </div>
-                    </div>
-                  </button>
-                ))}
+                      </button>
+                    ))}
               </div>
 
-              {/* Top 4 Urgent Touchpoints */}
-              <div className="grid grid-cols-4 gap-3">
-                {upcomingTouchpoints.map((touchpoint, idx) => {
-                  const isOverdue = touchpoint.daysUntil < 0;
-                  const isUrgent = touchpoint.daysUntil >= 0 && touchpoint.daysUntil <= 7;
-                  const isSoon = touchpoint.daysUntil > 7 && touchpoint.daysUntil <= 30;
                   
-                  return (
-                    <div 
-                      key={idx}
-                      className={`relative bg-white border rounded-xl p-4 hover:shadow-md transition-all duration-200 cursor-pointer group ${
-                        isOverdue 
-                          ? 'border-red-300 bg-red-50/30' 
-                          : isUrgent 
-                          ? 'border-amber-300 bg-amber-50/30'
-                          : 'border-gray-200'
-                      }`}
-                    >
-                      {/* Urgency indicator */}
-                      <div className={`absolute top-0 left-0 w-1 h-full rounded-l-xl ${
-                        isOverdue 
-                          ? 'bg-gradient-to-b from-red-500 to-red-600' 
-                          : isUrgent 
-                          ? 'bg-gradient-to-b from-amber-400 to-amber-500'
-                          : 'bg-gradient-to-b from-blue-400 to-blue-500'
-                      }`} />
+                  <div className="h-6 w-px bg-gray-200 mx-1" />
+
+                  {/* Next 3 Upcoming */}
+                  <div className="flex items-center gap-2 flex-1">
+                    {upcomingTouchpoints.map((touchpoint, idx) => {
+                      const isUrgent = touchpoint.daysUntil >= 0 && touchpoint.daysUntil <= 7;
                       
-                      <div className="flex items-start gap-3 ml-2">
-                        <div className="text-2xl flex-shrink-0 mt-0.5">
-                          {touchpoint.icon}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-1">
-                            {touchpoint.type}
+                      return (
+                        <button 
+                          key={idx}
+                          className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-lg hover:border-gray-300 hover:shadow-sm transition-all duration-150 group flex-1 min-w-0"
+                        >
+                          <span className="text-base flex-shrink-0">{touchpoint.icon}</span>
+                          <div className="flex-1 min-w-0 text-left">
+                            <div className="text-[13px] font-semibold tracking-tight text-[hsl(var(--charcoal))] truncate group-hover:text-[hsl(var(--coral))] transition-colors">
+                              {touchpoint.clientName}
+                            </div>
+                            <div className="text-[10px] text-gray-500 font-medium">
+                              {touchpoint.daysUntil === 0 ? (
+                                <span className="text-amber-600 font-semibold">Today</span>
+                              ) : touchpoint.daysUntil === 1 ? (
+                                <span className="text-amber-600 font-semibold">Tomorrow</span>
+                              ) : (
+                                <span>in {touchpoint.daysUntil} days</span>
+                              )}
+                            </div>
                           </div>
-                          <div className="text-[15px] font-semibold tracking-tight text-[hsl(var(--charcoal))] truncate group-hover:text-[hsl(var(--coral))] transition-colors">
-                            {touchpoint.clientName}
-                          </div>
-                          <div className="text-[12px] text-gray-600 mt-1.5 font-medium">
-                            {isOverdue ? (
-                              <span className="text-red-600 font-semibold">{touchpoint.date}</span>
-                            ) : (
-                              <>
-                                {touchpoint.daysUntil === 0 ? (
-                                  <span className="text-amber-600 font-semibold">Today</span>
-                                ) : touchpoint.daysUntil === 1 ? (
-                                  <span className="text-amber-600 font-semibold">Tomorrow</span>
-                                ) : (
-                                  <span>in {touchpoint.daysUntil} days</span>
-                                )}
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Quick action on hover */}
-                      <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <button className="p-1.5 rounded-lg bg-[hsl(var(--charcoal))] text-white text-[10px] font-bold uppercase tracking-wide hover:scale-105 transition-transform">
-                          {isOverdue ? 'Reach out' : 'Schedule'}
                         </button>
-                      </div>
-                    </div>
-                  );
-                })}
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             </div>
           )}
