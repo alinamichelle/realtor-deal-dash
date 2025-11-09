@@ -399,21 +399,21 @@ export default function ContactProfile() {
                 {/* Right column - Stats & Calls */}
                 <div className="space-y-6">
                   {/* Stats - AT THE TOP - Horizontal */}
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-3 gap-2">
                     <Card className="p-3 text-center">
-                      <Phone className="h-4 w-4 mx-auto mb-2 text-primary" />
-                      <div className="text-xs text-muted-foreground mb-1">Viable Calls</div>
-                      <div className="text-2xl font-bold">{contactData.viableCalls}</div>
+                      <Phone className="h-4 w-4 mx-auto mb-1.5 text-primary" />
+                      <div className="text-[10px] text-muted-foreground mb-0.5 whitespace-nowrap">Viable Calls</div>
+                      <div className="text-xl font-bold">{contactData.viableCalls}</div>
                     </Card>
                     <Card className="p-3 text-center">
-                      <MessageSquare className="h-4 w-4 mx-auto mb-2 text-primary" />
-                      <div className="text-xs text-muted-foreground mb-1">Interactions</div>
-                      <div className="text-2xl font-bold">{contactData.interactions}</div>
+                      <MessageSquare className="h-4 w-4 mx-auto mb-1.5 text-primary" />
+                      <div className="text-[10px] text-muted-foreground mb-0.5 whitespace-nowrap">Interactions</div>
+                      <div className="text-xl font-bold">{contactData.interactions}</div>
                     </Card>
                     <Card className="p-3 text-center">
-                      <Users className="h-4 w-4 mx-auto mb-2 text-primary" />
-                      <div className="text-xs text-muted-foreground mb-1">Referrals</div>
-                      <div className="text-2xl font-bold">{contactData.referrals}</div>
+                      <Users className="h-4 w-4 mx-auto mb-1.5 text-primary" />
+                      <div className="text-[10px] text-muted-foreground mb-0.5 whitespace-nowrap">Referrals</div>
+                      <div className="text-xl font-bold">{contactData.referrals}</div>
                     </Card>
                   </div>
 
