@@ -298,122 +298,341 @@ const Leads = () => {
               </Select>
             </div>
 
-            {/* Leads Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {filteredLeads.map((lead) => (
-                <Card key={lead.id} className="p-6 hover:shadow-lg transition-all relative">
-                  {lead.flagged && (
-                    <div className="absolute top-4 right-4">
-                      <Flag className="h-5 w-5 text-destructive fill-destructive" />
+            {/* Pipeline Board */}
+            <div className="flex gap-4 overflow-x-auto pb-4">
+              {/* New Pipeline */}
+              <div className="flex-shrink-0 w-[320px]">
+                <div className="bg-info/10 rounded-lg p-3 mb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4 text-info" />
+                      <h3 className="font-semibold text-foreground">New</h3>
                     </div>
-                  )}
-
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="p-3 bg-primary/10 rounded-xl">
-                      <User className="h-6 w-6 text-primary" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <div>
-                          <h3 className="text-lg font-semibold text-foreground">
-                            {lead.first_name} {lead.last_name}
-                          </h3>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Badge className={getStatusColor(lead.status)}>
-                              {lead.status}
-                            </Badge>
-                            <Badge className={getLeadTypeColor(lead.lead_type)} variant="outline">
+                    <Badge className="bg-info text-info-foreground">
+                      {leads.filter((l) => l.status === "new").length}
+                    </Badge>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  {leads
+                    .filter((l) => l.status === "new")
+                    .map((lead) => (
+                      <Card key={lead.id} className="p-4 hover:shadow-md transition-all cursor-pointer relative">
+                        {lead.flagged && (
+                          <Flag className="absolute top-2 right-2 h-4 w-4 text-destructive fill-destructive" />
+                        )}
+                        <div className="flex items-start gap-3 mb-3">
+                          <div className="p-2 bg-primary/10 rounded-lg">
+                            <User className="h-4 w-4 text-primary" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-foreground text-sm truncate">
+                              {lead.first_name} {lead.last_name}
+                            </h4>
+                            <Badge className={`${getLeadTypeColor(lead.lead_type)} text-xs mt-1`} variant="outline">
                               {lead.lead_type}
                             </Badge>
                           </div>
                         </div>
-                      </div>
-
-                      {/* Contact Info */}
-                      <div className="space-y-2 mb-4">
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Mail className="h-3 w-3" />
-                          <span>{lead.email}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Phone className="h-3 w-3" />
-                          <span>{lead.phone}</span>
-                        </div>
-                      </div>
-
-                      {/* Lead Details */}
-                      <div className="grid grid-cols-2 gap-3 mb-4 pb-4 border-b border-border">
-                        <div>
-                          <p className="text-xs text-muted-foreground mb-1">Source</p>
-                          <p className="text-sm font-medium text-foreground">{lead.source}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-muted-foreground mb-1">Price Point</p>
-                          <p className="text-sm font-medium text-foreground">{lead.price_point}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-muted-foreground mb-1">Location</p>
-                          <div className="flex items-center gap-1">
-                            <MapPin className="h-3 w-3 text-muted-foreground" />
-                            <p className="text-sm font-medium text-foreground">{lead.zip_code}</p>
+                        <div className="space-y-2 mb-3">
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Mail className="h-3 w-3" />
+                            <span className="truncate">{lead.email}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Phone className="h-3 w-3" />
+                            <span>{lead.phone}</span>
                           </div>
                         </div>
-                        <div>
-                          <p className="text-xs text-muted-foreground mb-1">Agent</p>
-                          <p className="text-sm font-medium text-foreground">{lead.routed_agent}</p>
+                        <div className="flex items-center justify-between text-xs mb-3">
+                          <span className="text-muted-foreground">{lead.source}</span>
+                          <span className="text-muted-foreground">{lead.price_point}</span>
                         </div>
-                      </div>
-
-                      {/* Notes */}
-                      {lead.notes && (
-                        <div className="mb-4">
-                          <p className="text-sm text-muted-foreground italic">
+                        {lead.notes && (
+                          <p className="text-xs text-muted-foreground italic mb-3 line-clamp-2">
                             "{lead.notes}"
                           </p>
+                        )}
+                        <div className="flex items-center justify-between pt-3 border-t border-border">
+                          <span className="text-xs text-muted-foreground">
+                            {getTimeSince(lead.registered_at)}
+                          </span>
+                          <Button size="sm" variant="ghost" asChild className="h-7 text-xs">
+                            <NavLink to={`/lead/${lead.id}`}>View</NavLink>
+                          </Button>
                         </div>
-                      )}
+                      </Card>
+                    ))}
+                </div>
+              </div>
 
-                      {/* Tags */}
-                      {lead.tags && lead.tags.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-4">
-                          {lead.tags.map((tag, index) => (
-                            <Badge key={index} variant="secondary" className="text-xs">
-                              {tag.replace("_", " ")}
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
-
-                      {/* Footer */}
-                      <div className="flex items-center justify-between pt-4 border-t border-border">
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <Clock className="h-3 w-3" />
-                          <span>{getTimeSince(lead.registered_at)}</span>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button variant="outline" size="sm" className="gap-2">
-                            <Phone className="h-3 w-3" />
-                            Call
-                          </Button>
-                          <Button variant="outline" size="sm" className="gap-2">
-                            <Mail className="h-3 w-3" />
-                            Email
-                          </Button>
-                          <Button size="sm" asChild>
-                            <NavLink to={`/lead/${lead.id}`}>
-                              View Details
-                            </NavLink>
-                          </Button>
-                        </div>
-                      </div>
+              {/* Contacted Pipeline */}
+              <div className="flex-shrink-0 w-[320px]">
+                <div className="bg-primary/10 rounded-lg p-3 mb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-primary" />
+                      <h3 className="font-semibold text-foreground">Contacted</h3>
                     </div>
+                    <Badge className="bg-primary text-primary-foreground">
+                      {leads.filter((l) => l.status === "contacted").length}
+                    </Badge>
                   </div>
-                </Card>
-              ))}
+                </div>
+                <div className="space-y-3">
+                  {leads
+                    .filter((l) => l.status === "contacted")
+                    .map((lead) => (
+                      <Card key={lead.id} className="p-4 hover:shadow-md transition-all cursor-pointer relative">
+                        {lead.flagged && (
+                          <Flag className="absolute top-2 right-2 h-4 w-4 text-destructive fill-destructive" />
+                        )}
+                        <div className="flex items-start gap-3 mb-3">
+                          <div className="p-2 bg-primary/10 rounded-lg">
+                            <User className="h-4 w-4 text-primary" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-foreground text-sm truncate">
+                              {lead.first_name} {lead.last_name}
+                            </h4>
+                            <Badge className={`${getLeadTypeColor(lead.lead_type)} text-xs mt-1`} variant="outline">
+                              {lead.lead_type}
+                            </Badge>
+                          </div>
+                        </div>
+                        <div className="space-y-2 mb-3">
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Mail className="h-3 w-3" />
+                            <span className="truncate">{lead.email}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Phone className="h-3 w-3" />
+                            <span>{lead.phone}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between text-xs mb-3">
+                          <span className="text-muted-foreground">{lead.source}</span>
+                          <span className="text-muted-foreground">{lead.price_point}</span>
+                        </div>
+                        {lead.notes && (
+                          <p className="text-xs text-muted-foreground italic mb-3 line-clamp-2">
+                            "{lead.notes}"
+                          </p>
+                        )}
+                        <div className="flex items-center justify-between pt-3 border-t border-border">
+                          <span className="text-xs text-muted-foreground">
+                            {getTimeSince(lead.registered_at)}
+                          </span>
+                          <Button size="sm" variant="ghost" asChild className="h-7 text-xs">
+                            <NavLink to={`/lead/${lead.id}`}>View</NavLink>
+                          </Button>
+                        </div>
+                      </Card>
+                    ))}
+                </div>
+              </div>
+
+              {/* Qualified Pipeline */}
+              <div className="flex-shrink-0 w-[320px]">
+                <div className="bg-success/10 rounded-lg p-3 mb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4 text-success" />
+                      <h3 className="font-semibold text-foreground">Qualified</h3>
+                    </div>
+                    <Badge className="bg-success text-success-foreground">
+                      {leads.filter((l) => l.status === "qualified").length}
+                    </Badge>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  {leads
+                    .filter((l) => l.status === "qualified")
+                    .map((lead) => (
+                      <Card key={lead.id} className="p-4 hover:shadow-md transition-all cursor-pointer relative">
+                        {lead.flagged && (
+                          <Flag className="absolute top-2 right-2 h-4 w-4 text-destructive fill-destructive" />
+                        )}
+                        <div className="flex items-start gap-3 mb-3">
+                          <div className="p-2 bg-primary/10 rounded-lg">
+                            <User className="h-4 w-4 text-primary" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-foreground text-sm truncate">
+                              {lead.first_name} {lead.last_name}
+                            </h4>
+                            <Badge className={`${getLeadTypeColor(lead.lead_type)} text-xs mt-1`} variant="outline">
+                              {lead.lead_type}
+                            </Badge>
+                          </div>
+                        </div>
+                        <div className="space-y-2 mb-3">
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Mail className="h-3 w-3" />
+                            <span className="truncate">{lead.email}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Phone className="h-3 w-3" />
+                            <span>{lead.phone}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between text-xs mb-3">
+                          <span className="text-muted-foreground">{lead.source}</span>
+                          <span className="text-muted-foreground">{lead.price_point}</span>
+                        </div>
+                        {lead.notes && (
+                          <p className="text-xs text-muted-foreground italic mb-3 line-clamp-2">
+                            "{lead.notes}"
+                          </p>
+                        )}
+                        <div className="flex items-center justify-between pt-3 border-t border-border">
+                          <span className="text-xs text-muted-foreground">
+                            {getTimeSince(lead.registered_at)}
+                          </span>
+                          <Button size="sm" variant="ghost" asChild className="h-7 text-xs">
+                            <NavLink to={`/lead/${lead.id}`}>View</NavLink>
+                          </Button>
+                        </div>
+                      </Card>
+                    ))}
+                </div>
+              </div>
+
+              {/* Nurturing Pipeline */}
+              <div className="flex-shrink-0 w-[320px]">
+                <div className="bg-caution/10 rounded-lg p-3 mb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-4 w-4 text-caution" />
+                      <h3 className="font-semibold text-foreground">Nurturing</h3>
+                    </div>
+                    <Badge className="bg-caution text-caution-foreground">
+                      {leads.filter((l) => l.status === "nurturing").length}
+                    </Badge>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  {leads
+                    .filter((l) => l.status === "nurturing")
+                    .map((lead) => (
+                      <Card key={lead.id} className="p-4 hover:shadow-md transition-all cursor-pointer relative">
+                        {lead.flagged && (
+                          <Flag className="absolute top-2 right-2 h-4 w-4 text-destructive fill-destructive" />
+                        )}
+                        <div className="flex items-start gap-3 mb-3">
+                          <div className="p-2 bg-primary/10 rounded-lg">
+                            <User className="h-4 w-4 text-primary" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-foreground text-sm truncate">
+                              {lead.first_name} {lead.last_name}
+                            </h4>
+                            <Badge className={`${getLeadTypeColor(lead.lead_type)} text-xs mt-1`} variant="outline">
+                              {lead.lead_type}
+                            </Badge>
+                          </div>
+                        </div>
+                        <div className="space-y-2 mb-3">
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Mail className="h-3 w-3" />
+                            <span className="truncate">{lead.email}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Phone className="h-3 w-3" />
+                            <span>{lead.phone}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between text-xs mb-3">
+                          <span className="text-muted-foreground">{lead.source}</span>
+                          <span className="text-muted-foreground">{lead.price_point}</span>
+                        </div>
+                        {lead.notes && (
+                          <p className="text-xs text-muted-foreground italic mb-3 line-clamp-2">
+                            "{lead.notes}"
+                          </p>
+                        )}
+                        <div className="flex items-center justify-between pt-3 border-t border-border">
+                          <span className="text-xs text-muted-foreground">
+                            {getTimeSince(lead.registered_at)}
+                          </span>
+                          <Button size="sm" variant="ghost" asChild className="h-7 text-xs">
+                            <NavLink to={`/lead/${lead.id}`}>View</NavLink>
+                          </Button>
+                        </div>
+                      </Card>
+                    ))}
+                </div>
+              </div>
+
+              {/* Converted Pipeline */}
+              <div className="flex-shrink-0 w-[320px]">
+                <div className="bg-success/10 rounded-lg p-3 mb-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Users className="h-4 w-4 text-success" />
+                      <h3 className="font-semibold text-foreground">Converted</h3>
+                    </div>
+                    <Badge className="bg-success text-success-foreground">
+                      {leads.filter((l) => l.status === "converted").length}
+                    </Badge>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  {leads
+                    .filter((l) => l.status === "converted")
+                    .map((lead) => (
+                      <Card key={lead.id} className="p-4 hover:shadow-md transition-all cursor-pointer relative">
+                        {lead.flagged && (
+                          <Flag className="absolute top-2 right-2 h-4 w-4 text-destructive fill-destructive" />
+                        )}
+                        <div className="flex items-start gap-3 mb-3">
+                          <div className="p-2 bg-primary/10 rounded-lg">
+                            <User className="h-4 w-4 text-primary" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-foreground text-sm truncate">
+                              {lead.first_name} {lead.last_name}
+                            </h4>
+                            <Badge className={`${getLeadTypeColor(lead.lead_type)} text-xs mt-1`} variant="outline">
+                              {lead.lead_type}
+                            </Badge>
+                          </div>
+                        </div>
+                        <div className="space-y-2 mb-3">
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Mail className="h-3 w-3" />
+                            <span className="truncate">{lead.email}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Phone className="h-3 w-3" />
+                            <span>{lead.phone}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between text-xs mb-3">
+                          <span className="text-muted-foreground">{lead.source}</span>
+                          <span className="text-muted-foreground">{lead.price_point}</span>
+                        </div>
+                        {lead.notes && (
+                          <p className="text-xs text-muted-foreground italic mb-3 line-clamp-2">
+                            "{lead.notes}"
+                          </p>
+                        )}
+                        <div className="flex items-center justify-between pt-3 border-t border-border">
+                          <span className="text-xs text-muted-foreground">
+                            {getTimeSince(lead.registered_at)}
+                          </span>
+                          <Button size="sm" variant="ghost" asChild className="h-7 text-xs">
+                            <NavLink to={`/lead/${lead.id}`}>View</NavLink>
+                          </Button>
+                        </div>
+                      </Card>
+                    ))}
+                </div>
+              </div>
             </div>
 
             {filteredLeads.length === 0 && (
-              <Card className="p-12 text-center">
+              <Card className="p-12 text-center mt-6">
                 <UserPlus className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-foreground mb-2">
                   No leads found
