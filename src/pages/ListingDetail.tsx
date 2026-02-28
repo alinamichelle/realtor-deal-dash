@@ -1,9 +1,23 @@
+import { useState } from "react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { NavLink } from "@/components/NavLink";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from "@/components/ui/collapsible";
 import {
   ArrowLeft,
   Edit,
@@ -12,15 +26,16 @@ import {
   Clock,
   AlertCircle,
   Camera,
-  Video,
   Lock,
   QrCode,
   MessageSquare,
-  Megaphone,
-  Monitor,
-  Image as ImageIcon,
   Copy,
   ArrowRight,
+  ChevronDown,
+  ChevronRight,
+  Eye,
+  User,
+  Send,
 } from "lucide-react";
 
 // ── Mock data ──
@@ -35,6 +50,8 @@ const listing = {
   dom: 18,
   showings: 8,
   leads: 3,
+  commissionPct: 3.0,
+  commissionCoopPct: 2.5,
 };
 
 const pipelineSteps = [
@@ -57,8 +74,8 @@ const checklist = [
   { title: "Lockbox assigned", subtitle: "LB-2847 · Supra · Code: 4821", date: "Jan 21", done: true },
   { title: "Text code active", subtitle: "HAUS2847 · 3 leads captured", date: "Jan 21", done: true },
   { title: "Marketing live", subtitle: "MLS, Zillow, social posted", date: "Jan 21", done: true },
-  { title: "Video", subtitle: "Scheduled Feb 10 · Drone + walkthrough", date: null, done: false, action: "View details" },
-  { title: "Zillow Showcase", subtitle: "Submit after video delivery", date: null, done: false, action: "Schedule" },
+  { title: "Video", subtitle: "Scheduled Feb 10 · Drone + walkthrough", date: null, done: false, overdue: false, action: "View details" },
+  { title: "Zillow Showcase", subtitle: "Submit after video delivery", date: null, done: false, overdue: false, action: "Schedule" },
 ];
 
 const inventory = [
@@ -75,19 +92,16 @@ const media = [
   { label: "Listing Imgs", detail: "12 in gallery", status: "Ready" },
 ];
 
-const activity = [
-  { type: "showing", label: "Showing · Chen Family", detail: "Kim Realty · 2nd visit · 2 adults, 1 child", time: "Today 2p", comment: "Very interested in the backyard. Asking about seller timeline." },
-  { type: "showing", label: "Showing · Martinez Family", detail: "ERA Realty · 1st visit · 2 adults", time: "Yesterday" },
-  { type: "inquiry", label: "Agent Inquiry · Sarah Kim", detail: "Compass · Asking about seller concessions", time: "Feb 5" },
-  { type: "open", label: "Open Haus", detail: "12 visitors · 4 potential buyers · 2 signed in", time: "Feb 2" },
+const showings = [
+  { id: 1, label: "Showing · Chen Family", detail: "Kim Realty · 2nd visit · 2 adults, 1 child", time: "Today 2p", comment: "Very interested in the backyard. Asking about seller timeline.", agent: "Kim Lee", phone: "(512) 555-0192" },
+  { id: 2, label: "Showing · Martinez Family", detail: "ERA Realty · 1st visit · 2 adults", time: "Yesterday", comment: "", agent: "Jose Martinez", phone: "(512) 555-0301" },
+  { id: 3, label: "Showing · Thompson", detail: "RE/MAX · 1st visit · 1 adult", time: "Feb 4", comment: "Liked layout, concerned about price.", agent: "Amy Thompson", phone: "(512) 555-0444" },
 ];
 
 const leads = [
-  { name: "Rachel Johnson", source: "Text HAUS2847 · $500K buyer", assigned: "Anthony", pipeline: "Nurturing", contact: "Connected", contactTime: "2h response", color: "bg-destructive" },
-  { name: "Kelly Park", source: "QR scan · Showing today 4:30p", assigned: "Anthony", pipeline: "Showing", contact: "Connected", contactTime: "45m response", color: "bg-caution" },
-  { name: "Mike Rivera", source: "Text HAUS2847 · Browsing area", assigned: "Sarah P.", pipeline: "New", contact: "No contact", contactTime: "5d ago", color: "bg-success" },
-  { name: "Jennifer Lee", source: "QR scan · Open Haus visitor", assigned: "Matt J.", pipeline: "Nurturing", contact: "Connected", contactTime: "15h response", color: "bg-info" },
-  { name: "Sarah Kim · Compass", source: "Agent inquiry · Buyer $650-700K", assigned: "Lead Pond", pipeline: "Unassigned", contact: "No contact", contactTime: "3d ago", color: "bg-violet" },
+  { id: 1, name: "Rachel Johnson", source: "Text HAUS2847 · $500K buyer", assigned: "Anthony", pipeline: "Nurturing", contact: "Connected", contactTime: "2h response", color: "bg-destructive", phone: "(512) 555-1234", email: "rachel@email.com", loftyId: "LF-29481" },
+  { id: 2, name: "Kelly Park", source: "QR scan · Showing today 4:30p", assigned: "Anthony", pipeline: "Showing", contact: "Connected", contactTime: "45m response", color: "bg-caution", phone: "(512) 555-5678", email: "kelly@email.com", loftyId: "LF-29502" },
+  { id: 3, name: "Mike Rivera", source: "Text HAUS2847 · Browsing area", assigned: "Sarah P.", pipeline: "New", contact: "No contact", contactTime: "5d ago", color: "bg-success", phone: "(512) 555-9012", email: "mike@email.com", loftyId: "LF-29510" },
 ];
 
 const keyDates = [
@@ -114,288 +128,240 @@ const stepLineColor = (status: string) => {
 };
 
 const ListingDetail = () => {
+  const [showingDrawerOpen, setShowingDrawerOpen] = useState(false);
+  const [selectedShowing, setSelectedShowing] = useState<typeof showings[0] | null>(null);
+  const [allShowingsOpen, setAllShowingsOpen] = useState(false);
+  const [leadDrawerOpen, setLeadDrawerOpen] = useState(false);
+  const [selectedLead, setSelectedLead] = useState<typeof leads[0] | null>(null);
+  const [checklistDrawerOpen, setChecklistDrawerOpen] = useState(false);
+  const [selectedChecklistItem, setSelectedChecklistItem] = useState<typeof checklist[0] | null>(null);
+  const [inventoryDrawerOpen, setInventoryDrawerOpen] = useState(false);
+  const [selectedInventory, setSelectedInventory] = useState<typeof inventory[0] | null>(null);
+  const [completedOpen, setCompletedOpen] = useState(false);
+
+  const completedItems = checklist.filter(c => c.done);
+  const pendingItems = checklist.filter(c => !c.done);
+  const mostRecentShowing = showings[0];
+  const mostRecentLead = leads[0];
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
 
         <main className="flex-1 bg-background overflow-y-auto">
-          <div className="max-w-[1400px] mx-auto px-7 py-6">
-            {/* Back */}
-            <Button variant="ghost" size="sm" asChild className="mb-3 -ml-2">
-              <NavLink to="/listings">
-                <ArrowLeft className="h-4 w-4 mr-1" />
-                Listings
-              </NavLink>
-            </Button>
+          {/* ═══ White Header ═══ */}
+          <div className="bg-card border-b border-border">
+            <div className="max-w-[1400px] mx-auto px-7 py-5">
+              {/* Back */}
+              <Button variant="ghost" size="sm" asChild className="mb-3 -ml-2">
+                <NavLink to="/listings">
+                  <ArrowLeft className="h-4 w-4 mr-1" />
+                  Listings
+                </NavLink>
+              </Button>
 
-            {/* ═══ Header ═══ */}
-            <div className="flex items-start justify-between mb-6">
-              <div>
-                <h1 className="text-2xl font-semibold text-foreground mb-2">
-                  {listing.address}
-                </h1>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <Badge className="bg-success text-success-foreground">
-                    {listing.status}
-                  </Badge>
-                  <span className="text-sm text-muted-foreground">{listing.type}</span>
-                  <span className="text-sm text-muted-foreground">MLS# {listing.mls}</span>
-                  <span className="text-sm text-muted-foreground">{listing.client}</span>
-                  <span className="text-sm text-muted-foreground">{listing.agent}</span>
-                </div>
-                <div className="flex items-center gap-2 mt-3">
-                  <Button size="sm" className="gap-2">
-                    <Edit className="h-3.5 w-3.5" />
-                    Edit listing
-                  </Button>
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <ExternalLink className="h-3.5 w-3.5" />
-                    MLS
-                  </Button>
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <ArrowRight className="h-3.5 w-3.5" />
-                    Transaction
-                  </Button>
-                  <Button variant="outline" size="sm" className="gap-2">
-                    <ExternalLink className="h-3.5 w-3.5" />
-                    Drive
-                  </Button>
-                </div>
-              </div>
-              <div className="flex items-start gap-6 text-right shrink-0">
+              <div className="flex items-start justify-between mb-5">
                 <div>
-                  <p className="text-2xl font-semibold font-mono text-foreground">{formatCurrency(listing.price)}</p>
-                  <p className="text-xs text-muted-foreground">List Price</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-semibold font-mono text-foreground">{listing.dom}</p>
-                  <p className="text-xs text-muted-foreground">DOM</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-semibold font-mono text-foreground">{listing.showings}</p>
-                  <p className="text-xs text-muted-foreground">Showings</p>
-                </div>
-                <div>
-                  <p className="text-2xl font-semibold font-mono text-foreground">{listing.leads}</p>
-                  <p className="text-xs text-muted-foreground">Leads</p>
-                </div>
-              </div>
-            </div>
-
-            {/* ═══ Progress Pipeline ═══ */}
-            <div className="flex items-center gap-0 mb-8 overflow-x-auto pb-2">
-              {pipelineSteps.map((step, i) => (
-                <div key={step.label} className="flex items-center">
-                  <div className="flex flex-col items-center gap-1.5">
-                    <div className={`w-3 h-3 rounded-full ${stepDotColor(step.status)}`} />
-                    <span className="text-xs text-muted-foreground whitespace-nowrap">{step.label}</span>
+                  <h1 className="text-2xl font-semibold text-foreground mb-2">
+                    {listing.address}
+                  </h1>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Badge className="bg-success text-success-foreground">
+                      {listing.status}
+                    </Badge>
+                    <span className="text-sm text-muted-foreground">{listing.type}</span>
+                    <span className="text-sm text-muted-foreground">MLS# {listing.mls}</span>
+                    <span className="text-sm text-muted-foreground">{listing.client}</span>
+                    <span className="text-sm text-muted-foreground">{listing.agent}</span>
                   </div>
-                  {i < pipelineSteps.length - 1 && (
-                    <div className={`w-10 h-0.5 mx-1 mt-[-14px] ${stepLineColor(pipelineSteps[i + 1].status)}`} />
-                  )}
+                  <div className="flex items-center gap-2 mt-3">
+                    <Button size="sm" className="gap-2">
+                      <Edit className="h-3.5 w-3.5" />
+                      Edit listing
+                    </Button>
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <ExternalLink className="h-3.5 w-3.5" />
+                      MLS
+                    </Button>
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <ArrowRight className="h-3.5 w-3.5" />
+                      Transaction
+                    </Button>
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <ExternalLink className="h-3.5 w-3.5" />
+                      Drive
+                    </Button>
+                  </div>
                 </div>
-              ))}
-            </div>
+                <div className="flex items-start gap-6 text-right shrink-0">
+                  <div>
+                    <p className="text-2xl font-semibold font-mono text-foreground">{formatCurrency(listing.price)}</p>
+                    <p className="text-xs text-muted-foreground">List Price</p>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-semibold font-mono text-foreground">{listing.dom}</p>
+                    <p className="text-xs text-muted-foreground">DOM</p>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-semibold font-mono text-foreground">{listing.showings}</p>
+                    <p className="text-xs text-muted-foreground">Showings</p>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-semibold font-mono text-foreground">{listing.leads}</p>
+                    <p className="text-xs text-muted-foreground">Leads</p>
+                  </div>
+                </div>
+              </div>
 
-            {/* ═══ Main Grid ═══ */}
+              {/* ═══ Progress Pipeline (white bg) ═══ */}
+              <div className="flex items-center gap-0 overflow-x-auto pb-1">
+                {pipelineSteps.map((step, i) => (
+                  <div key={step.label} className="flex items-center">
+                    <div className="flex flex-col items-center gap-1.5">
+                      <div className={`w-3 h-3 rounded-full ${stepDotColor(step.status)}`} />
+                      <span className="text-xs text-muted-foreground whitespace-nowrap">{step.label}</span>
+                    </div>
+                    {i < pipelineSteps.length - 1 && (
+                      <div className={`w-10 h-0.5 mx-1 mt-[-14px] ${stepLineColor(pipelineSteps[i + 1].status)}`} />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* ═══ Content ═══ */}
+          <div className="max-w-[1400px] mx-auto px-7 py-6">
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
-              {/* Left Column */}
+              {/* ═══ Left Column ═══ */}
               <div className="space-y-6">
-                {/* Launch Checklist */}
+                {/* Showings – most recent only */}
+                <Card className="p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <Eye className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Showings</span>
+                      <Badge variant="outline" className="text-[10px]">{showings.length}</Badge>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs text-muted-foreground h-auto py-0"
+                      onClick={() => setAllShowingsOpen(true)}
+                    >
+                      View all
+                    </Button>
+                  </div>
+                  <div
+                    className="flex items-start gap-3 py-3 cursor-pointer hover:bg-muted/30 rounded-lg px-2 -mx-2 transition-colors"
+                    onClick={() => { setSelectedShowing(mostRecentShowing); setShowingDrawerOpen(true); }}
+                  >
+                    <div className="w-2 h-2 rounded-full mt-1.5 shrink-0 bg-info" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-sm font-medium text-foreground">{mostRecentShowing.label}</p>
+                        <span className="text-xs text-muted-foreground shrink-0">{mostRecentShowing.time}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{mostRecentShowing.detail}</p>
+                      {mostRecentShowing.comment && (
+                        <div className="mt-2 px-3 py-2 bg-muted/50 rounded-lg">
+                          <p className="text-xs text-muted-foreground italic">"{mostRecentShowing.comment}"</p>
+                        </div>
+                      )}
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 mt-1" />
+                  </div>
+
+                  {/* Most Recent Lead */}
+                  <div className="mt-4 pt-4 border-t border-border">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-3">Most Recent Lead</span>
+                    <div
+                      className="flex items-center gap-3 cursor-pointer hover:bg-muted/30 rounded-lg px-2 py-2 -mx-2 transition-colors"
+                      onClick={() => { setSelectedLead(mostRecentLead); setLeadDrawerOpen(true); }}
+                    >
+                      <div className={`w-7 h-7 rounded-full ${mostRecentLead.color} flex items-center justify-center text-[10px] font-bold text-white shrink-0`}>
+                        {mostRecentLead.name.split(" ").map(w => w[0]).join("").slice(0, 2)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-foreground">{mostRecentLead.name}</p>
+                        <p className="text-[11px] text-muted-foreground">{mostRecentLead.source}</p>
+                      </div>
+                      <Badge variant="outline" className="text-[10px]">{mostRecentLead.pipeline}</Badge>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Launch Checklist – upcoming/overdue + collapsed completed */}
                 <Card className="p-5">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
                       <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Launch Checklist</span>
                     </div>
-                    <span className="text-xs text-muted-foreground">7 of 9 complete</span>
-                  </div>
-                  <div className="space-y-0 divide-y divide-border-sub">
-                    {checklist.map((item, i) => (
-                      <div key={i} className="flex items-start gap-3 py-3">
-                        {item.done ? (
-                          <CheckCircle2 className="h-5 w-5 text-success shrink-0 mt-0.5" />
-                        ) : item.action === "View details" ? (
-                          <Clock className="h-5 w-5 text-caution shrink-0 mt-0.5" />
-                        ) : (
-                          <AlertCircle className="h-5 w-5 text-muted-foreground/40 shrink-0 mt-0.5" />
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-foreground">{item.title}</p>
-                          <p className="text-xs text-muted-foreground">{item.subtitle}</p>
-                        </div>
-                        {item.date && (
-                          <span className="text-xs text-muted-foreground shrink-0">{item.date}</span>
-                        )}
-                        {item.action && (
-                          <Button variant="ghost" size="sm" className="text-xs text-success shrink-0 h-auto py-0">
-                            {item.action}
-                          </Button>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </Card>
-
-                {/* Activity */}
-                <Card className="p-5">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Activity</span>
-                    <Button variant="ghost" size="sm" className="text-xs text-muted-foreground h-auto py-0">All activity</Button>
+                    <span className="text-xs text-muted-foreground">{completedItems.length} of {checklist.length} complete</span>
                   </div>
 
-                  {/* Activity Stats */}
-                  <div className="grid grid-cols-3 gap-3 mb-5">
-                    <div className="border border-border rounded-lg p-3 text-center">
-                      <p className="text-xl font-semibold font-mono text-foreground">8</p>
-                      <p className="text-xs text-muted-foreground">Showings</p>
-                      <p className="text-[10px] text-success">↑3 this week</p>
-                    </div>
-                    <div className="border border-border rounded-lg p-3 text-center">
-                      <p className="text-xl font-semibold font-mono text-foreground">1</p>
-                      <p className="text-xs text-muted-foreground">Open Haus</p>
-                      <p className="text-[10px] text-muted-foreground">12 visitors</p>
-                    </div>
-                    <div className="border border-border rounded-lg p-3 text-center">
-                      <p className="text-xl font-semibold font-mono text-foreground">2</p>
-                      <p className="text-xs text-muted-foreground">Agent Inquiries</p>
-                      <p className="text-[10px] text-muted-foreground">This week</p>
-                    </div>
-                  </div>
-
-                  {/* Activity Feed */}
-                  <div className="space-y-0 divide-y divide-border-sub">
-                    {activity.map((item, i) => (
-                      <div key={i} className="py-3">
-                        <div className="flex items-start gap-3">
-                          <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
-                            item.type === "showing" ? "bg-info" : item.type === "inquiry" ? "bg-violet" : "bg-success"
-                          }`} />
+                  {/* Pending / Overdue items */}
+                  {pendingItems.length > 0 && (
+                    <div className="space-y-0 divide-y divide-border-sub">
+                      {pendingItems.map((item, i) => (
+                        <div
+                          key={i}
+                          className="flex items-start gap-3 py-3 cursor-pointer hover:bg-muted/30 rounded-lg px-2 -mx-2 transition-colors"
+                          onClick={() => { setSelectedChecklistItem(item); setChecklistDrawerOpen(true); }}
+                        >
+                          {item.overdue ? (
+                            <AlertCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+                          ) : (
+                            <Clock className="h-5 w-5 text-caution shrink-0 mt-0.5" />
+                          )}
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between gap-2">
-                              <p className="text-sm font-medium text-foreground">{item.label}</p>
-                              <span className="text-xs text-muted-foreground shrink-0">{item.time}</span>
-                            </div>
-                            <p className="text-xs text-muted-foreground">{item.detail}</p>
-                            {item.comment && (
-                              <div className="mt-2 px-3 py-2 bg-muted/50 rounded-lg">
-                                <p className="text-xs text-muted-foreground italic">"{item.comment}"</p>
-                              </div>
-                            )}
+                            <p className="text-sm font-medium text-foreground">{item.title}</p>
+                            <p className="text-xs text-muted-foreground">{item.subtitle}</p>
                           </div>
+                          {item.action && (
+                            <Button variant="ghost" size="sm" className="text-xs text-success shrink-0 h-auto py-0">
+                              {item.action}
+                            </Button>
+                          )}
+                          <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 mt-1" />
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                </Card>
-
-                {/* Lead Attribution */}
-                <Card className="p-5">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Lead Attribution</span>
-                    <Button variant="ghost" size="sm" className="text-xs text-muted-foreground h-auto py-0">All leads</Button>
-                  </div>
-
-                  {/* Lead Source Stats */}
-                  <div className="grid grid-cols-3 gap-3 mb-5">
-                    <div className="border border-border rounded-lg p-3 text-center">
-                      <p className="text-xl font-semibold font-mono text-success">2</p>
-                      <p className="text-xs text-muted-foreground">QR Scans</p>
+                      ))}
                     </div>
-                    <div className="border border-border rounded-lg p-3 text-center">
-                      <p className="text-xl font-semibold font-mono text-success">3</p>
-                      <p className="text-xs text-muted-foreground">Text Code</p>
-                    </div>
-                    <div className="border border-border rounded-lg p-3 text-center">
-                      <p className="text-xl font-semibold font-mono text-success">1</p>
-                      <p className="text-xs text-muted-foreground">Agent Inquiry</p>
-                    </div>
-                  </div>
+                  )}
 
-                  {/* Leads Table */}
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b border-border">
-                          <th className="text-left text-[10px] font-bold text-muted-foreground uppercase tracking-wider py-2">Lead</th>
-                          <th className="text-left text-[10px] font-bold text-muted-foreground uppercase tracking-wider py-2">Assigned</th>
-                          <th className="text-left text-[10px] font-bold text-muted-foreground uppercase tracking-wider py-2">Pipeline</th>
-                          <th className="text-left text-[10px] font-bold text-muted-foreground uppercase tracking-wider py-2">Contact</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-border-sub">
-                        {leads.map((lead, i) => (
-                          <tr key={i} className="hover:bg-muted/30 transition-colors">
-                            <td className="py-3">
-                              <div className="flex items-center gap-2">
-                                <div className={`w-7 h-7 rounded-full ${lead.color} flex items-center justify-center text-[10px] font-bold text-white shrink-0`}>
-                                  {lead.name.split(" ").map(w => w[0]).join("").slice(0, 2)}
-                                </div>
-                                <div>
-                                  <p className="text-sm font-medium text-foreground">{lead.name}</p>
-                                  <p className="text-[11px] text-muted-foreground">{lead.source}</p>
-                                </div>
+                  {/* Completed items – collapsed */}
+                  {completedItems.length > 0 && (
+                    <Collapsible open={completedOpen} onOpenChange={setCompletedOpen}>
+                      <CollapsibleTrigger className="flex items-center gap-2 w-full pt-3 mt-3 border-t border-border text-left">
+                        <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${completedOpen ? "" : "-rotate-90"}`} />
+                        <span className="text-xs text-muted-foreground">{completedItems.length} completed</span>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <div className="space-y-0 divide-y divide-border-sub mt-2">
+                          {completedItems.map((item, i) => (
+                            <div
+                              key={i}
+                              className="flex items-start gap-3 py-3 cursor-pointer hover:bg-muted/30 rounded-lg px-2 -mx-2 transition-colors"
+                              onClick={() => { setSelectedChecklistItem(item); setChecklistDrawerOpen(true); }}
+                            >
+                              <CheckCircle2 className="h-5 w-5 text-success shrink-0 mt-0.5" />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-foreground">{item.title}</p>
+                                <p className="text-xs text-muted-foreground">{item.subtitle}</p>
                               </div>
-                            </td>
-                            <td className="py-3 text-xs text-muted-foreground">{lead.assigned}</td>
-                            <td className="py-3">
-                              <Badge variant="outline" className="text-[10px]">{lead.pipeline}</Badge>
-                            </td>
-                            <td className="py-3 text-right">
-                              <p className="text-xs text-foreground">{lead.contact}</p>
-                              <p className="text-[10px] text-muted-foreground">{lead.contactTime}</p>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  {/* Lead Summary Stats */}
-                  <div className="grid grid-cols-4 gap-3 mt-4 pt-4 border-t border-border">
-                    <div className="text-center">
-                      <p className="text-lg font-semibold font-mono text-foreground">3</p>
-                      <p className="text-[10px] text-muted-foreground">Connected</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-lg font-semibold font-mono text-destructive">2</p>
-                      <p className="text-[10px] text-muted-foreground">No contact</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-lg font-semibold font-mono text-foreground">2.1h</p>
-                      <p className="text-[10px] text-muted-foreground">Avg response</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-lg font-semibold font-mono text-destructive">1</p>
-                      <p className="text-[10px] text-muted-foreground">Lead Pond</p>
-                    </div>
-                  </div>
-                </Card>
-              </div>
-
-              {/* ═══ Right Sidebar ═══ */}
-              <div className="space-y-5">
-                {/* Inventory */}
-                <Card className="p-5">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Inventory</span>
-                    <Button variant="ghost" size="sm" className="text-xs text-muted-foreground h-auto py-0">Manage</Button>
-                  </div>
-                  <div className="space-y-3">
-                    {inventory.map((item, i) => (
-                      <div key={i} className="flex items-center gap-3">
-                        <item.icon className="h-4 w-4 text-muted-foreground shrink-0" />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-foreground">{item.id}</p>
-                          <p className="text-[11px] text-muted-foreground">{item.label}</p>
+                              {item.date && (
+                                <span className="text-xs text-muted-foreground shrink-0">{item.date}</span>
+                              )}
+                              <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 mt-1" />
+                            </div>
+                          ))}
                         </div>
-                        <Badge variant="outline" className="text-[10px] bg-success/10 text-success border-success/20 shrink-0">
-                          {item.status}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  )}
                 </Card>
 
                 {/* Media */}
@@ -411,8 +377,8 @@ const ListingDetail = () => {
                         <p className="text-xs font-medium text-foreground">{item.label}</p>
                         <p className="text-[10px] text-muted-foreground">{item.detail}</p>
                         <Badge variant="outline" className={`text-[9px] mt-1 ${
-                          item.status === "Done" || item.status === "Live" || item.status === "Ready" 
-                            ? "bg-success/10 text-success border-success/20" 
+                          item.status === "Done" || item.status === "Live" || item.status === "Ready"
+                            ? "bg-success/10 text-success border-success/20"
                             : "bg-caution/10 text-caution border-caution/20"
                         }`}>
                           {item.status}
@@ -457,21 +423,11 @@ const ListingDetail = () => {
                     </div>
                   </div>
                 </Card>
+              </div>
 
-                {/* Key Dates */}
-                <Card className="p-5">
-                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-4">Key Dates</span>
-                  <div className="space-y-2">
-                    {keyDates.map((d, i) => (
-                      <div key={i} className="flex items-center justify-between py-1.5">
-                        <span className="text-xs text-muted-foreground">{d.label}</span>
-                        <span className={`text-xs font-medium ${d.highlight ? "text-caution" : "text-foreground"}`}>{d.date}</span>
-                      </div>
-                    ))}
-                  </div>
-                </Card>
-
-                {/* Price History */}
+              {/* ═══ Right Sidebar ═══ */}
+              <div className="space-y-5">
+                {/* Price History (moved to top) */}
                 <Card className="p-5">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Price History</span>
@@ -493,12 +449,234 @@ const ListingDetail = () => {
                       </div>
                     </div>
                   </div>
+                  {/* Commission */}
+                  <div className="mt-4 pt-4 border-t border-border">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-2">Commission</span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">Listing side</span>
+                      <span className="text-sm font-mono font-medium text-foreground">{listing.commissionPct}%</span>
+                    </div>
+                    <div className="flex items-center justify-between mt-1">
+                      <span className="text-xs text-muted-foreground">Co-op</span>
+                      <span className="text-sm font-mono font-medium text-foreground">{listing.commissionCoopPct}%</span>
+                    </div>
+                    <div className="flex items-center justify-between mt-1 pt-1 border-t border-border-sub">
+                      <span className="text-xs text-muted-foreground">Total</span>
+                      <span className="text-sm font-mono font-medium text-foreground">{listing.commissionPct + listing.commissionCoopPct}%</span>
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Key Dates (below price history) */}
+                <Card className="p-5">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-4">Key Dates</span>
+                  <div className="space-y-2">
+                    {keyDates.map((d, i) => (
+                      <div key={i} className="flex items-center justify-between py-1.5">
+                        <span className="text-xs text-muted-foreground">{d.label}</span>
+                        <span className={`text-xs font-medium ${d.highlight ? "text-caution" : "text-foreground"}`}>{d.date}</span>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+
+                {/* Inventory */}
+                <Card className="p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Inventory</span>
+                    <Button variant="ghost" size="sm" className="text-xs text-muted-foreground h-auto py-0">Manage</Button>
+                  </div>
+                  <div className="space-y-3">
+                    {inventory.map((item, i) => (
+                      <div
+                        key={i}
+                        className="flex items-center gap-3 cursor-pointer hover:bg-muted/30 rounded-lg px-2 py-2 -mx-2 transition-colors"
+                        onClick={() => { setSelectedInventory(item); setInventoryDrawerOpen(true); }}
+                      >
+                        <item.icon className="h-4 w-4 text-muted-foreground shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-foreground">{item.id}</p>
+                          <p className="text-[11px] text-muted-foreground">{item.label}</p>
+                        </div>
+                        <Badge variant="outline" className="text-[10px] bg-success/10 text-success border-success/20 shrink-0">
+                          {item.status}
+                        </Badge>
+                        <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+                      </div>
+                    ))}
+                  </div>
                 </Card>
               </div>
             </div>
           </div>
         </main>
       </div>
+
+      {/* ═══ DRAWERS ═══ */}
+
+      {/* Showing Detail Drawer */}
+      <Sheet open={showingDrawerOpen} onOpenChange={setShowingDrawerOpen}>
+        <SheetContent className="sm:max-w-md">
+          <SheetHeader>
+            <SheetTitle>{selectedShowing?.label}</SheetTitle>
+            <SheetDescription>{selectedShowing?.detail}</SheetDescription>
+          </SheetHeader>
+          {selectedShowing && (
+            <div className="mt-6 space-y-5">
+              <div className="space-y-2">
+                <p className="text-xs text-muted-foreground">{selectedShowing.time}</p>
+                <p className="text-sm text-foreground">Agent: {selectedShowing.agent}</p>
+                <p className="text-sm text-muted-foreground">{selectedShowing.phone}</p>
+              </div>
+              {selectedShowing.comment && (
+                <div className="px-3 py-2 bg-muted/50 rounded-lg">
+                  <p className="text-xs text-muted-foreground italic">"{selectedShowing.comment}"</p>
+                </div>
+              )}
+              <div>
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-2">Add Comment</span>
+                <Textarea placeholder="Add a note about this showing..." className="text-sm" rows={3} />
+                <Button size="sm" className="mt-2 gap-2">
+                  <Send className="h-3.5 w-3.5" /> Save
+                </Button>
+              </div>
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
+
+      {/* All Showings Drawer */}
+      <Sheet open={allShowingsOpen} onOpenChange={setAllShowingsOpen}>
+        <SheetContent className="sm:max-w-md">
+          <SheetHeader>
+            <SheetTitle>All Showings</SheetTitle>
+            <SheetDescription>{showings.length} showings for {listing.address}</SheetDescription>
+          </SheetHeader>
+          <div className="mt-6 space-y-0 divide-y divide-border">
+            {showings.map((s) => (
+              <div
+                key={s.id}
+                className="flex items-start gap-3 py-3 cursor-pointer hover:bg-muted/30 rounded-lg px-2 -mx-2 transition-colors"
+                onClick={() => { setAllShowingsOpen(false); setSelectedShowing(s); setShowingDrawerOpen(true); }}
+              >
+                <div className="w-2 h-2 rounded-full mt-1.5 shrink-0 bg-info" />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-medium text-foreground">{s.label}</p>
+                    <span className="text-xs text-muted-foreground shrink-0">{s.time}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{s.detail}</p>
+                </div>
+                <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 mt-1" />
+              </div>
+            ))}
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Lead Detail Drawer */}
+      <Sheet open={leadDrawerOpen} onOpenChange={setLeadDrawerOpen}>
+        <SheetContent className="sm:max-w-md">
+          <SheetHeader>
+            <SheetTitle>{selectedLead?.name}</SheetTitle>
+            <SheetDescription>{selectedLead?.source}</SheetDescription>
+          </SheetHeader>
+          {selectedLead && (
+            <div className="mt-6 space-y-5">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Pipeline</span>
+                  <Badge variant="outline" className="text-[10px]">{selectedLead.pipeline}</Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Assigned</span>
+                  <span className="text-sm text-foreground">{selectedLead.assigned}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Contact</span>
+                  <span className="text-sm text-foreground">{selectedLead.contact}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Phone</span>
+                  <span className="text-sm text-foreground">{selectedLead.phone}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">Email</span>
+                  <span className="text-sm text-foreground">{selectedLead.email}</span>
+                </div>
+              </div>
+              <Button variant="outline" size="sm" className="w-full gap-2">
+                <User className="h-3.5 w-3.5" />
+                Open in Lofty · {selectedLead.loftyId}
+              </Button>
+              <div>
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-2">Add Comment</span>
+                <Textarea placeholder="Add a note about this lead..." className="text-sm" rows={3} />
+                <Button size="sm" className="mt-2 gap-2">
+                  <Send className="h-3.5 w-3.5" /> Save
+                </Button>
+              </div>
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
+
+      {/* Checklist Item Drawer */}
+      <Sheet open={checklistDrawerOpen} onOpenChange={setChecklistDrawerOpen}>
+        <SheetContent className="sm:max-w-md">
+          <SheetHeader>
+            <SheetTitle>{selectedChecklistItem?.title}</SheetTitle>
+            <SheetDescription>{selectedChecklistItem?.subtitle}</SheetDescription>
+          </SheetHeader>
+          {selectedChecklistItem && (
+            <div className="mt-6 space-y-5">
+              <div className="flex items-center gap-2">
+                {selectedChecklistItem.done ? (
+                  <Badge className="bg-success text-success-foreground text-[10px]">Completed</Badge>
+                ) : (
+                  <Badge variant="outline" className="text-[10px] text-caution border-caution/20">Pending</Badge>
+                )}
+                {selectedChecklistItem.date && (
+                  <span className="text-xs text-muted-foreground">{selectedChecklistItem.date}</span>
+                )}
+              </div>
+              <div>
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-2">Add Comment</span>
+                <Textarea placeholder="Add a note about this task..." className="text-sm" rows={3} />
+                <Button size="sm" className="mt-2 gap-2">
+                  <Send className="h-3.5 w-3.5" /> Save
+                </Button>
+              </div>
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
+
+      {/* Inventory Item Drawer */}
+      <Sheet open={inventoryDrawerOpen} onOpenChange={setInventoryDrawerOpen}>
+        <SheetContent className="sm:max-w-md">
+          <SheetHeader>
+            <SheetTitle>{selectedInventory?.id}</SheetTitle>
+            <SheetDescription>{selectedInventory?.label}</SheetDescription>
+          </SheetHeader>
+          {selectedInventory && (
+            <div className="mt-6 space-y-5">
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-[10px] bg-success/10 text-success border-success/20">
+                  {selectedInventory.status}
+                </Badge>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-2">Add Comment</span>
+                <Textarea placeholder="Add a note about this item..." className="text-sm" rows={3} />
+                <Button size="sm" className="mt-2 gap-2">
+                  <Send className="h-3.5 w-3.5" /> Save
+                </Button>
+              </div>
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
     </SidebarProvider>
   );
 };
