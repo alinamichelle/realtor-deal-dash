@@ -146,15 +146,15 @@ export default function Transactions() {
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
         <AppSidebar />
-        <div className="flex-1 bg-background">
+        <div className="flex-1 bg-background overflow-y-auto">
       {/* Header */}
-      <div className="border-b border-border bg-card px-8 py-6">
+      <div className="border-b border-border bg-card px-7 py-5">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" className="rounded-full" onClick={() => navigate('/')}>
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className="h-4 w-4" />
             </Button>
-            <h1 className="text-3xl font-bold">Transactions</h1>
+            <h1 className="text-[22px] font-normal tracking-tight text-foreground">Transactions</h1>
           </div>
           <Button className="gap-2">
             <Plus className="h-4 w-4" />
