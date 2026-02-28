@@ -446,6 +446,45 @@ const ListingDetail = () => {
 
               {/* ═══ Right Sidebar ═══ */}
               <div className="space-y-5">
+                {/* Price History */}
+                <Card className="p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Price History</span>
+                    <Button variant="ghost" size="sm" className="text-xs text-muted-foreground h-auto py-0">Audit log</Button>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-lg font-semibold font-mono text-foreground">{formatCurrency(listing.price)}</span>
+                      <div className="flex items-center gap-2">
+                        <Badge className="bg-success text-success-foreground text-[10px]">Current</Badge>
+                        <span className="text-xs text-muted-foreground">Jan 21</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-lg font-semibold font-mono text-foreground">$695,000</span>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="text-[10px] text-destructive border-destructive/20">-$20K</Badge>
+                        <span className="text-xs text-muted-foreground">Jan 21 (orig)</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-border">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-2">Commission</span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">Listing side</span>
+                      <span className="text-sm font-mono font-medium text-foreground">{listing.commissionPct}%</span>
+                    </div>
+                    <div className="flex items-center justify-between mt-1">
+                      <span className="text-xs text-muted-foreground">Co-op</span>
+                      <span className="text-sm font-mono font-medium text-foreground">{listing.commissionCoopPct}%</span>
+                    </div>
+                    <div className="flex items-center justify-between mt-1 pt-1 border-t border-border-sub">
+                      <span className="text-xs text-muted-foreground">Total</span>
+                      <span className="text-sm font-mono font-medium text-foreground">{listing.commissionPct + listing.commissionCoopPct}%</span>
+                    </div>
+                  </div>
+                </Card>
+
                 {/* People */}
                 <Card className="p-5">
                   <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-4">People</span>
@@ -509,76 +548,46 @@ const ListingDetail = () => {
                   </NavLink>
                 </Card>
 
-                {/* Price History */}
+                {/* Key Dates – collapsible */}
                 <Card className="p-5">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Price History</span>
-                    <Button variant="ghost" size="sm" className="text-xs text-muted-foreground h-auto py-0">Audit log</Button>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-lg font-semibold font-mono text-foreground">{formatCurrency(listing.price)}</span>
-                      <div className="flex items-center gap-2">
-                        <Badge className="bg-success text-success-foreground text-[10px]">Current</Badge>
-                        <span className="text-xs text-muted-foreground">Jan 21</span>
+                  <Collapsible>
+                    <CollapsibleTrigger className="flex items-center justify-between w-full text-left">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Key Dates</span>
+                      <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform" />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <div className="mt-4">
+                        {upcomingDates.length > 0 && (
+                          <div className="space-y-2 mb-3">
+                            {upcomingDates.map((d, i) => (
+                              <div key={i} className="flex items-center justify-between py-1.5">
+                                <span className="text-xs text-muted-foreground">{d.label}</span>
+                                <span className="text-xs font-medium text-caution">{d.date}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {pastDates.length > 0 && (
+                          <Collapsible open={pastDatesOpen} onOpenChange={setPastDatesOpen}>
+                            <CollapsibleTrigger className="flex items-center gap-2 w-full text-left border-t border-border pt-2">
+                              <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${pastDatesOpen ? "" : "-rotate-90"}`} />
+                              <span className="text-[11px] text-muted-foreground">{pastDates.length} past dates</span>
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                              <div className="space-y-2 mt-2">
+                                {pastDates.map((d, i) => (
+                                  <div key={i} className="flex items-center justify-between py-1.5">
+                                    <span className="text-xs text-muted-foreground">{d.label}</span>
+                                    <span className="text-xs font-medium text-foreground">{d.date}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </CollapsibleContent>
+                          </Collapsible>
+                        )}
                       </div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-lg font-semibold font-mono text-foreground">$695,000</span>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="text-[10px] text-destructive border-destructive/20">-$20K</Badge>
-                        <span className="text-xs text-muted-foreground">Jan 21 (orig)</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="mt-4 pt-4 border-t border-border">
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-2">Commission</span>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">Listing side</span>
-                      <span className="text-sm font-mono font-medium text-foreground">{listing.commissionPct}%</span>
-                    </div>
-                    <div className="flex items-center justify-between mt-1">
-                      <span className="text-xs text-muted-foreground">Co-op</span>
-                      <span className="text-sm font-mono font-medium text-foreground">{listing.commissionCoopPct}%</span>
-                    </div>
-                    <div className="flex items-center justify-between mt-1 pt-1 border-t border-border-sub">
-                      <span className="text-xs text-muted-foreground">Total</span>
-                      <span className="text-sm font-mono font-medium text-foreground">{listing.commissionPct + listing.commissionCoopPct}%</span>
-                    </div>
-                  </div>
-                </Card>
-
-                {/* Key Dates – upcoming shown, past collapsed */}
-                <Card className="p-5">
-                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-4">Key Dates</span>
-                  {upcomingDates.length > 0 && (
-                    <div className="space-y-2 mb-3">
-                      {upcomingDates.map((d, i) => (
-                        <div key={i} className="flex items-center justify-between py-1.5">
-                          <span className="text-xs text-muted-foreground">{d.label}</span>
-                          <span className="text-xs font-medium text-caution">{d.date}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  {pastDates.length > 0 && (
-                    <Collapsible open={pastDatesOpen} onOpenChange={setPastDatesOpen}>
-                      <CollapsibleTrigger className="flex items-center gap-2 w-full text-left border-t border-border pt-2">
-                        <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${pastDatesOpen ? "" : "-rotate-90"}`} />
-                        <span className="text-[11px] text-muted-foreground">{pastDates.length} past dates</span>
-                      </CollapsibleTrigger>
-                      <CollapsibleContent>
-                        <div className="space-y-2 mt-2">
-                          {pastDates.map((d, i) => (
-                            <div key={i} className="flex items-center justify-between py-1.5">
-                              <span className="text-xs text-muted-foreground">{d.label}</span>
-                              <span className="text-xs font-medium text-foreground">{d.date}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </CollapsibleContent>
-                    </Collapsible>
-                  )}
+                    </CollapsibleContent>
+                  </Collapsible>
                 </Card>
 
                 {/* Media */}
