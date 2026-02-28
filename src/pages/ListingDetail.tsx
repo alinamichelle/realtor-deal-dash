@@ -503,49 +503,56 @@ const ListingDetail = () => {
                   </div>
                 </Card>
 
-                {/* Property Details */}
+                {/* Property Details – collapsible */}
                 <Card className="p-5">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Home className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Property Details</span>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between py-1">
-                      <span className="text-xs text-muted-foreground">Address</span>
-                      <span className="text-xs font-medium text-foreground">{listing.address}</span>
-                    </div>
-                    <div className="flex items-center justify-between py-1">
-                      <span className="text-xs text-muted-foreground">City</span>
-                      <span className="text-xs font-medium text-foreground">{listing.city}</span>
-                    </div>
-                    <div className="flex items-center justify-between py-1">
-                      <span className="text-xs text-muted-foreground">Neighborhood</span>
-                      <span className="text-xs font-medium text-foreground">{listing.neighborhood}</span>
-                    </div>
-                    <div className="flex items-center justify-between py-1">
-                      <span className="text-xs text-muted-foreground">Beds / Baths</span>
-                      <span className="text-xs font-medium text-foreground">{listing.beds} bd · {listing.baths} ba</span>
-                    </div>
-                    <div className="flex items-center justify-between py-1">
-                      <span className="text-xs text-muted-foreground">Sq Ft</span>
-                      <span className="text-xs font-medium font-mono text-foreground">{listing.sqft.toLocaleString()}</span>
-                    </div>
-                    <div className="flex items-center justify-between py-1">
-                      <span className="text-xs text-muted-foreground">Year Built</span>
-                      <span className="text-xs font-medium text-foreground">{listing.yearBuilt}</span>
-                    </div>
-                    <div className="flex items-center justify-between py-1">
-                      <span className="text-xs text-muted-foreground">Lot Size</span>
-                      <span className="text-xs font-medium text-foreground">{listing.lotSize}</span>
-                    </div>
-                    <div className="flex items-center justify-between py-1">
-                      <span className="text-xs text-muted-foreground">Type</span>
-                      <span className="text-xs font-medium text-foreground">{listing.propertyType}</span>
-                    </div>
-                  </div>
-                  <NavLink to="/properties/1" className="flex items-center gap-1 text-xs text-foreground mt-3 hover:underline">
-                    View full property <ArrowRight className="h-3 w-3" />
-                  </NavLink>
+                  <Collapsible>
+                    <CollapsibleTrigger className="flex items-center justify-between w-full text-left">
+                      <div className="flex items-center gap-2">
+                        <Home className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Property Details</span>
+                      </div>
+                      <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform" />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <div className="space-y-2 mt-4">
+                        <div className="flex items-center justify-between py-1">
+                          <span className="text-xs text-muted-foreground">Address</span>
+                          <span className="text-xs font-medium text-foreground">{listing.address}</span>
+                        </div>
+                        <div className="flex items-center justify-between py-1">
+                          <span className="text-xs text-muted-foreground">City</span>
+                          <span className="text-xs font-medium text-foreground">{listing.city}</span>
+                        </div>
+                        <div className="flex items-center justify-between py-1">
+                          <span className="text-xs text-muted-foreground">Neighborhood</span>
+                          <span className="text-xs font-medium text-foreground">{listing.neighborhood}</span>
+                        </div>
+                        <div className="flex items-center justify-between py-1">
+                          <span className="text-xs text-muted-foreground">Beds / Baths</span>
+                          <span className="text-xs font-medium text-foreground">{listing.beds} bd · {listing.baths} ba</span>
+                        </div>
+                        <div className="flex items-center justify-between py-1">
+                          <span className="text-xs text-muted-foreground">Sq Ft</span>
+                          <span className="text-xs font-medium font-mono text-foreground">{listing.sqft.toLocaleString()}</span>
+                        </div>
+                        <div className="flex items-center justify-between py-1">
+                          <span className="text-xs text-muted-foreground">Year Built</span>
+                          <span className="text-xs font-medium text-foreground">{listing.yearBuilt}</span>
+                        </div>
+                        <div className="flex items-center justify-between py-1">
+                          <span className="text-xs text-muted-foreground">Lot Size</span>
+                          <span className="text-xs font-medium text-foreground">{listing.lotSize}</span>
+                        </div>
+                        <div className="flex items-center justify-between py-1">
+                          <span className="text-xs text-muted-foreground">Type</span>
+                          <span className="text-xs font-medium text-foreground">{listing.propertyType}</span>
+                        </div>
+                      </div>
+                      <NavLink to="/properties/1" className="flex items-center gap-1 text-xs text-foreground mt-3 hover:underline">
+                        View full property <ArrowRight className="h-3 w-3" />
+                      </NavLink>
+                    </CollapsibleContent>
+                  </Collapsible>
                 </Card>
 
                 {/* Key Dates – collapsible */}
