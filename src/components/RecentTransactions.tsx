@@ -56,9 +56,7 @@ export function RecentTransactions() {
             to={`/transaction/${t.id}`}
             className="flex items-center gap-4 px-4 py-3 cursor-pointer"
           >
-            <div className="p-2.5 rounded-lg bg-surface-cream shrink-0">
-              <Home className="h-4 w-4 text-foreground" />
-            </div>
+            <Home className="h-4 w-4 text-muted-foreground shrink-0" />
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2">
                 <h4 className="text-[13px] font-semibold text-foreground truncate">{t.property}</h4>
@@ -74,7 +72,7 @@ export function RecentTransactions() {
               <div className="mt-2">
                 <div className="w-full bg-border rounded-full h-1">
                   <div
-                    className="bg-foreground h-1 rounded-full transition-all"
+                    className="bg-success h-1 rounded-full transition-all"
                     style={{ width: `${t.progress}%` }}
                   />
                 </div>
