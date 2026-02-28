@@ -36,11 +36,14 @@ import {
   Eye,
   User,
   Send,
+  Home,
 } from "lucide-react";
 
 // ── Mock data ──
 const listing = {
   address: "2847 Oak Hill Dr",
+  city: "Austin, TX 78745",
+  neighborhood: "Oak Hill",
   status: "Active",
   type: "Listing · Sale",
   mls: "2026-048291",
@@ -52,6 +55,26 @@ const listing = {
   leads: 3,
   commissionPct: 3.0,
   commissionCoopPct: 2.5,
+  beds: 4,
+  baths: 3,
+  sqft: 2526,
+  yearBuilt: 2018,
+  lotSize: "0.28 acres",
+  propertyType: "single_family",
+};
+
+const people = [
+  { name: "Anthony Gibson", role: "Agent", initials: "AG" },
+  { name: "Park Family", role: "Contact", initials: "PF" },
+];
+
+const marketingHighlights = {
+  schoolDistrict: "Top Rated",
+  locationStrength: "Good Location",
+  visualAppeal: "Standard",
+  opportunityType: "Rental/Income Property",
+  buyerType: ["Family Home", "First Time Buyer", "Investor"],
+  servicesComments: null as string | null,
 };
 
 const pipelineSteps = [
@@ -105,12 +128,12 @@ const leads = [
 ];
 
 const keyDates = [
-  { label: "Target Live", date: "Jan 21" },
-  { label: "List Date", date: "Jan 21" },
-  { label: "Photos", date: "Jan 18" },
-  { label: "Staging", date: "Jan 16" },
-  { label: "Sign Deploy", date: "Jan 21" },
-  { label: "Video", date: "Feb 10 (sched)", highlight: true },
+  { label: "Video", date: "Feb 10 (sched)", upcoming: true },
+  { label: "Target Live", date: "Jan 21", upcoming: false },
+  { label: "List Date", date: "Jan 21", upcoming: false },
+  { label: "Photos", date: "Jan 18", upcoming: false },
+  { label: "Staging", date: "Jan 16", upcoming: false },
+  { label: "Sign Deploy", date: "Jan 21", upcoming: false },
 ];
 
 const formatCurrency = (n: number) =>
@@ -138,11 +161,14 @@ const ListingDetail = () => {
   const [inventoryDrawerOpen, setInventoryDrawerOpen] = useState(false);
   const [selectedInventory, setSelectedInventory] = useState<typeof inventory[0] | null>(null);
   const [completedOpen, setCompletedOpen] = useState(false);
+  const [pastDatesOpen, setPastDatesOpen] = useState(false);
 
   const completedItems = checklist.filter(c => c.done);
   const pendingItems = checklist.filter(c => !c.done);
   const mostRecentShowing = showings[0];
   const mostRecentLead = leads[0];
+  const upcomingDates = keyDates.filter(d => d.upcoming);
+  const pastDates = keyDates.filter(d => !d.upcoming);
 
   return (
     <SidebarProvider>
@@ -153,7 +179,6 @@ const ListingDetail = () => {
           {/* ═══ White Header ═══ */}
           <div className="bg-card border-b border-border">
             <div className="max-w-[1400px] mx-auto px-7 py-5">
-              {/* Back */}
               <Button variant="ghost" size="sm" asChild className="mb-3 -ml-2">
                 <NavLink to="/listings">
                   <ArrowLeft className="h-4 w-4 mr-1" />
@@ -214,7 +239,7 @@ const ListingDetail = () => {
                 </div>
               </div>
 
-              {/* ═══ Progress Pipeline (white bg) ═══ */}
+              {/* Pipeline */}
               <div className="flex items-center gap-0 overflow-x-auto pb-1">
                 {pipelineSteps.map((step, i) => (
                   <div key={step.label} className="flex items-center">
@@ -233,10 +258,77 @@ const ListingDetail = () => {
 
           {/* ═══ Content ═══ */}
           <div className="max-w-[1400px] mx-auto px-7 py-6">
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6">
               {/* ═══ Left Column ═══ */}
               <div className="space-y-6">
-                {/* Showings – most recent only */}
+                {/* Launch Checklist – TOP */}
+                <Card className="p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Launch Checklist</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">{completedItems.length} of {checklist.length} complete</span>
+                  </div>
+
+                  {pendingItems.length > 0 && (
+                    <div className="space-y-0 divide-y divide-border-sub">
+                      {pendingItems.map((item, i) => (
+                        <div
+                          key={i}
+                          className="flex items-start gap-3 py-3 cursor-pointer hover:bg-muted/30 rounded-lg px-2 -mx-2 transition-colors"
+                          onClick={() => { setSelectedChecklistItem(item); setChecklistDrawerOpen(true); }}
+                        >
+                          {item.overdue ? (
+                            <AlertCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+                          ) : (
+                            <Clock className="h-5 w-5 text-caution shrink-0 mt-0.5" />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-foreground">{item.title}</p>
+                            <p className="text-xs text-muted-foreground">{item.subtitle}</p>
+                          </div>
+                          {item.action && (
+                            <Button variant="ghost" size="sm" className="text-xs text-success shrink-0 h-auto py-0">
+                              {item.action}
+                            </Button>
+                          )}
+                          <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 mt-1" />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {completedItems.length > 0 && (
+                    <Collapsible open={completedOpen} onOpenChange={setCompletedOpen}>
+                      <CollapsibleTrigger className="flex items-center gap-2 w-full pt-3 mt-3 border-t border-border text-left">
+                        <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${completedOpen ? "" : "-rotate-90"}`} />
+                        <span className="text-xs text-muted-foreground">{completedItems.length} completed</span>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <div className="space-y-0 divide-y divide-border-sub mt-2">
+                          {completedItems.map((item, i) => (
+                            <div
+                              key={i}
+                              className="flex items-start gap-3 py-3 cursor-pointer hover:bg-muted/30 rounded-lg px-2 -mx-2 transition-colors"
+                              onClick={() => { setSelectedChecklistItem(item); setChecklistDrawerOpen(true); }}
+                            >
+                              <CheckCircle2 className="h-5 w-5 text-success shrink-0 mt-0.5" />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-foreground">{item.title}</p>
+                                <p className="text-xs text-muted-foreground">{item.subtitle}</p>
+                              </div>
+                              {item.date && <span className="text-xs text-muted-foreground shrink-0">{item.date}</span>}
+                              <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 mt-1" />
+                            </div>
+                          ))}
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  )}
+                </Card>
+
+                {/* Showings */}
                 <Card className="p-5">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
@@ -244,12 +336,7 @@ const ListingDetail = () => {
                       <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Showings</span>
                       <Badge variant="outline" className="text-[10px]">{showings.length}</Badge>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-xs text-muted-foreground h-auto py-0"
-                      onClick={() => setAllShowingsOpen(true)}
-                    >
+                    <Button variant="ghost" size="sm" className="text-xs text-muted-foreground h-auto py-0" onClick={() => setAllShowingsOpen(true)}>
                       View all
                     </Button>
                   </div>
@@ -293,102 +380,39 @@ const ListingDetail = () => {
                   </div>
                 </Card>
 
-                {/* Launch Checklist – upcoming/overdue + collapsed completed */}
+                {/* Marketing Highlights */}
                 <Card className="p-5">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Launch Checklist</span>
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-4">Marketing Highlights</span>
+                  <div className="grid grid-cols-2 gap-x-8 gap-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">School District</span>
+                      <Badge variant="secondary" className="text-[10px]">{marketingHighlights.schoolDistrict}</Badge>
                     </div>
-                    <span className="text-xs text-muted-foreground">{completedItems.length} of {checklist.length} complete</span>
-                  </div>
-
-                  {/* Pending / Overdue items */}
-                  {pendingItems.length > 0 && (
-                    <div className="space-y-0 divide-y divide-border-sub">
-                      {pendingItems.map((item, i) => (
-                        <div
-                          key={i}
-                          className="flex items-start gap-3 py-3 cursor-pointer hover:bg-muted/30 rounded-lg px-2 -mx-2 transition-colors"
-                          onClick={() => { setSelectedChecklistItem(item); setChecklistDrawerOpen(true); }}
-                        >
-                          {item.overdue ? (
-                            <AlertCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
-                          ) : (
-                            <Clock className="h-5 w-5 text-caution shrink-0 mt-0.5" />
-                          )}
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-foreground">{item.title}</p>
-                            <p className="text-xs text-muted-foreground">{item.subtitle}</p>
-                          </div>
-                          {item.action && (
-                            <Button variant="ghost" size="sm" className="text-xs text-success shrink-0 h-auto py-0">
-                              {item.action}
-                            </Button>
-                          )}
-                          <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 mt-1" />
-                        </div>
-                      ))}
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">Location Strength</span>
+                      <Badge variant="secondary" className="text-[10px]">{marketingHighlights.locationStrength}</Badge>
                     </div>
-                  )}
-
-                  {/* Completed items – collapsed */}
-                  {completedItems.length > 0 && (
-                    <Collapsible open={completedOpen} onOpenChange={setCompletedOpen}>
-                      <CollapsibleTrigger className="flex items-center gap-2 w-full pt-3 mt-3 border-t border-border text-left">
-                        <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${completedOpen ? "" : "-rotate-90"}`} />
-                        <span className="text-xs text-muted-foreground">{completedItems.length} completed</span>
-                      </CollapsibleTrigger>
-                      <CollapsibleContent>
-                        <div className="space-y-0 divide-y divide-border-sub mt-2">
-                          {completedItems.map((item, i) => (
-                            <div
-                              key={i}
-                              className="flex items-start gap-3 py-3 cursor-pointer hover:bg-muted/30 rounded-lg px-2 -mx-2 transition-colors"
-                              onClick={() => { setSelectedChecklistItem(item); setChecklistDrawerOpen(true); }}
-                            >
-                              <CheckCircle2 className="h-5 w-5 text-success shrink-0 mt-0.5" />
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-foreground">{item.title}</p>
-                                <p className="text-xs text-muted-foreground">{item.subtitle}</p>
-                              </div>
-                              {item.date && (
-                                <span className="text-xs text-muted-foreground shrink-0">{item.date}</span>
-                              )}
-                              <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0 mt-1" />
-                            </div>
-                          ))}
-                        </div>
-                      </CollapsibleContent>
-                    </Collapsible>
-                  )}
-                </Card>
-
-                {/* Media */}
-                <Card className="p-5">
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Media</span>
-                    <span className="text-xs text-muted-foreground">Giraffe360</span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    {media.map((item, i) => (
-                      <div key={i} className="border border-border rounded-lg p-3 text-center">
-                        <Camera className="h-5 w-5 text-muted-foreground mx-auto mb-2" />
-                        <p className="text-xs font-medium text-foreground">{item.label}</p>
-                        <p className="text-[10px] text-muted-foreground">{item.detail}</p>
-                        <Badge variant="outline" className={`text-[9px] mt-1 ${
-                          item.status === "Done" || item.status === "Live" || item.status === "Ready"
-                            ? "bg-success/10 text-success border-success/20"
-                            : "bg-caution/10 text-caution border-caution/20"
-                        }`}>
-                          {item.status}
-                        </Badge>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">Visual Appeal</span>
+                      <Badge variant="secondary" className="text-[10px]">{marketingHighlights.visualAppeal}</Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">Opportunity Type</span>
+                      <span className="text-xs font-medium text-foreground">{marketingHighlights.opportunityType}</span>
+                    </div>
+                    <div className="flex items-start justify-between col-span-2">
+                      <span className="text-xs text-muted-foreground shrink-0 mt-0.5">Buyer Type</span>
+                      <div className="flex flex-wrap gap-1 justify-end">
+                        {marketingHighlights.buyerType.map(t => (
+                          <span key={t} className="text-xs text-foreground">{t}</span>
+                        ))}
                       </div>
-                    ))}
+                    </div>
+                    <div className="flex items-center justify-between col-span-2">
+                      <span className="text-xs text-muted-foreground">Services / Marketing Comments</span>
+                      <span className="text-xs text-muted-foreground">{marketingHighlights.servicesComments || "—"}</span>
+                    </div>
                   </div>
-                  <p className="text-[10px] text-muted-foreground mt-3">
-                    Last Giraffe360 sync: 2h ago · <span className="text-success cursor-pointer">Sync now</span>
-                  </p>
                 </Card>
 
                 {/* Marketing Copy */}
@@ -416,18 +440,76 @@ const ListingDetail = () => {
                         <Copy className="h-3 w-3" /> Copy
                       </button>
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge variant="outline" className="text-[10px]">Visual: High</Badge>
-                      <Badge variant="outline" className="text-[10px]">Location: Strong</Badge>
-                      <Badge variant="outline" className="text-[10px]">Buyer: Family</Badge>
-                    </div>
                   </div>
                 </Card>
               </div>
 
               {/* ═══ Right Sidebar ═══ */}
               <div className="space-y-5">
-                {/* Price History (moved to top) */}
+                {/* People */}
+                <Card className="p-5">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-4">People</span>
+                  <div className="space-y-3">
+                    {people.map((p, i) => (
+                      <div key={i} className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-[11px] font-semibold text-secondary-foreground shrink-0">
+                          {p.initials}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-foreground">{p.name}</p>
+                          <p className="text-[11px] text-muted-foreground">{p.role}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+
+                {/* Property Details */}
+                <Card className="p-5">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Home className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Property Details</span>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between py-1">
+                      <span className="text-xs text-muted-foreground">Address</span>
+                      <span className="text-xs font-medium text-foreground">{listing.address}</span>
+                    </div>
+                    <div className="flex items-center justify-between py-1">
+                      <span className="text-xs text-muted-foreground">City</span>
+                      <span className="text-xs font-medium text-foreground">{listing.city}</span>
+                    </div>
+                    <div className="flex items-center justify-between py-1">
+                      <span className="text-xs text-muted-foreground">Neighborhood</span>
+                      <span className="text-xs font-medium text-foreground">{listing.neighborhood}</span>
+                    </div>
+                    <div className="flex items-center justify-between py-1">
+                      <span className="text-xs text-muted-foreground">Beds / Baths</span>
+                      <span className="text-xs font-medium text-foreground">{listing.beds} bd · {listing.baths} ba</span>
+                    </div>
+                    <div className="flex items-center justify-between py-1">
+                      <span className="text-xs text-muted-foreground">Sq Ft</span>
+                      <span className="text-xs font-medium font-mono text-foreground">{listing.sqft.toLocaleString()}</span>
+                    </div>
+                    <div className="flex items-center justify-between py-1">
+                      <span className="text-xs text-muted-foreground">Year Built</span>
+                      <span className="text-xs font-medium text-foreground">{listing.yearBuilt}</span>
+                    </div>
+                    <div className="flex items-center justify-between py-1">
+                      <span className="text-xs text-muted-foreground">Lot Size</span>
+                      <span className="text-xs font-medium text-foreground">{listing.lotSize}</span>
+                    </div>
+                    <div className="flex items-center justify-between py-1">
+                      <span className="text-xs text-muted-foreground">Type</span>
+                      <span className="text-xs font-medium text-foreground">{listing.propertyType}</span>
+                    </div>
+                  </div>
+                  <NavLink to="/properties/1" className="flex items-center gap-1 text-xs text-foreground mt-3 hover:underline">
+                    View full property <ArrowRight className="h-3 w-3" />
+                  </NavLink>
+                </Card>
+
+                {/* Price History */}
                 <Card className="p-5">
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Price History</span>
@@ -449,7 +531,6 @@ const ListingDetail = () => {
                       </div>
                     </div>
                   </div>
-                  {/* Commission */}
                   <div className="mt-4 pt-4 border-t border-border">
                     <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-2">Commission</span>
                     <div className="flex items-center justify-between">
@@ -467,17 +548,64 @@ const ListingDetail = () => {
                   </div>
                 </Card>
 
-                {/* Key Dates (below price history) */}
+                {/* Key Dates – upcoming shown, past collapsed */}
                 <Card className="p-5">
                   <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-4">Key Dates</span>
-                  <div className="space-y-2">
-                    {keyDates.map((d, i) => (
-                      <div key={i} className="flex items-center justify-between py-1.5">
-                        <span className="text-xs text-muted-foreground">{d.label}</span>
-                        <span className={`text-xs font-medium ${d.highlight ? "text-caution" : "text-foreground"}`}>{d.date}</span>
+                  {upcomingDates.length > 0 && (
+                    <div className="space-y-2 mb-3">
+                      {upcomingDates.map((d, i) => (
+                        <div key={i} className="flex items-center justify-between py-1.5">
+                          <span className="text-xs text-muted-foreground">{d.label}</span>
+                          <span className="text-xs font-medium text-caution">{d.date}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {pastDates.length > 0 && (
+                    <Collapsible open={pastDatesOpen} onOpenChange={setPastDatesOpen}>
+                      <CollapsibleTrigger className="flex items-center gap-2 w-full text-left border-t border-border pt-2">
+                        <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${pastDatesOpen ? "" : "-rotate-90"}`} />
+                        <span className="text-[11px] text-muted-foreground">{pastDates.length} past dates</span>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <div className="space-y-2 mt-2">
+                          {pastDates.map((d, i) => (
+                            <div key={i} className="flex items-center justify-between py-1.5">
+                              <span className="text-xs text-muted-foreground">{d.label}</span>
+                              <span className="text-xs font-medium text-foreground">{d.date}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  )}
+                </Card>
+
+                {/* Media */}
+                <Card className="p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Media</span>
+                    <span className="text-xs text-muted-foreground">Giraffe360</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {media.map((item, i) => (
+                      <div key={i} className="border border-border rounded-lg p-3 text-center bg-card">
+                        <Camera className="h-5 w-5 text-muted-foreground mx-auto mb-2" />
+                        <p className="text-xs font-medium text-foreground">{item.label}</p>
+                        <p className="text-[10px] text-muted-foreground">{item.detail}</p>
+                        <Badge variant="outline" className={`text-[9px] mt-1 ${
+                          item.status === "Done" || item.status === "Live" || item.status === "Ready"
+                            ? "bg-success/10 text-success border-success/20"
+                            : "bg-caution/10 text-caution border-caution/20"
+                        }`}>
+                          {item.status}
+                        </Badge>
                       </div>
                     ))}
                   </div>
+                  <p className="text-[10px] text-muted-foreground mt-3">
+                    Last Giraffe360 sync: 2h ago · <span className="text-success cursor-pointer">Sync now</span>
+                  </p>
                 </Card>
 
                 {/* Inventory */}
