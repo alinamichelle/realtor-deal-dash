@@ -38,7 +38,7 @@ export function DashboardKPIs() {
         <div key={kpi.title} className="bg-card border border-border rounded-xl p-4">
           <div className="flex items-center justify-between mb-3">
             <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{kpi.title}</span>
-            <kpi.icon className="h-4 w-4 text-muted-foreground" />
+            <kpi.icon className="h-3.5 w-3.5 text-muted-foreground/60" />
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-2xl font-semibold font-mono text-foreground">{kpi.value}</span>

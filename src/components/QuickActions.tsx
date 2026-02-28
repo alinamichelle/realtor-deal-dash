@@ -24,9 +24,7 @@ export function QuickActions() {
             to={action.href}
             className="flex flex-col items-center gap-2 py-4 px-2 text-center transition-colors"
           >
-            <div className="p-2.5 rounded-lg bg-surface-cream">
-              <action.icon className="h-4 w-4 text-foreground" />
-            </div>
+            <action.icon className="h-4 w-4 text-foreground" />
             <span className="text-[11px] font-medium text-foreground">{action.label}</span>
           </NavLink>
         ))}

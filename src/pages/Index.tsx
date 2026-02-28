@@ -47,8 +47,8 @@ const Index = () => {
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-4 mb-4">
               {/* Main column */}
               <div className="space-y-4">
-                <RecentTransactions />
                 <QuickActions />
+                <RecentTransactions />
               </div>
 
               {/* Side column */}
