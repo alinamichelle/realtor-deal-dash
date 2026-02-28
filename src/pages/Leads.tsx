@@ -187,15 +187,15 @@ const Leads = () => {
       <div className="min-h-screen flex w-full">
         <AppSidebar />
 
-        <main className="flex-1 bg-gradient-to-b from-silver to-muted/30">
-          <div className="max-w-[1600px] mx-auto px-6 py-8">
+        <main className="flex-1 bg-background overflow-y-auto">
+          <div className="max-w-[1600px] mx-auto px-7 py-6">
             {/* Header */}
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center justify-between mb-6">
               <div>
-                <h1 className="text-3xl font-bold text-foreground mb-2">
+                <h1 className="text-[22px] font-normal tracking-tight text-foreground">
                   Leads
                 </h1>
-                <p className="text-muted-foreground">
+                <p className="text-xs text-muted-foreground mt-0.5">
                   Manage and nurture your incoming leads
                 </p>
               </div>

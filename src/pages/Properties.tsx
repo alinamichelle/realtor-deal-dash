@@ -250,13 +250,13 @@ export default function Properties() {
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
         <AppSidebar />
-        <div className="flex-1 bg-background">
+         <div className="flex-1 bg-background overflow-y-auto">
           {/* Header */}
-          <div className="border-b border-border bg-card px-8 py-6">
-            <div className="flex items-center justify-between mb-6">
+          <div className="border-b border-border bg-card px-7 py-5">
+            <div className="flex items-center justify-between mb-5">
               <div>
-                <h1 className="text-3xl font-bold text-foreground">HausWatch</h1>
-                <p className="text-muted-foreground mt-1">Monitor properties and nurture client relationships</p>
+                <h1 className="text-[22px] font-normal tracking-tight text-foreground">HausWatch</h1>
+                <p className="text-xs text-muted-foreground mt-0.5">Monitor properties and nurture client relationships</p>
               </div>
               <Button>
                 <MapPin className="mr-2 h-4 w-4" />

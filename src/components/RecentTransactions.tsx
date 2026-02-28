@@ -1,5 +1,4 @@
-import { ArrowRight, Home, TrendingUp } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { ArrowRight, Home } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { NavLink } from "@/components/NavLink";
@@ -34,71 +33,56 @@ const transactions = [
   },
 ];
 
+const statusColor = (s: string) => {
+  if (s === "Under Contract") return "bg-caution/10 text-caution border-caution/20";
+  if (s === "Active") return "bg-info/10 text-info border-info/20";
+  if (s === "Pending") return "bg-success/10 text-success border-success/20";
+  return "bg-muted text-muted-foreground";
+};
+
 export function RecentTransactions() {
   return (
-    <Card className="p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-foreground">Recent Transactions</h3>
-        <Button variant="ghost" size="sm" asChild>
-          <NavLink to="/transactions">
-            View All
-            <ArrowRight className="h-4 w-4" />
-          </NavLink>
-        </Button>
+    <div className="bg-card border border-border rounded-xl overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border-sub">
+        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Active Deals</span>
+        <NavLink to="/transactions" className="text-[10px] text-muted-foreground flex items-center gap-1">
+          View All <ArrowRight className="h-3 w-3" />
+        </NavLink>
       </div>
-      <div className="space-y-4">
-        {transactions.map((transaction) => (
-          <div
-            key={transaction.id}
-            className="flex items-center gap-4 p-4 rounded-lg border border-border hover:shadow-md transition-all cursor-pointer group"
+      <div className="divide-y divide-border-sub">
+        {transactions.map((t) => (
+          <NavLink
+            key={t.id}
+            to={`/transaction/${t.id}`}
+            className="flex items-center gap-4 px-4 py-3 cursor-pointer"
           >
-            <div className="p-3 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-              <Home className="h-5 w-5 text-primary" />
+            <div className="p-2.5 rounded-lg bg-surface-cream shrink-0">
+              <Home className="h-4 w-4 text-foreground" />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <h4 className="text-sm font-semibold text-foreground">{transaction.property}</h4>
-                  <p className="text-xs text-muted-foreground">{transaction.city}</p>
-                </div>
-                <Badge variant="outline">{transaction.type}</Badge>
-              </div>
-              <div className="flex items-center gap-4 mt-2">
-                <span className="text-sm font-bold text-primary">{transaction.price}</span>
-                <Badge
-                  variant={
-                    transaction.status === "Under Contract"
-                      ? "default"
-                      : transaction.status === "Active"
-                      ? "secondary"
-                      : "outline"
-                  }
-                  className="text-xs"
-                >
-                  {transaction.status}
+              <div className="flex items-center justify-between gap-2">
+                <h4 className="text-[13px] font-semibold text-foreground truncate">{t.property}</h4>
+                <Badge variant="outline" className={`text-[10px] shrink-0 border ${statusColor(t.status)}`}>
+                  {t.status}
                 </Badge>
               </div>
-              <div className="mt-3">
-                <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-                  <span>Progress</span>
-                  <span>{transaction.progress}%</span>
-                </div>
-                <div className="w-full bg-muted rounded-full h-1.5">
+              <div className="flex items-center gap-3 mt-1">
+                <span className="text-xs text-muted-foreground">{t.city}</span>
+                <span className="text-xs font-semibold font-mono text-foreground">{t.price}</span>
+              </div>
+              {/* Progress bar */}
+              <div className="mt-2">
+                <div className="w-full bg-border rounded-full h-1">
                   <div
-                    className="bg-primary h-1.5 rounded-full transition-all"
-                    style={{ width: `${transaction.progress}%` }}
+                    className="bg-foreground h-1 rounded-full transition-all"
+                    style={{ width: `${t.progress}%` }}
                   />
                 </div>
               </div>
             </div>
-            <NavLink to={`/transaction/${transaction.id}`}>
-              <Button variant="ghost" size="icon" className="shrink-0">
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </NavLink>
-          </div>
+          </NavLink>
         ))}
       </div>
-    </Card>
+    </div>
   );
 }

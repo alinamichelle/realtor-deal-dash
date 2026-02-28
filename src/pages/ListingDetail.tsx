@@ -32,8 +32,8 @@ const ListingDetail = () => {
       <div className="min-h-screen flex w-full">
         <AppSidebar />
 
-        <main className="flex-1 bg-gradient-to-b from-silver to-muted/30">
-          <div className="max-w-[1400px] mx-auto px-6 py-8">
+        <main className="flex-1 bg-background overflow-y-auto">
+          <div className="max-w-[1400px] mx-auto px-7 py-6">
             {/* Header */}
             <div className="mb-6">
               <Button variant="ghost" size="sm" asChild className="mb-4">
@@ -45,11 +45,11 @@ const ListingDetail = () => {
               
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-4">
-                  <div className="p-3 bg-primary/10 rounded-xl">
-                    <Home className="h-8 w-8 text-primary" />
+                  <div className="p-3 bg-surface-cream rounded-xl">
+                    <Home className="h-7 w-7 text-foreground" />
                   </div>
                   <div>
-                    <h1 className="text-3xl font-bold text-foreground mb-2">
+                    <h1 className="text-[22px] font-normal tracking-tight text-foreground">
                       Luxury Estate on Oak Hills
                     </h1>
                     <div className="flex items-center gap-2 text-muted-foreground mb-2">

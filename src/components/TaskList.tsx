@@ -1,85 +1,50 @@
 import { CheckCircle2, Circle, Clock } from "lucide-react";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 
 const tasks = [
-  {
-    title: "Follow up with Johnson listing",
-    priority: "high",
-    dueDate: "Today",
-    completed: false,
-  },
-  {
-    title: "Schedule home inspection - 123 Oak St",
-    priority: "high",
-    dueDate: "Tomorrow",
-    completed: false,
-  },
-  {
-    title: "Review contract for Smith property",
-    priority: "medium",
-    dueDate: "Dec 15",
-    completed: false,
-  },
-  {
-    title: "Client meeting preparation",
-    priority: "medium",
-    dueDate: "Dec 16",
-    completed: false,
-  },
-  {
-    title: "Update listing photos",
-    priority: "low",
-    dueDate: "Dec 18",
-    completed: false,
-  },
+  { title: "Follow up with Johnson listing", priority: "high", dueDate: "Today", completed: false },
+  { title: "Schedule home inspection - 123 Oak St", priority: "high", dueDate: "Tomorrow", completed: false },
+  { title: "Review contract for Smith property", priority: "medium", dueDate: "Dec 15", completed: false },
+  { title: "Client meeting preparation", priority: "medium", dueDate: "Dec 16", completed: false },
+  { title: "Update listing photos", priority: "low", dueDate: "Dec 18", completed: false },
 ];
+
+const priorityDot = (p: string) => {
+  if (p === "high") return "bg-destructive";
+  if (p === "medium") return "bg-caution";
+  return "bg-muted-foreground/40";
+};
 
 export function TaskList() {
   return (
-    <Card className="p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-foreground">Tasks & To-Dos</h3>
-        <Button variant="ghost" size="sm">View All</Button>
+    <div className="bg-card border border-border rounded-xl overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border-sub">
+        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Tasks</span>
+        <span className="text-[10px] text-muted-foreground">View All</span>
       </div>
-      <div className="space-y-3">
-        {tasks.map((task, index) => (
-          <div
-            key={index}
-            className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer group"
-          >
-            <button className="mt-0.5">
+      <div className="divide-y divide-border-sub">
+        {tasks.map((task, i) => (
+          <div key={i} className="flex items-start gap-3 px-4 py-3 cursor-pointer">
+            <button className="mt-0.5 shrink-0">
               {task.completed ? (
-                <CheckCircle2 className="h-5 w-5 text-success" />
+                <CheckCircle2 className="h-4 w-4 text-success" />
               ) : (
-                <Circle className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                <Circle className="h-4 w-4 text-muted-foreground/40" />
               )}
             </button>
             <div className="flex-1 min-w-0">
-              <p className={`text-sm font-medium ${task.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
+              <p className={`text-[13px] font-medium leading-tight ${task.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
                 {task.title}
               </p>
               <div className="flex items-center gap-2 mt-1">
                 <Clock className="h-3 w-3 text-muted-foreground" />
-                <span className="text-xs text-muted-foreground">{task.dueDate}</span>
+                <span className="text-[11px] text-muted-foreground">{task.dueDate}</span>
               </div>
             </div>
-            <Badge
-              variant={
-                task.priority === "high"
-                  ? "destructive"
-                  : task.priority === "medium"
-                  ? "default"
-                  : "secondary"
-              }
-              className="shrink-0"
-            >
-              {task.priority}
-            </Badge>
+            <span className={`w-2 h-2 rounded-full shrink-0 mt-1.5 ${priorityDot(task.priority)}`} />
           </div>
         ))}
       </div>
-    </Card>
+    </div>
   );
 }
